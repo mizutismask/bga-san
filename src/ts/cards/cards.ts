@@ -1,0 +1,91 @@
+import { TooltipElement } from '../tooltipable'
+import { SanCard, SanGame } from '../types'
+import { CardsManagerBase } from './cardsManagerBase'
+
+// <reference path="../card-manager.ts"/>
+export const IMAGE_ITEMS_PER_ROW = 10
+
+const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
+	game.cardsManager.setFrontBackground(div as HTMLDivElement, card.type)
+	const tokensId = `${game.cardsManager.getId(card)}-tokens`
+	const textId = `${game.cardsManager.getId(card)}-text`
+
+	//add help
+	const helpId = `${game.cardsManager.getId(card)}-front-info`
+	if (!$(helpId)) {
+		const info: HTMLDivElement = document.createElement('div')
+		info.id = helpId
+		info.innerText = '?'
+		info.classList.add('css-icon', 'card-info')
+		div.appendChild(info)
+		if (game.cardsManager.isCardVisible(card)) {
+			const tooltipContent = game.cardsManager.getTooltip(card)
+			game.setTooltip(div.id, tooltipContent)
+			game.addTooltipOnClickHelpButton(info.id, tooltipContent)
+		}
+	}
+
+	//adds tokens locations
+	if (!$(tokensId)) {
+		const container: HTMLDivElement = document.createElement('div')
+		container.id = tokensId
+		container.classList.add('tokens-location-wrapper')
+		div.appendChild(container)
+	}
+
+	if (!$(textId)) {
+		const container: HTMLDivElement = document.createElement('div')
+		container.id = tokensId
+		container.classList.add('bga-autofit', 'card-text-wrapper')
+		div.appendChild(container)
+	}
+}
+
+export class CardsManager extends CardsManagerBase<SanCard> {
+	constructor(public game: SanGame) {
+		super({
+			animationManager: game.animationManager,
+			type: 'card',
+			getId: (card) => `san-card-${card.id}`,
+			setupFrontDiv: setupFrontDiv(game),
+			setupDiv: (card: SanCard, div: HTMLElement) => {
+				div.classList.add('san-card')
+				div.dataset.cardId = '' + card.id
+				div.dataset.cardType = '' + card.type
+			},
+			setupBackDiv: (card: SanCard, div: HTMLElement) => {
+				div.style.backgroundImage = `url('${g_gamethemeurl}img/san-card-background.jpg')`
+				//	const url = this.game.bga.images.getImgUrl("treasures.webp")
+				//	div.style.backgroundImage = `url('${url}')`
+				//	div.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
+			},
+			cardHeight: undefined as unknown as number,
+			cardWidth: undefined as unknown as number,
+			cardBorderRadius: '3px'
+		})
+	}
+
+	public getCardName(card: SanCard) {
+		return `<div class="cstm-card-name">${card.name}</div>`
+	}
+
+	public getTooltipContent(): TooltipElement<SanCard>[] {
+		return [{ title: _('Objective'), contentProvider: (c: SanCard) => this.getDesc(c) }]
+	}
+
+	public getDesc(card: SanCard) {
+		return 'todo'
+	}
+
+	public setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
+		const imageUrl = this.game.bga.images.getImgUrl('san-card-background.jpg')
+		cardDiv.style.backgroundImage = `url('${imageUrl}')`
+		const imagePosition = cardType - 1
+		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
+		const xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100
+		const yBackgroundPercent = row * 100
+		cardDiv.style.backgroundPositionX = `-${xBackgroundPercent}%`
+		cardDiv.style.backgroundPositionY = `-${yBackgroundPercent}%`
+		cardDiv.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
+	}
+}

@@ -1,0 +1,255 @@
+@use 'sass:list';
+@use 'animations';
+@use 'playerboards';
+@use 'bga-hacks';
+@use 'end-score';
+@use 'player-table';
+@use '../../node_modules/bga-help/bga-help';
+@use 'GameVars' as vars;
+
+$BASE_CARD_WIDTH: 246;
+$BASE_CARD_HEIGHT: 344;
+$cardSizeModifier: 0.5;
+$CARD_WIDTH: calc(#{$BASE_CARD_WIDTH}px * $cardSizeModifier); //also change in stock-utils.ts
+$CARD_HEIGHT: calc(#{$BASE_CARD_HEIGHT}px * $cardSizeModifier);
+$CARD_RATIO: list.slash($BASE_CARD_WIDTH, $BASE_CARD_HEIGHT);
+
+@mixin card-border {
+	border-radius: 3%;
+}
+
+html {
+	/*background: rgb(21, 104, 134);
+    background-repeat: no-repeat;
+    background-size: 100%;*/
+
+	background-image: url('img/background.jpg');
+	background-attachment: fixed;
+	background-position: 50%;
+	background-size: cover;
+}
+
+.hidden {
+	display: none !important;
+}
+
+#custom-game-area {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 5px;
+}
+
+@mixin selected-element {
+	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
+}
+
+svg {
+	height: 100%;
+	width: auto;
+}
+
+.zone-title {
+	color: #965e17;
+	font-size: large;
+	text-align: center;
+	padding-top: 10px;
+}
+
+.cst-block {
+	padding: 12px 20px;
+	border-radius: 5px;
+}
+
+//do not display title if the stock is empty
+.cst-block:has(> .card-stock:empty + .zone-title) .zone-title {
+	display: none;
+}
+
+.deck-icon {
+	width: 40px;
+	aspect-ratio: 1;
+	background-size: contain;
+	background-repeat: no-repeat;
+	display: inline-block;
+	color: white;
+}
+
+.stock-counter {
+	border-radius: 50%;
+	font-weight: bold;
+	font-size: 11pt;
+	border: 1px solid;
+	box-sizing: border-box;
+	border-color: vars.$main-color;
+}
+
+.cstm-card-name {
+	font-style: oblique;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
+.bga-cards_selected-card {
+	@include selected-element;
+	@include card-border;
+}
+
+.san-card {
+	.card-side {
+		@include card-border;
+	}
+}
+
+.deck {
+	&[data-empty='true'] {
+		@include card-border;
+		outline: 2px dashed vars.$main-color;
+	}
+}
+
+.card {
+	position: relative;
+	width: $CARD_WIDTH;
+	height: $CARD_HEIGHT;
+
+	.card-text-wrapper {
+		width: 100px;
+		height: 30px;
+	}
+}
+
+.card-stock {
+	.slot {
+		@include card-border;
+		aspect-ratio: $CARD_RATIO;
+		width: $CARD_WIDTH;
+		background: hsla(0, 0%, 100%, 0.4);
+		outline: 1px solid hsla(0, 0%, 100%, 0.6);
+	}
+
+	.board-card {
+		aspect-ratio: $CARD_RATIO;
+		//width: $CARD_WIDTH;
+	}
+}
+
+//overlapping cards in line-stock
+#discards-wrapper {
+	display: flex;
+	$shift: 105px;
+	.line-stock {
+		padding-left: $shift;
+	}
+	.card {
+		margin-left: calc($shift * -1);
+	}
+}
+
+.touch-device {
+	.css-icon {
+		&.card-info,
+		&.card-info-small {
+			display: inline-flex;
+		}
+	}
+}
+
+.css-icon {
+	width: 25px;
+	height: 25px;
+	color: white;
+	background-color: vars.$main-color;
+	border: 2px solid white;
+	border-radius: 15px;
+	text-align: center;
+	font-weight: bolder;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	pointer-events: auto;
+
+	&.card-info {
+		display: none;
+		width: 25px;
+		height: 25px;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
+
+	&.card-info-small {
+		display: none;
+		width: 11px;
+		height: 11px;
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		font-size: x-small;
+	}
+}
+
+.bga-cards_card > .bga-cards_card-sides > .bga-cards_card-side > .card-info {
+	pointer-events: all;
+}
+
+.log {
+	.log-icon {
+		display: inline-block;
+		vertical-align: middle;
+		width: 30px;
+		height: 27px;
+	}
+}
+
+.counter-left-part {
+	margin-right: -5px;
+}
+
+#player-help-visible-wrapper {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 1px;
+	flex-direction: column;
+	gap: 5px;
+
+	.player-help-visible {
+		background-size: 200%;
+		background-image: url('img/helpCards.jpg');
+		@include card-border;
+		$helpVisibleModifier: 0.9;
+		width: calc(246px * $helpVisibleModifier);
+		height: calc(344px * $helpVisibleModifier);
+
+		&[data-player-color='0d383a'] {
+			background-position: -100% 0;
+		}
+
+		&[data-player-color='f5f8d3'] {
+			background-position: 0 0;
+		}
+	}
+}
+
+.bga-help_button {
+	&.fa,
+	.fa6 {
+		font-size: 1.9em;
+		font-weight: 500;
+	}
+}
+
+//for a lonely expandable help button that looks like a normal help button
+.button-help-expandable {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: white;
+	color: #266059;
+	font-size: 28pt;
+	font-weight: bold;
+}

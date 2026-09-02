@@ -1,0 +1,11 @@
+{
+	"100": {
+		"name": "With custom sounds",
+		"needReload": false,
+		"values": {
+			"1": { "name": "Yes" },
+			"2": { "name": "No" }
+		},
+		"default": 1
+	}
+}

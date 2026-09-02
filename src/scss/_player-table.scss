@@ -1,0 +1,18 @@
+.player-table {
+	display: flex;
+	z-index: 25; // so new animations are over the map
+}
+
+.player-name {
+	font-size: 1.1em;
+	font-weight: bold;
+	text-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.9),
+		0 0 4px rgba(255, 255, 255, 0.35);
+	margin-bottom: 8px;
+	background: rgb(10 56 48 / 80%);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+	padding: 5px 10px;
+	border-radius: 5px;
+}

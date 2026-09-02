@@ -1,0 +1,19 @@
+{
+    "101": {
+		"name": "Difficulty",
+		"values": {
+			"1": {
+				"name": "Easy (3 pieces to place)",
+				"tmdisplay": "Easy",
+				"description": "Recommended for beginners"
+			},
+			"2": {
+				"name": "Difficult (4 pieces to place)",
+				"tmdisplay": "Difficult",
+				"description": "Recommended for experienced players",
+				"nobeginner ": true
+			}
+		},
+		"default": 1
+	}
+}

@@ -1,0 +1,19 @@
+$main-color: #965e17;
+$selected-color:rgb(200, 255, 47);
+
+//(classic BGA colors) :
+$player-colors: (
+	'red': 'ff0000',
+	'green': '008000',
+	'blue': '0000ff',
+	'yellow': 'ffa500',
+	'purple': '982fff'
+);
+
+
+@mixin selected-element {
+	box-shadow: 0 0 5px 5px #573c09;
+}
+@mixin selectable-element {
+	box-shadow: 0 0 2px 2px rgb(200, 255, 47);
+}

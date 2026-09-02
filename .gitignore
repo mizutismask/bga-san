@@ -1,0 +1,14 @@
+.vscode
+.history
+node_modules
+package-lock.json
+misc/.~lock.material.ods#
+phpunit.cache
+/vendor/
+san.css
+.vscode/sftp.json
+Game.js
+composer.json
+composer.lock
+phpunit.xml.dist
+_ide_helper.php

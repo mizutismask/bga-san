@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"strict": false,
+		"lib": ["dom", "esnext"],
+		"sourceMap": false,
+		"rootDir": "."
+	},
+	"include": [
+		"*.d.ts",
+		"src/ts/**/*.d.ts",
+		"src/ts/**/*.ts",
+		"node_modules/bga-help/src/help-manager.ts",
+		"node_modules/bga-jump-to/src/jump-to-manager.ts"
+	]
+}
