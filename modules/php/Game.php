@@ -229,13 +229,12 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter->fillResult($result);
         $this->incomeCounter->fillResult($result);
 
-        //$result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
+        $result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
 
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);
             $player['playerNo'] = $currentPlayerOrder;
             //$player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
-            //$player['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
 
             // $player['cardsCount'] = intval($this->actionCards->countCardInLocation("hand", $playerId));
         }

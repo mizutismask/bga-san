@@ -84,6 +84,7 @@ export class Game extends BaseGame {
 			mapCardToSlot: (card) => riverPrefix + card.location_arg
 		})
 		this.river.addCards(gamedatas.river)
+
 	}
 
 	private setupTooltips() {
@@ -99,7 +100,7 @@ export class Game extends BaseGame {
 		this.playerTables[player.id] = new PlayerTable(
 			this,
 			player,
-			parseInt(player.id) === this.getPlayerId() ? this.gamedatas.hand : []
+			Number(player.id) === this.getPlayerId() ? this.gamedatas.hand : []
 		)
 	}
 

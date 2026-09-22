@@ -5,10 +5,14 @@ namespace Bga\Games\San;
 use Bga\Games\San\DeckManager;
 use Constants;
 
-const TABLE_CARD = "action_card";
+const TABLE_CARD = "card";
 
 class CardManager extends DeckManager {
     const RIVER_SIZE = 6;
+
+    public function getPlayerHand(int $playerId) {
+        return $this->cast($this->deck->getCardsInLocation("hand_{$playerId}"));
+    }
 
     public function dealHands($notify = false) {
         $players = $this->game->loadPlayersBasicInfos();

@@ -1,17 +1,17 @@
-import { LineStock } from "../../bga-cards"
-import { BgaCards } from "./libs"
+import { LineStock } from '../../bga-cards'
+import { BgaCards } from './libs'
 import { SanCard, SanGame, SanPlayer } from "./types"
 
 /**
  * Player table.
  */
 export class PlayerTable {
-	private handStock: LineStock<SanCard> | null = null
+	public readonly handStocks: Record<number, LineStock<SanCard>> = {}
 
 	constructor(
 		private game: SanGame,
 		player: SanPlayer,
-		cards: SanCard[]
+		cards: SanCard[] = []
 	) {
 		const isMyTable = Number(player.id) === game.getPlayerId()
 		const ownClass = isMyTable ? 'own' : ''
@@ -22,21 +22,29 @@ export class PlayerTable {
             </div>
         `
 		dojo.place(html, 'player-tables')
-
 		if (isMyTable) {
-			const handHtml = `
-			<div id="hand-${player.id}" class="cstm-player-hand"></div>
-        `
-			dojo.place(handHtml, `player-table-${player.id}`, 'first')
 			this.initHand(player, cards)
 		}
 	}
 
-	private initHand(player: SanPlayer, cards: SanCard[] = []) {
-		this.handStock = new BgaCards.LineStock<SanCard>(this.game.cardsManager, $('hand-' + player.id), {})
-		this.handStock.setSelectionMode('single')
-		if (cards) {
-			this.handStock.addCards(cards)
+	private initHand(player: SanPlayer, cards: SanCard[]) {
+		const container = document.createElement('div')
+		container.id = `hand-${player.id}`
+		container.classList.add('cstm-player-hand')
+		document.getElementById(`player-table-${player.id}`)!.prepend(container)
+
+		for (const typeArg of [1, 2, 3, 4]) {
+			const element = document.createElement('div')
+			element.id = `${container.id}-type-${typeArg}`
+			container.appendChild(element)
+			const stock = new BgaCards.LineStock<SanCard>(this.game.cardsManager, element, {
+				direction: 'column',
+				wrap: 'nowrap',
+				center: false,
+			})
+			this.handStocks[typeArg] = stock
+			stock.setSelectionMode('single')
+			stock.addCards(cards.filter(card => Number(card.type_arg) === typeArg))
 		}
 	}
 }

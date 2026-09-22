@@ -45,6 +45,15 @@ html {
 		flex-wrap: nowrap;
 		gap: 15px;
 	}
+
+	.cstm-player-hand {
+		.san-card {
+			margin-top: -150px;
+			&:first-child {
+				margin-top: unset;
+			}
+		}
+	}
 }
 
 @mixin selected-element {
