@@ -2,13 +2,14 @@ import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
 import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
-import { CardStock, SlotStock } from '../../bga-cards'
+import { CardStock, Deck, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
 
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
+	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
 
 	private propagandaCounters: Counter[] = []
@@ -66,11 +67,21 @@ export class Game extends BaseGame {
 	}
 
 	private setupPlaymat(gamedatas: SanGamedatas) {
-		dojo.place('<div id="river"></div>', 'player-tables', 'before')
+		const centralLine = document.getElementById('central-line')!
+		//deck
+		centralLine.insertAdjacentHTML('beforeend', '<div id="river-deck"></div>')
+		this.riverDeck = new BgaCards.Deck<SanCard>(this.cardsManager, document.getElementById('river-deck')!, {
+			topCard: gamedatas.riverDeckTopCard ?? undefined,
+			cardNumber: gamedatas.riverDeckCount,
+			counter: { show: true, position:'left' }
+		})
+
+		// river
+		centralLine.insertAdjacentHTML('beforeend', '<div id="river"></div>')
 		const riverPrefix = 'river-slot-'
-		this.river = new BgaCards.SlotStock<SanCard>(this.cardsManager, $('river'), {
+		this.river = new BgaCards.SlotStock<SanCard>(this.cardsManager, document.getElementById('river')!, {
 			slotsIds: generateSlotsIds(riverPrefix, 6),
-			mapCardToSlot: (card) => riverPrefix + card.location_arg,
+			mapCardToSlot: (card) => riverPrefix + card.location_arg
 		})
 		this.river.addCards(gamedatas.river)
 	}

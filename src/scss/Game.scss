@@ -39,6 +39,12 @@ html {
 	flex-wrap: wrap;
 	gap: 10px;
 	padding: 5px;
+
+	#central-line{
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 15px;
+	}
 }
 
 @mixin selected-element {

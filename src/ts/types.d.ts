@@ -47,6 +47,8 @@ interface SanGamedatas {
 	// Add here variables you set up in getAllDatas
 	hand: Array<SanCard>
 	river: SanCard[]
+	riverDeckTopCard: SanCard | null
+	riverDeckCount: number
 }
 
 interface CounterValue {

@@ -219,6 +219,8 @@ class Game extends \Bga\GameFramework\Table {
         $result['playerOrderWorkingWithSpectators'] = $this->getPlayerIdsInOrder($currentPlayerId);
         $result['turnOrderClockwise'] = true;
         $result['river'] = $this->cardManager->getRiverCards();
+        $result['riverDeckTopCard'] = $this->cardManager->getTopOfLocation(Constants::MATERIAL_LOCATION_DECK);
+        $result['riverDeckCount'] = $this->cardManager->countCardsInLocation(Constants::MATERIAL_LOCATION_DECK);
 
         //counters
         $this->propagandaCounter->fillResult($result);
