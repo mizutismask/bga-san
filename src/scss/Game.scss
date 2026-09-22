@@ -49,7 +49,7 @@ html {
 		#river-deck { grid-column: 1; grid-row: 2; }
 		#river { grid-column: 2; grid-row: 2; }
 
-		#river, .corruptionPanel > .slot-stock {
+		#river, .corruptionPanel > .corruption-slots {
 			display: grid;
 			grid-template-columns: repeat(6, $CARD_WIDTH);
 			gap: 8px;
@@ -58,15 +58,22 @@ html {
 		.corruptionPanel {
 			grid-column: 2;
 			.corruption-panel-title { margin-bottom: 6px; font-weight: bold; }
-			> .slot-stock {
-				grid-template-rows: $CARD_HEIGHT calc($CARD_HEIGHT - 150px);
-				grid-auto-flow: column;
-				.slot { outline: 1px dashed currentColor; }
-				.slot:nth-child(even) { margin-top: -150px; }
+			.corruption-pair {
+				display: flex;
+				justify-content: center;
+				gap: 8px;
 			}
-			&.above-river > .slot-stock > .slot:nth-child(odd),
-			&.below-river > .slot-stock > .slot:nth-child(even) {
-				z-index: 1;
+			.corruption-marker {
+				width: 54px;
+				height: 28px;
+				border: 1px solid rgba(0, 0, 0, .5);
+				border-radius: 4px;
+				background: rgba(255, 255, 255, .7);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 18px;
+				color: #245b28;
 			}
 		}
 	}
