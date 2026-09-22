@@ -39,12 +39,6 @@ class EndScore extends \Bga\GameFramework\States\GameState {
         $this->scorePoints();
         $this->scoreTieBreaker();
 
-        foreach ($this->game->getWinners() as $playerId) {
-            $this->notify->all('highlightWinnerScore', '', [
-                'playerId' => $playerId,
-            ]);
-        }
-
         if ($this->game->isStudio()) {
             $this->game->stMakeEveryoneActive();
             return DebugGameEnd::class;

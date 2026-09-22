@@ -238,9 +238,7 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        if ($isEnd) {
-            $result['winners'] = $this->getWinners();
-        } else {
+        if (!$isEnd) {
             $result['lastTurn'] = $this->globals->get(Constants::LAST_TURN) > 0;
         }
         return $result;
@@ -286,16 +284,6 @@ class Game extends \Bga\GameFramework\Table {
 
     function getGameVersion(): int {
         return $this->bga->tableOptions->get(300);
-    }
-
-    function getWinners() {
-        $max = $this->playerScore->getMax();
-        $winners =  array_filter($this->playerScore->getAll(), fn($score) => $score == $max);
-        if (count($winners) > 1) {
-            $max = $this->playerScoreAux->getMax();
-            $winners =  array_filter($winners, fn($score) => $score == $max);
-        }
-        return array_keys($winners);
     }
 
     //////////////////////////////////////////////////////////////////////////////

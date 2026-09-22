@@ -1,17 +1,14 @@
 import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
-import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION, SCORE_MS } from './base-game'
+import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
 import { CardStock } from '../../bga-cards'
-import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove, NotifScoreArgs, NotifWinnerArgs } from './types'
-import { ScoreBoard } from './end-score'
-import { Utils } from './utils'
+import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
 
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 
-	private scoreBoard!: ScoreBoard
 	private propagandaCounters: Counter[] = []
 	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
@@ -55,13 +52,6 @@ export class Game extends BaseGame {
 
 		this.setupTooltips()
 		//this.setupHelpPopin()
-
-		this.scoreBoard = new ScoreBoard(this, this.getPlayersInOrder())
-		this.gamedatas.scores?.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
-		if (this.gamedatas.winners) {
-			this.gamedatas.winners.forEach((pId) => this.scoreBoard.highlightWinnerScore(pId))
-		}
-		Utils.removeClass('animatedScore')
 
 		if (!this.isCustomSoundsOn()) {
 			this.bga.sounds.dontPreloadSounds(this.customSounds)
@@ -249,7 +239,7 @@ export class Game extends BaseGame {
 	}
 
 	/**
-	 * Show score board.
+	 * Clear the last-turn banner when scoring begins.
 	 */
 	public onEnteringEndScore() {
 		this.bga.gameArea.removeLastTurnBanner()
@@ -381,8 +371,6 @@ export class Game extends BaseGame {
 		//
 
 		const notifs = [
-			['score', ANIMATION_MS],
-			['highlightWinnerScore', ANIMATION_MS],
 			['materialMove', ANIMATION_MS],
 			['lastTurn', 1],
 			['importantMessage', 3000]
@@ -393,15 +381,6 @@ export class Game extends BaseGame {
 			//comment to prevent formating to glue these 2 lines
 			;(this.gameui as any).notifqueue.setSynchronous(notif[0], notif[1])
 		})
-	}
-
-	/**
-	 * Updates a total or subtotal
-	 * @param notif
-	 */
-	notif_score(notif: Notif<NotifScoreArgs>) {
-		log('notif_score', notif)
-		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score)
 	}
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
@@ -435,10 +414,4 @@ export class Game extends BaseGame {
 		}
 	}*/
 
-	/**
-	 * Highlight winner for end score.
-	 */
-	notif_highlightWinnerScore(notif: Notif<NotifWinnerArgs>) {
-		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
-	}
 }

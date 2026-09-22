@@ -42,8 +42,6 @@ interface SanGamedatas {
 	turnOrderClockwise: boolean
 	expansion: number
 	// counters
-	scores?: Array<NotifScoreArgs>
-	winners: number[]
 	version: string
 	counters: Map<string, CounterValue>
 	// Add here variables you set up in getAllDatas
@@ -88,12 +86,6 @@ interface NotifPointsArgs {
 	scoreType: string
 }
 
-interface NotifScoreArgs {
-	playerId: number
-	score: number
-	scoreType: string
-}
-
 interface NotifCounter {
 	counterName: string
 	counterValue: number
@@ -102,10 +94,6 @@ interface NotifCounter {
 
 interface NotifUpdateCounters {
 	counters: [{ [name: string]: CounterValue }]
-}
-
-interface NotifWinnerArgs {
-	playerId: number
 }
 
 interface NotifScorePointArgs {
