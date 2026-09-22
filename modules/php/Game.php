@@ -218,6 +218,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['players'] = $this->getCollectionFromDb($sql);
         $result['playerOrderWorkingWithSpectators'] = $this->getPlayerIdsInOrder($currentPlayerId);
         $result['turnOrderClockwise'] = true;
+        $result['river'] = $this->cardManager->getRiverCards();
 
         //counters
         $this->propagandaCounter->fillResult($result);

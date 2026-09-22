@@ -3,7 +3,10 @@ import { SanCard, SanGame } from '../types'
 import { CardsManagerBase } from './cardsManagerBase'
 
 // <reference path="../card-manager.ts"/>
-export const IMAGE_ITEMS_PER_ROW = 10
+export const IMAGE_ITEMS_PER_ROW = 13
+const modifierCardSize = .7
+const CARD_WIDTH = 200 * modifierCardSize
+const CARD_HEIGHT = 279 * modifierCardSize
 
 const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 	game.cardsManager.setFrontBackground(div as HTMLDivElement, card.type)
@@ -59,8 +62,8 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 				//	div.style.backgroundImage = `url('${url}')`
 				//	div.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
 			},
-			cardHeight: undefined as unknown as number,
-			cardWidth: undefined as unknown as number,
+			cardHeight: CARD_HEIGHT,
+			cardWidth: CARD_WIDTH,
 			cardBorderRadius: '3px'
 		})
 	}
@@ -78,9 +81,9 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 	}
 
 	public setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
-		const imageUrl = this.game.bga.images.getImgUrl('san-card-background.jpg')
+		const imageUrl = this.game.bga.images.getImgUrl('cards.webp')
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`
-		const imagePosition = cardType - 1
+		const imagePosition = cardType
 		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
 		const xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100
 		const yBackgroundPercent = row * 100

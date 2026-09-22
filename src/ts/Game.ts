@@ -2,12 +2,14 @@ import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
 import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
-import { CardStock } from '../../bga-cards'
+import { CardStock, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
+import { generateSlotsIds } from './stock-utils'
 
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
+	public river!: SlotStock<SanCard>
 
 	private propagandaCounters: Counter[] = []
 	private ticketsCounters: Counter[] = []
@@ -50,6 +52,7 @@ export class Game extends BaseGame {
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
 
+		this.setupPlaymat(this.gamedatas)
 		this.setupTooltips()
 		//this.setupHelpPopin()
 
@@ -60,6 +63,16 @@ export class Game extends BaseGame {
 		BgaAutofit.init()
 
 		log('Ending game setup')
+	}
+
+	private setupPlaymat(gamedatas: SanGamedatas) {
+		dojo.place('<div id="river"></div>', 'player-tables', 'before')
+		const riverPrefix = 'river-slot-'
+		this.river = new BgaCards.SlotStock<SanCard>(this.cardsManager, $('river'), {
+			slotsIds: generateSlotsIds(riverPrefix, 6),
+			mapCardToSlot: (card) => riverPrefix + card.location_arg,
+		})
+		this.river.addCards(gamedatas.river)
 	}
 
 	private setupTooltips() {
@@ -413,5 +426,4 @@ export class Game extends BaseGame {
 				break
 		}
 	}*/
-
 }

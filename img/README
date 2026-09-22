@@ -11,7 +11,7 @@ See: http://en.doc.boardgamearena.com/Game_art:_img_directory for more details.
 
 
 .\tools\extractCards.ps1 T:\games\San\worked\cards
-magick montage $(find ./cards -maxdepth 1 -name '*.jpg' | sort -V)  -trim -tile 13x   -geometry 200x+0+0   -background none   -define webp:lossless=true   cards.webp
+magick montage $(find ./cards -maxdepth 1 -name '*.jpg' | sort -V) -tile 13x   -geometry 200x+0+0   -background none   -define webp:lossless=true   cards.webp
 
 
 

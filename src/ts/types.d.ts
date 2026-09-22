@@ -46,6 +46,7 @@ interface SanGamedatas {
 	counters: Map<string, CounterValue>
 	// Add here variables you set up in getAllDatas
 	hand: Array<SanCard>
+	river: SanCard[]
 }
 
 interface CounterValue {
