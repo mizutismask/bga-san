@@ -2,6 +2,7 @@ import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
 import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
+import { VirusZone } from './virus-zone'
 import { CardStock, Deck, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
@@ -11,6 +12,7 @@ export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
+	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
 
 	private propagandaCounters: Counter[] = []
@@ -53,6 +55,8 @@ export class Game extends BaseGame {
 		})
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
+		const hand = document.getElementById(`hand-${this.getPlayerId()}`)
+		this.virusZone = new VirusZone(this, gamedatas, hand?.parentElement ?? document.getElementById('player-tables')!)
 
 		this.setupPlaymat(this.gamedatas)
 		this.setupTooltips()
@@ -463,6 +467,8 @@ export class Game extends BaseGame {
 			this.updateCorruptionMarker(card)
 			if (card.location?.startsWith('corr_')) {
 				this.cardsManager.removeCard(card)
+			} else if (card.location?.startsWith('virus_')) {
+				this.virusZone.decks[Number(card.location.substring(6))]?.addCard(card)
 			} else if (card.location === 'river') {
 				this.river.addCard(card)
 			} else if (card.location?.startsWith('hand_')) {

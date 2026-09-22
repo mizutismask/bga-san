@@ -50,6 +50,7 @@ interface SanGamedatas {
 	riverDeckTopCard: SanCard | null
 	riverDeckCount: number
 	corruptedCards: Record<number, SanCard[]>
+	virusCards: Record<number, SanCard[]>
 }
 
 interface CounterValue {
