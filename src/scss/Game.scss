@@ -41,9 +41,34 @@ html {
 	padding: 5px;
 
 	#central-line{
-		display: flex;
-		flex-wrap: nowrap;
+		display: grid;
+		grid-template-columns: $CARD_WIDTH auto;
 		gap: 15px;
+		align-items: center;
+
+		#river-deck { grid-column: 1; grid-row: 2; }
+		#river { grid-column: 2; grid-row: 2; }
+
+		#river, .corruptionPanel > .slot-stock {
+			display: grid;
+			grid-template-columns: repeat(6, $CARD_WIDTH);
+			gap: 8px;
+		}
+
+		.corruptionPanel {
+			grid-column: 2;
+			.corruption-panel-title { margin-bottom: 6px; font-weight: bold; }
+			> .slot-stock {
+				grid-template-rows: $CARD_HEIGHT calc($CARD_HEIGHT - 150px);
+				grid-auto-flow: column;
+				.slot { outline: 1px dashed currentColor; }
+				.slot:nth-child(even) { margin-top: -150px; }
+			}
+			&.above-river > .slot-stock > .slot:nth-child(odd),
+			&.below-river > .slot-stock > .slot:nth-child(even) {
+				z-index: 1;
+			}
+		}
 	}
 
 	.cstm-player-hand {

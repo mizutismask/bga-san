@@ -109,7 +109,7 @@ class CardManager extends DeckManager {
     }
 
     public function corruptCard(SanCard $card, int $slot, int $position, int $playerId): void {
-        $this->moveCardToLocation($card->id, Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, "{$slot}_{$position}", true);
+        $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId), $slot * 10 + $position, true, $playerId);
         $this->game->corruptionCounter->inc($playerId, -3);
     }
 
@@ -118,7 +118,8 @@ class CardManager extends DeckManager {
             (new QueryBuilder($this->game, $this->tableName))
                 ->select($this->game->getTypicalTableFields())
                 ->where('card_location', $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId))
-                ->where('card_location_arg', 'like', "{$slot}\\_%")
+                ->where('card_location_arg', '>=', $slot * 10 + 1)
+                ->where('card_location_arg', '<=', $slot * 10 + 2)
                 ->get()
         );
     }

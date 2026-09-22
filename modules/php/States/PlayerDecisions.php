@@ -65,6 +65,7 @@ class PlayerDecisions extends GameState {
             throw new UserException(clienttranslate('You don’t have enough corruption'));
         }
 
+        $slot = $this->mirrorSlot($slot, $activePlayerId);
         $position = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $activePlayerId));
 
         if ($position >= 2) {
@@ -72,7 +73,7 @@ class PlayerDecisions extends GameState {
         }
 
         $card = $this->game->cardManager->getCard($cardId);
-        $this->game->cardManager->corruptCard($card, $this->mirrorSlot($slot, $activePlayerId), $position + 1, $activePlayerId);
+        $this->game->cardManager->corruptCard($card, $slot, $position + 1, $activePlayerId);
         return PlayerDecisions::class;
     }
 

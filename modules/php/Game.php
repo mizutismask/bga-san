@@ -221,6 +221,10 @@ class Game extends \Bga\GameFramework\Table {
         $result['river'] = $this->cardManager->getRiverCards();
         $result['riverDeckTopCard'] = $this->cardManager->getTopOfLocation(Constants::MATERIAL_LOCATION_DECK);
         $result['riverDeckCount'] = $this->cardManager->countCardsInLocation(Constants::MATERIAL_LOCATION_DECK);
+        $result['corruptedCards'] = [];
+        foreach (array_keys($result['players']) as $playerId) {
+            $result['corruptedCards'][$playerId] = $this->cardManager->getCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId));
+        }
 
         //counters
         $this->propagandaCounter->fillResult($result);

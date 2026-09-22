@@ -11,6 +11,7 @@ export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
+	public corruptionPanels: Record<number, SlotStock<SanCard>> = {}
 
 	private propagandaCounters: Counter[] = []
 	private ticketsCounters: Counter[] = []
@@ -84,6 +85,29 @@ export class Game extends BaseGame {
 			mapCardToSlot: (card) => riverPrefix + card.location_arg
 		})
 		this.river.addCards(gamedatas.river)
+		const playerOrder = gamedatas.playerOrderWorkingWithSpectators
+		playerOrder.forEach((playerId, index) => {
+			const player = gamedatas.players[playerId]
+			const panel = document.createElement('div')
+			panel.id = `corruption-panel-${playerId}`
+			panel.className = `corruptionPanel ${index === 0 ? 'below-river' : 'above-river'}`
+			panel.style.gridRow = index === 0 ? '3' : '1'
+			const title = document.createElement('div')
+			title.className = 'corruption-panel-title'
+			title.style.color = `#${player.color}`
+			title.textContent = `${player.name} — ${_('Corrupted cards')}`
+			panel.appendChild(title)
+			const slots = document.createElement('div')
+			panel.appendChild(slots)
+			centralLine.insertAdjacentElement(index === 0 ? 'beforeend' : 'afterbegin', panel)
+			const prefix = `corruption-${playerId}-`
+			const stock = new BgaCards.SlotStock<SanCard>(this.cardsManager, slots, {
+				slotsIds: generateSlotsIds('', 6).flatMap(slot => [prefix + slot + '1', prefix + slot + '2']),
+				mapCardToSlot: card => prefix + card.location_arg
+			})
+			this.corruptionPanels[playerId] = stock
+			stock.addCards(gamedatas.corruptedCards?.[playerId] ?? [])
+		})
 
 	}
 
@@ -410,6 +434,21 @@ export class Game extends BaseGame {
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
 		log('notif_materialMove', notif)
+		for (const card of notif.args.material as SanCard[]) {
+			if (card.location?.startsWith('corr_')) {
+				const playerId = Number(card.location.substring(5))
+				this.corruptionPanels[playerId]?.addCard(card)
+			} else if (card.location === 'river') {
+				this.river.addCard(card)
+			} else if (card.location?.startsWith('hand_')) {
+				const playerId = Number(card.location.substring(5))
+				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card)
+			} else {
+				Object.values(this.corruptionPanels).forEach(stock => {
+					if (stock.contains(card)) stock.removeCard(card)
+				})
+			}
+		}
 		/*switch (notif.args.type) {
 			case "MISSION":
 				const cards = notif.args.material as Array<MissionCard>
