@@ -11,6 +11,7 @@ use Bga\GameFramework\States\PossibleAction;
 use Bga\GameFramework\UserException;
 use Bga\Games\San\CardManager;
 use Bga\Games\San\Game;
+use Bga\Games\San\SanCard;
 use Constants;
 
 class PlayerDecisions extends GameState {
@@ -36,7 +37,7 @@ class PlayerDecisions extends GameState {
     public function getArgs(int $activePlayerId): array {
         // Get some values from the current game situation from the database.
         return [
-            "canCorrupt" => $this->game->corruptionCounter > 0,
+            "canCorrupt" => $this->game->corruptionCounter->get($activePlayerId) > 2,
             "canProgressOnProp" => $this->canProgressOnProp($activePlayerId),
         ];
     }
@@ -45,8 +46,11 @@ class PlayerDecisions extends GameState {
         $propPosition = $this->game->propagandaProgressCounter->get($playerId);
 
         $slot = $this->mirrorSlot($propPosition, $playerId);
+        /** @var SanCard|null $nextCard */
         $nextCard = $this->game->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
-
+        if (!$nextCard) {
+            return false;//todo
+        }
         $opponentId = $this->game->getOpponentId($playerId);
 
         $nextCardCost = $nextCard->moveCost
@@ -144,6 +148,4 @@ class PlayerDecisions extends GameState {
             return $this->actMoveOshax($slot, $playerId, $args);
         }
     }
-
-   
 }

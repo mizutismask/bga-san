@@ -37,7 +37,7 @@ class PlayerTurn extends GameState {
     public function getArgs(int $activePlayerId): array {
         // Get some values from the current game situation from the database.
         return [
-            "canPass" => true,
+            "canPass" => !empty($this->game->cardManager->getPlayedCards($activePlayerId)),
             "canResetTurn" => $this->globals->get(Constants::CAN_RESET_TURN),
             "possibleCards" => $this->getPossibleCards($activePlayerId),
         ];
@@ -59,7 +59,7 @@ class PlayerTurn extends GameState {
         if ($sanCard->chooseOne && !$choice) {
             throw new UserException(clienttranslate('You must choose which option to play'));
         }
-        $this->game->cardManager->playCard($sanCard, $choice,$activePlayerId);
+        $this->game->cardManager->playCard($sanCard, $choice, $activePlayerId);
 
         if ($this->game->cardManager->hasImmediateAction($sanCard)) {
             $this->game->globals->set(Constants::GLB_CURRENT_CARD, $sanCard);
@@ -77,12 +77,14 @@ class PlayerTurn extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $this->game->cardManager->revealPlayedCards($activePlayerId);
-        $end = $this->game->hasReachedEndOfGameRequirements();
+        return PlayerDecisions::class;
+
+        /*  $end = $this->game->hasReachedEndOfGameRequirements();
         if ($end) {
             return CardShopping::class;
         } else {
             return NextPlayer::class;
-        }
+        }*/
     }
 
     #[CheckAction(false)]

@@ -21,7 +21,6 @@ export class PlayerTurn {
 		/*this.bga.statusBar.setTitle(
 			isCurrentPlayerActive ? _('${You} must play cards from your hand') : _('${actplayer} must play cards from his hand')
 		)*/
-
 		if (isCurrentPlayerActive) {
 			
 			log('selectableHandCards', args.selectableHandCards)
@@ -57,7 +56,7 @@ export class PlayerTurn {
 			updatePlaySelectedCardsButton()*/
 
 
-			this.bga.statusBar.addActionButton(_('End turn'), () => this.game.takeAction('actPass'), {
+			this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
 				id: 'buttonPass',
 				color: 'primary'
 			})

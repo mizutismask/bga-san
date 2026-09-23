@@ -7,6 +7,8 @@ import { CardStock, Deck, LineStock, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
+import { PlayerTurn } from './States/PlayerTurn'
+import { PlayerDecision } from './States/PlayerDecision'
 
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
@@ -23,7 +25,8 @@ export class Game extends BaseGame {
 	constructor(bga: Bga<SanPlayer, SanGamedatas>) {
 		super()
 		this.bga = bga
-		//this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))
+		this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))
+		this.bga.states.register('PlayerDecisions', new PlayerDecision(this, this.bga))
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
 

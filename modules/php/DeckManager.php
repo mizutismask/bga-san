@@ -487,9 +487,9 @@ class DeckManager {
     }
 
     public function getFirstEmptySlotInLocation(int $locationMaxSize, $location = "river") {
-        $i = 0;
+        $i = 1;
         $full = true;
-        while ($i < $locationMaxSize && $full) {
+        while ($i <= $locationMaxSize && $full) {
             $full = intval($this->deck->countCardInLocation($location, $i)) > 0;
             if ($full) $i++;
         }
