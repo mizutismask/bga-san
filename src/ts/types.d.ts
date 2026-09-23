@@ -47,6 +47,7 @@ interface SanGamedatas {
 	// Add here variables you set up in getAllDatas
 	hand: Array<SanCard>
 	river: SanCard[]
+	playedCards: SanCard[]
 	riverDeckTopCard: SanCard | null
 	riverDeckCount: number
 	corruptedCards: Record<number, SanCard[]>

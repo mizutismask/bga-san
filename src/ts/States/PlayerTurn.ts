@@ -18,9 +18,9 @@ export class PlayerTurn {
 	 * This method is called each time we are entering the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onEnteringState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
-		this.bga.statusBar.setTitle(
+		/*this.bga.statusBar.setTitle(
 			isCurrentPlayerActive ? _('${You} must play cards from your hand') : _('${actplayer} must play cards from his hand')
-		)
+		)*/
 
 		if (isCurrentPlayerActive) {
 			
@@ -35,7 +35,7 @@ export class PlayerTurn {
 					{ tooltip: _('You’ll be able to place dwarves and mermaids on any square') }
 				)
 			}
-			const handStocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
+			/*const handStocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
 			const updatePlaySelectedCardsButton = () => {
 				document.getElementById('playSelectedCards')?.classList.toggle(
 					'disabled',
@@ -54,7 +54,7 @@ export class PlayerTurn {
 			for (const stock of handStocks) {
 				stock.onSelectionChange = updatePlaySelectedCardsButton
 			}
-			updatePlaySelectedCardsButton()
+			updatePlaySelectedCardsButton()*/
 
 
 			this.bga.statusBar.addActionButton(_('End turn'), () => this.game.takeAction('actPass'), {

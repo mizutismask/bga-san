@@ -50,7 +50,18 @@ class CardManager extends DeckManager {
     }
 
     public function playCard(SanCard $card, int $activePlayerId) {
-        $this->moveCardToLocation($card->id, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId), $activePlayerId, true);
+        $revealed = $this->game->globals->get('revealedPlayedCards', []);
+        $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, [$card->id])));
+        $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId);
+        $this->moveCardToLocation($card, $location, $activePlayerId, false);
+        $this->game->notify->player($activePlayerId, 'materialMove', '', [
+            'type' => $this->materialType,
+            'from' => $card->location,
+            'fromArg' => $card->location_arg,
+            'to' => $location,
+            'toArg' => $activePlayerId,
+            'material' => [$this->castSingle($this->deck->getCard($card->id))],
+        ]);
 
         if ($card->propaganda) {
             $this->game->propagandaCounter->inc($activePlayerId, $card->propaganda);
@@ -64,6 +75,21 @@ class CardManager extends DeckManager {
         if ($card->income) {
             $this->game->incomeCounter->inc($activePlayerId, $card->income);
         }
+    }
+
+    public function revealPlayedCards(int $playerId): void {
+        $cards = $this->getPlayedCards($playerId);
+        $revealed = $this->game->globals->get('revealedPlayedCards', []);
+        $this->game->globals->set('revealedPlayedCards', array_values(array_unique(array_merge($revealed, array_map(fn($card) => $card->id, $cards)))));
+        $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId);
+        $this->game->notify->all('materialMove', '', [
+            'type' => $this->materialType,
+            'from' => $location,
+            'fromArg' => $playerId,
+            'to' => $location,
+            'toArg' => $playerId,
+            'material' => $cards,
+        ]);
     }
 
     function buyCard(SanCard $card, int $activePlayerId): bool {
@@ -101,9 +127,9 @@ class CardManager extends DeckManager {
         $cards = $this->getPlayedCards($activePlayerId);
         foreach ($cards as $card) {
             if ($card->trashAfterUse) {
-                $this->moveCardToLocation($card->id, Constants::MATERIAL_LOCATION_DESTROYED, "", true);
+                $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, true, $activePlayerId);
             } else {
-                $this->moveCardToLocation($card->id, Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId, true);
+                $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, true, $activePlayerId);
             }
         }
     }

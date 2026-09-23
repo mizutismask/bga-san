@@ -20,8 +20,8 @@ class PlayerTurn extends GameState {
             $game,
             id: Constants::STATE_ID_PLAYER_TURN,
             type: StateType::ACTIVE_PLAYER,
-            description: clienttranslate('${actplayer} must move the Oshax'),
-            descriptionMyTurn: clienttranslate('You must select an action'),
+            description: clienttranslate(_('${actplayer} must play cards from his hand')),
+            descriptionMyTurn: clienttranslate('${you} must play cards from your hand'),
         );
     }
 
@@ -54,10 +54,10 @@ class PlayerTurn extends GameState {
         if ($sanCard === null) {
             throw new UserException(clienttranslate('You cannot play this card'));
         }
-        $this->game->cardManager->playCard($card, $activePlayerId);
+        $this->game->cardManager->playCard($sanCard, $activePlayerId);
 
-        if ($this->game->cardManager->hasImmediateAction($card)) {
-            $this->game->globals->set(Constants::GLB_CURRENT_CARD, $card);
+        if ($this->game->cardManager->hasImmediateAction($sanCard)) {
+            $this->game->globals->set(Constants::GLB_CURRENT_CARD, $sanCard);
             return ImmediateAction::class;
         }
         return PlayerTurn::class;
@@ -71,6 +71,7 @@ class PlayerTurn extends GameState {
      */
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
+        $this->game->cardManager->revealPlayedCards($activePlayerId);
         $end = $this->game->hasReachedEndOfGameRequirements();
         if ($end) {
             return CardShopping::class;

@@ -3,7 +3,7 @@ import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './b
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
 import { VirusZone } from './virus-zone'
-import { CardStock, Deck, SlotStock } from '../../bga-cards'
+import { CardStock, Deck, LineStock, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
@@ -12,6 +12,7 @@ export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
+	public playedCards!: LineStock<SanCard>
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
 
@@ -72,13 +73,17 @@ export class Game extends BaseGame {
 	}
 
 	private setupPlaymat(gamedatas: SanGamedatas) {
+		//played cards zone
+		this.playedCards = new BgaCards.LineStock<SanCard>(this.cardsManager, document.getElementById('played-cards')!)
+		this.playedCards.addCards(gamedatas.playedCards ?? [], { initialSide: 'front', finalSide: 'front' })
+
 		const centralLine = document.getElementById('central-line')!
 		//deck
 		centralLine.insertAdjacentHTML('beforeend', '<div id="river-deck"></div>')
 		this.riverDeck = new BgaCards.Deck<SanCard>(this.cardsManager, document.getElementById('river-deck')!, {
 			topCard: gamedatas.riverDeckTopCard ?? undefined,
 			cardNumber: gamedatas.riverDeckCount,
-			counter: { show: true, position:'left' }
+			counter: { show: true, position: 'left' }
 		})
 
 		// river
@@ -120,7 +125,6 @@ export class Game extends BaseGame {
 				this.updateCorruptionMarker(card)
 			}
 		})
-
 	}
 
 	private updateCorruptionMarker(card: SanCard) {
@@ -465,7 +469,9 @@ export class Game extends BaseGame {
 		log('notif_materialMove', notif)
 		for (const card of notif.args.material as SanCard[]) {
 			this.updateCorruptionMarker(card)
-			if (card.location?.startsWith('corr_')) {
+			if (card.location?.startsWith('play_area_')) {
+				this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
+			} else if (card.location?.startsWith('corr_')) {
 				this.cardsManager.removeCard(card)
 			} else if (card.location?.startsWith('virus_')) {
 				this.virusZone.decks[Number(card.location.substring(6))]?.addCard(card)
@@ -474,6 +480,8 @@ export class Game extends BaseGame {
 			} else if (card.location?.startsWith('hand_')) {
 				const playerId = Number(card.location.substring(5))
 				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card)
+			} else if (this.playedCards.contains(card)) {
+				this.playedCards.removeCard(card)
 			}
 		}
 		/*switch (notif.args.type) {

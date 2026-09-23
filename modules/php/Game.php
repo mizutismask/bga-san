@@ -223,7 +223,14 @@ class Game extends \Bga\GameFramework\Table {
         $result['riverDeckCount'] = $this->cardManager->countCardsInLocation(Constants::MATERIAL_LOCATION_DECK);
         $result['corruptedCards'] = [];
         $result['virusCards'] = [];
+        $result['playedCards'] = [];
+        $revealedPlayedCards = $this->globals->get('revealedPlayedCards', []);
         foreach (array_keys($result['players']) as $playerId) {
+            foreach ($this->cardManager->getPlayedCards($playerId) as $card) {
+                if ((int) $playerId === (int) $currentPlayerId || in_array($card->id, $revealedPlayedCards, true)) {
+                    $result['playedCards'][] = $card;
+                }
+            }
             $result['virusCards'][$playerId] = $this->cardManager->getCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $playerId));
             $result['corruptedCards'][$playerId] = $this->cardManager->getCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId));
         }
