@@ -118,17 +118,6 @@ class PlayerDecisions extends GameState {
         }
     }
 
-    #[CheckAction(false)]
-    function actResetPlayerTurn() {
-        $possible = $this->globals->get(Constants::CAN_RESET_TURN);
-        if (!$possible) {
-            throw new UserException(clienttranslate("Undo is not available"));
-        }
-        $this->game->undoRestorePoint();
-        //$this->toggleResetTurn(false);
-        $this->gamestate->reloadState();
-    }
-
     /**
      * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
      * You can do whatever you want in order to make sure the turn of this player ends appropriately
@@ -156,31 +145,5 @@ class PlayerDecisions extends GameState {
         }
     }
 
-    function getPossibleCards(int $activePlayerId) {
-        $hand = $this->game->cardManager->getPlayerHand($activePlayerId);
-        $played = $this->game->cardManager->getPlayedCards($activePlayerId);
-        //only one type is allowed from Hacking, Corruption or Propaganda. All other types are allowed
-        $restrictedTypes = [
-            array_search(Constants::CARD_TYPE_HACKING, Constants::CARD_TYPE, true) => true,
-            array_search(Constants::CARD_TYPE_CORRUPTION, Constants::CARD_TYPE, true) => true,
-            array_search(Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE, true) => true,
-        ];
-
-        $playedRestrictedType = null;
-        foreach ($played as $card) {
-            if (isset($restrictedTypes[$card->type_arg])) {
-                $playedRestrictedType = $card->type_arg;
-                break;
-            }
-        }
-
-        if ($playedRestrictedType === null) {
-            return $hand;
-        }
-
-        return array_filter(
-            $hand,
-            fn($card) => !isset($restrictedTypes[$card->type_arg]) || $card->type_arg === $playedRestrictedType
-        );
-    }
+   
 }
