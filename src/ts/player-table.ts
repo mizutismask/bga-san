@@ -1,6 +1,6 @@
 import { LineStock } from '../../bga-cards'
 import { BgaCards } from './libs'
-import { SanCard, SanGame, SanPlayer } from "./types"
+import { SanCard, SanGame, SanPlayer } from './types'
 
 /**
  * Player table.
@@ -40,14 +40,14 @@ export class PlayerTable {
 			const stock = new BgaCards.LineStock<SanCard>(this.game.cardsManager, element, {
 				direction: 'column',
 				wrap: 'nowrap',
-				center: false,
+				center: false
 			})
 			this.handStocks[typeArg] = stock
 			stock.setSelectionMode('multiple')
-			stock.addCards(cards.filter(card => Number(card.type_arg) === typeArg))
+			stock.addCards(cards.filter((card) => Number(card.type_arg) === typeArg))
 			stock.onSelectionChange = (selection, lastChange) => {
-				if (lastChange && selection.some(card => card.id === lastChange.id)) {
-					this.game.takeAction('actPlayCard', { cardId: lastChange.id })
+				if (lastChange && selection.some((card) => card.id === lastChange.id)) {
+					this.game.takeAction('actPlayCard', { cardId: lastChange.id, choice: 0 })
 				}
 			}
 		}

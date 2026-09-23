@@ -16,8 +16,6 @@ export class Game extends BaseGame {
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
 
-	private propagandaCounters: Counter[] = []
-	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
 
 	private displayedTooltip: any //dijit.Tooltip
@@ -163,19 +161,22 @@ export class Game extends BaseGame {
 
 	private setupMiniPlayerBoard(player: SanPlayer) {
 		const playerId = Number(player.id)
+		const additionalCounters = [
+			{ name: 'propaganda', icon: 'fa-bullhorn', label: _('Propaganda') },
+			{ name: 'hacking', icon: 'fa-laptop', label: _('Hacking') },
+			{ name: 'corruption', icon: 'fa-user-secret', label: _('Corruption') },
+			{ name: 'income', icon: 'fa-money', label: _('Income') }
+		]
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
 			'afterbegin',
 			`<div id="counters-${player.id}" class="counters">
-				<div id="propaganda-counter-${player.id}-wrapper" class="counter propaganda-counter">
-					<div class="fa fa-bullhorn"></div>
-					<span id="propaganda-player-counter-${player.id}"></span>
-				</div>
-
-				<div id="tickets-counter-${player.id}-wrapper" class="counter tickets-counter">
-					<div class="icon expTicket"></div> 
-					<span id="tickets-player-counter-${player.id}"></span>
-				</div>
-			
+				
+				${additionalCounters.map(({ name, icon }) => `
+					<div id="${name}-counter-${player.id}-wrapper" class="counter ${name}-counter">
+						<div class="fa ${icon}"></div>
+						<span id="${name}-player-counter-${player.id}"></span>
+					</div>
+				`).join('')}
 				<div id="hand-cards-counter-${player.id}-wrapper" class="counter hand-cards-counter counter-left-part">
 					<div class="fa fa-hand-paper-o"></div> 
 					<span id="hand-cards-counter-${player.id}"></span>
@@ -192,20 +193,15 @@ export class Game extends BaseGame {
             revealedTokensBackCounter.setValue(player.revealedTokensBackCount);
             this.revealedTokensBackCounters[playerId] = revealedTokensBackCounter;
 */
-		const propagandaCounter = new ebg.counter()
-		propagandaCounter.create(`propaganda-player-counter-${player.id}`, {
-			playerCounter: 'propaganda',
-			playerId
+		
+		additionalCounters.forEach(({ name, label }) => {
+			const counter = new ebg.counter()
+			counter.create(`${name}-player-counter-${player.id}`, {
+				playerCounter: name,
+				playerId
+			})
+			this.setTooltipToClass(`${name}-counter`, label)
 		})
-		this.propagandaCounters[playerId] = propagandaCounter
-
-		const ticketsCounter = new ebg.counter()
-		ticketsCounter.create(`tickets-player-counter-${player.id}`, {
-			value: player.tickets,
-			playerCounter: 'tickets',
-			playerId: playerId
-		})
-		this.ticketsCounters[playerId] = ticketsCounter
 
 		const cardsCounter = new ebg.counter()
 		cardsCounter.create(`hand-cards-counter-${player.id}`)

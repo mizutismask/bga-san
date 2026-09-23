@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bga\Games\San\States;
 
 use Bga\GameFramework\Actions\CheckAction;
+use Bga\GameFramework\Actions\Types\IntParam;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
@@ -43,7 +44,7 @@ class PlayerTurn extends GameState {
     }
 
     #[PossibleAction]
-    public function actPlayCard(int $cardId, int $choice, int $activePlayerId, array $args) {
+    public function actPlayCard(int $cardId, #[IntParam(min: 0, max: 3)] ?int $choice, int $activePlayerId, array $args) {
         /** @var SanCard|null $sanCard */
         $sanCard = null;
         foreach ($args['possibleCards'] as $card) {
@@ -55,7 +56,7 @@ class PlayerTurn extends GameState {
         if ($sanCard === null) {
             throw new UserException(clienttranslate('You cannot play this card'));
         }
-        if ($sanCard->chooseOne && $choice == null) {
+        if ($sanCard->chooseOne && !$choice) {
             throw new UserException(clienttranslate('You must choose which option to play'));
         }
         $this->game->cardManager->playCard($sanCard, $choice,$activePlayerId);

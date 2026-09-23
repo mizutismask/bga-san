@@ -45,7 +45,7 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 				if (!hand?.contains(zone)) {
 					return
 				}
-				game.takeAction('actPlayCard', { cardId: card.id, choice })
+				game.takeAction('actPlayCard', { cardId: card.id, choice:choice })
 			})
 			container.appendChild(zone)
 		}

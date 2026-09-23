@@ -75,7 +75,6 @@ class CardManager extends DeckManager {
                 [Constants::CARD_TYPE_CORRUPTION, $card->corruption],
                 [Constants::ACTION_DRAW, $card->draw],
             ];
-
         } else {
             $actions = array_map(fn($action) => [$action, 1], $this->getChoiceActions($card, $choice));
             $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
