@@ -19,7 +19,7 @@ export class PlayerTurn {
 	 */
 	onEnteringState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
 		this.bga.statusBar.setTitle(
-			isCurrentPlayerActive ? _('You must end your turn') : _('${actplayer} must place a tile or end his turn')
+			isCurrentPlayerActive ? _('${You} must play cards from your hand') : _('${actplayer} must play cards from his hand')
 		)
 
 		if (isCurrentPlayerActive) {
@@ -35,6 +35,28 @@ export class PlayerTurn {
 					{ tooltip: _('You’ll be able to place dwarves and mermaids on any square') }
 				)
 			}
+			const handStocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
+			const updatePlaySelectedCardsButton = () => {
+				document.getElementById('playSelectedCards')?.classList.toggle(
+					'disabled',
+					!handStocks.some(stock => stock.getSelection().length > 0)
+				)
+			}
+			this.bga.statusBar.addActionButton(_('Play selected cards'), () => {
+				const cardIds = handStocks.flatMap(stock => stock.getSelection().map(card => card.id))
+				if (cardIds.length > 0) {
+					this.game.takeAction('actPlaySelectedCards', { cardIds: cardIds.join(',') })
+				}
+			}, {
+				id: 'playSelectedCards',
+				color: 'primary'
+			})
+			for (const stock of handStocks) {
+				stock.onSelectionChange = updatePlaySelectedCardsButton
+			}
+			updatePlaySelectedCardsButton()
+
+
 			this.bga.statusBar.addActionButton(_('End turn'), () => this.game.takeAction('actPass'), {
 				id: 'buttonPass',
 				color: 'primary'
@@ -68,6 +90,9 @@ export class PlayerTurn {
 	 * This method is called each time we are leaving the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onLeavingState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
+		for (const stock of Object.values(this.game.playerTables[this.game.getPlayerId()]?.handStocks ?? {})) {
+			stock.onSelectionChange = undefined
+		}
 		//this.game.playerTables[this.game.getPlayerId()].setHandSelectionMode('none', undefined)
 	}
 }

@@ -13,7 +13,7 @@ export const log = isDebug ? console.log.bind(window.console) : function () {}
 export abstract class BaseGame {
 	protected player_id!: string
 	protected players!: { [playerId: number]: Player }
-	protected playerTables: { [playerId: number]: PlayerTable } = []
+	public playerTables: { [playerId: number]: PlayerTable } = []
 	protected playerNumber!: number
 	public animationManager: InstanceType<typeof BgaAnimations.Manager>
 

@@ -43,8 +43,13 @@ export class PlayerTable {
 				center: false,
 			})
 			this.handStocks[typeArg] = stock
-			stock.setSelectionMode('single')
+			stock.setSelectionMode('multiple')
 			stock.addCards(cards.filter(card => Number(card.type_arg) === typeArg))
+			stock.onSelectionChange = (selection, lastChange) => {
+				if (lastChange && selection.some(card => card.id === lastChange.id)) {
+					this.game.takeAction('actPlayCard', { cardId: lastChange.id })
+				}
+			}
 		}
 	}
 }
