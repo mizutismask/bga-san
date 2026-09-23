@@ -154,9 +154,13 @@ svg {
 		top: 12px;
 		left: 8px;
 		z-index: 1;
-		display: flex;
+		display: none;
 		flex-direction: row;
 		gap: 9px;
+	}
+
+	.cstm-player-hand & .card-choices {
+		display: flex;
 	}
 
 	.card-choice {

@@ -45,7 +45,6 @@ class ImmediateAction extends GameState {
         return [
             "canPass" => true,
             "canResetTurn" => $this->globals->get(Constants::CAN_RESET_TURN),
-            "possibleCards" => $this->getPossibleCards($activePlayerId),
         ];
     }
 
@@ -129,33 +128,5 @@ class ImmediateAction extends GameState {
             $slot = $this->game->getRandomValue($oshaxValidMoves);
             return $this->actMoveOshax($slot, $playerId, $args);
         }
-    }
-
-    function getPossibleCards(int $activePlayerId) {
-        $hand = $this->game->cardManager->getPlayerHand($activePlayerId);
-        $played = $this->game->cardManager->getPlayedCards($activePlayerId);
-        //only one type is allowed from Hacking, Corruption or Propaganda. All other types are allowed
-        $restrictedTypes = [
-            array_search(Constants::CARD_TYPE_HACKING, Constants::CARD_TYPE, true) => true,
-            array_search(Constants::CARD_TYPE_CORRUPTION, Constants::CARD_TYPE, true) => true,
-            array_search(Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE, true) => true,
-        ];
-
-        $playedRestrictedType = null;
-        foreach ($played as $card) {
-            if (isset($restrictedTypes[$card->type_arg])) {
-                $playedRestrictedType = $card->type_arg;
-                break;
-            }
-        }
-
-        if ($playedRestrictedType === null) {
-            return $hand;
-        }
-
-        return array_filter(
-            $hand,
-            fn($card) => !isset($restrictedTypes[$card->type_arg]) || $card->type_arg === $playedRestrictedType
-        );
     }
 }

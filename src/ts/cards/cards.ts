@@ -41,6 +41,10 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 			zone.setAttribute('aria-label', `${_('Choice')} ${choice}`)
 			zone.addEventListener('click', event => {
 				event.stopPropagation()
+				const hand = document.getElementById(`hand-${game.getPlayerId()}`)
+				if (!hand?.contains(zone)) {
+					return
+				}
 				game.takeAction('actPlayCard', { cardId: card.id, choice })
 			})
 			container.appendChild(zone)

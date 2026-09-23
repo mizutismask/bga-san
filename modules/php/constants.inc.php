@@ -34,6 +34,8 @@ class Constants {
     const CARD_TYPE_HARDWARE = 4;
     const CARD_TYPE_VIRUS = 5;
 
+    const ACTION_DRAW = 4;
+
     const GLB_CURRENT_CARD = "currentCard";
 
     /**

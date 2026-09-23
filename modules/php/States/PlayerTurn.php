@@ -43,7 +43,8 @@ class PlayerTurn extends GameState {
     }
 
     #[PossibleAction]
-    public function actPlayCard(int $cardId, int $activePlayerId, array $args) {
+    public function actPlayCard(int $cardId, int $choice, int $activePlayerId, array $args) {
+        /** @var SanCard|null $sanCard */
         $sanCard = null;
         foreach ($args['possibleCards'] as $card) {
             if ($card->id === $cardId) {
@@ -54,7 +55,10 @@ class PlayerTurn extends GameState {
         if ($sanCard === null) {
             throw new UserException(clienttranslate('You cannot play this card'));
         }
-        $this->game->cardManager->playCard($sanCard, $activePlayerId);
+        if ($sanCard->chooseOne && $choice == null) {
+            throw new UserException(clienttranslate('You must choose which option to play'));
+        }
+        $this->game->cardManager->playCard($sanCard, $choice,$activePlayerId);
 
         if ($this->game->cardManager->hasImmediateAction($sanCard)) {
             $this->game->globals->set(Constants::GLB_CURRENT_CARD, $sanCard);

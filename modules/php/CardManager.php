@@ -49,7 +49,7 @@ class CardManager extends DeckManager {
         return $this->cast($this->deck->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId)));
     }
 
-    public function playCard(SanCard $card, int $activePlayerId) {
+    public function playCard(SanCard $card, int $choice, int $activePlayerId) {
         $revealed = $this->game->globals->get('revealedPlayedCards', []);
         $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, [$card->id])));
         $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId);
@@ -63,17 +63,57 @@ class CardManager extends DeckManager {
             'material' => [$this->castSingle($this->deck->getCard($card->id))],
         ]);
 
-        if ($card->propaganda) {
-            $this->game->propagandaCounter->inc($activePlayerId, $card->propaganda);
+        $counters = [
+            Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
+            Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
+            Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
+        ];
+        if (!$choice) {
+            $actions = [
+                [Constants::CARD_TYPE_PROPAGANDA, $card->propaganda],
+                [Constants::CARD_TYPE_HACKING, $card->hacking],
+                [Constants::CARD_TYPE_CORRUPTION, $card->corruption],
+                [Constants::ACTION_DRAW, $card->draw],
+            ];
+
+        } else {
+            $actions = array_map(fn($action) => [$action, 1], $this->getChoiceActions($card, $choice));
+            $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
         }
-        if ($card->hacking) {
-            $this->game->hackingCounter->inc($activePlayerId, $card->hacking);
-        }
-        if ($card->corruption) {
-            $this->game->corruptionCounter->inc($activePlayerId, $card->corruption);
+
+        foreach ($actions as [$action, $amount]) {
+            if (!$amount) {
+                continue;
+            }
+            if (isset($counters[$action])) {
+                $counters[$action]->inc($activePlayerId, $amount);
+            } elseif ($action === Constants::ACTION_DRAW) {
+                $this->addCardsToHand($amount, $activePlayerId, true);
+            }
         }
         if ($card->income) {
             $this->game->incomeCounter->inc($activePlayerId, $card->income);
+        }
+    }
+
+    private function getChoiceActions(SanCard $card, int $choice) {
+        if ((int) $card->cardCategory === Constants::CARD_TYPE_HARDWARE) {
+            return match ($choice) {
+                1 => [Constants::CARD_TYPE_PROPAGANDA],
+                2 => [Constants::CARD_TYPE_HACKING],
+                3 => [Constants::CARD_TYPE_CORRUPTION],
+                default => [],
+            };
+        } else {
+            return match ($card->type_arg) {
+                37 => $choice == 1 ? [Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE_PROPAGANDA] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                38 => $choice == 1 ? [Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE_PROPAGANDA] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                47 => $choice == 1 ? [Constants::CARD_TYPE_HACKING, Constants::CARD_TYPE_HACKING] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                48 => $choice == 1 ? [Constants::CARD_TYPE_HACKING, Constants::CARD_TYPE_HACKING] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                57 => $choice == 1 ? [Constants::CARD_TYPE_CORRUPTION, Constants::CARD_TYPE_CORRUPTION] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                58 => $choice == 1 ? [Constants::CARD_TYPE_CORRUPTION, Constants::CARD_TYPE_CORRUPTION] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
+                default => [],
+            };
         }
     }
 
@@ -99,7 +139,7 @@ class CardManager extends DeckManager {
     }
 
     public function hasImmediateAction(SanCard $card) {
-        return $card->chooseOne || $card->destroyCards || $card->specialEffect || $card->draw;
+        return $card->destroyCards || $card->specialEffect || $card->draw;
     }
 
     public function refillRiver() {
