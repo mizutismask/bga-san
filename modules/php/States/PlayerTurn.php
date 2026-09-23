@@ -125,18 +125,18 @@ class PlayerTurn extends GameState {
 
     function getPossibleCards(int $activePlayerId) {
         $hand = $this->game->cardManager->getPlayerHand($activePlayerId);
-        $played = $this->game->cardManager->getPlayedCards($activePlayerId);
+        $playedTypes = array_column($this->game->cardManager->getPlayedCards($activePlayerId), 'type_arg');
         //only one type is allowed from Hacking, Corruption or Propaganda. All other types are allowed
         $restrictedTypes = [
-            array_search(Constants::CARD_TYPE_HACKING, $played, true) => true,
-            array_search(Constants::CARD_TYPE_CORRUPTION, $played, true) => true,
-            array_search(Constants::CARD_TYPE_PROPAGANDA, $played, true) => true,
+            Constants::CARD_TYPE_HACKING => true,
+            Constants::CARD_TYPE_CORRUPTION => true,
+            Constants::CARD_TYPE_PROPAGANDA => true,
         ];
 
         $playedRestrictedType = null;
-        foreach ($played as $card) {
-            if (isset($restrictedTypes[$card->type_arg])) {
-                $playedRestrictedType = $card->type_arg;
+        foreach ($playedTypes as $typeArg) {
+            if (isset($restrictedTypes[$typeArg])) {
+                $playedRestrictedType = $typeArg;
                 break;
             }
         }

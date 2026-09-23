@@ -9,12 +9,23 @@ namespace Bga\Games\San;
  * Type : the Wizard type
  * Type arg :  player color
  */
-class SanCard extends SanCardInfo {
+class SanCard extends SanCardInfo implements \JsonSerializable {
     public int $id;
     public string $location;
     public int $location_arg;
     public int $type;
     public int $type_arg;
+
+    //to force the order of attributes and make debugging easier
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'location' => $this->location,
+            'location_arg' => $this->location_arg,
+            'type' => $this->type,
+            'type_arg' => $this->type_arg,
+        ] + get_object_vars($this);
+    }
 
     public function __construct($dbCard, array $additionalParameters) {
         array_key_exists('id', $dbCard) ? $this->id = intval($dbCard['id']) : null;
