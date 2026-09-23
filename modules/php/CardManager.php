@@ -158,6 +158,10 @@ class CardManager extends DeckManager {
                     'material' => [$card],
                 ]);
             }
+            $this->game->notify->all('riverDeckUpdated', '', [
+                'topCard' => $this->getTopOfLocation(Constants::MATERIAL_LOCATION_DECK),
+                'count' => $this->countCardsInLocation(Constants::MATERIAL_LOCATION_DECK),
+            ]);
         }
         return true;
     }

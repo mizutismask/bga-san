@@ -453,6 +453,7 @@ export class Game extends BaseGame {
 
 		const notifs = [
 			['materialMove', ANIMATION_MS],
+			['riverDeckUpdated', 1],
 			['lastTurn', 1],
 			['importantMessage', 3000]
 		]
@@ -462,6 +463,10 @@ export class Game extends BaseGame {
 			//comment to prevent formating to glue these 2 lines
 			;(this.gameui as any).notifqueue.setSynchronous(notif[0], notif[1])
 		})
+	}
+
+	notif_riverDeckUpdated(notif: Notif<{ topCard: SanCard | null; count: number }>) {
+		this.riverDeck.setCardNumber(notif.args.count, notif.args.topCard ?? undefined)
 	}
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
