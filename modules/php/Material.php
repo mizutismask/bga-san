@@ -1419,7 +1419,7 @@ class Material {
           $card['moveCost'],
           $card['virusSpaces'],
           $card['trashAfterUse'],
-          $card['chooseOne'],
+          (bool) $card['chooseOne'],
           $card['destroyCards'],
           $card['specialEffect'],
           $card['text'],

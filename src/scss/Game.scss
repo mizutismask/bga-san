@@ -145,6 +145,39 @@ svg {
 }
 
 .san-card {
+	&.has-choices {
+		pointer-events: none;
+	}
+
+	.card-choices {
+		position: absolute;
+		top: 12px;
+		left: 8px;
+		z-index: 1;
+		display: flex;
+		flex-direction: row;
+		gap: 9px;
+	}
+
+	.card-choice {
+		background: transparent;
+		pointer-events: auto;
+		width: 21px;
+		height: 25px;
+		padding: 0;
+		cursor: pointer;
+		
+		&:hover, &:focus-visible {
+			border: 1px solid #333;
+			border-radius: 3px;
+			outline: 2px solid black;
+		}
+	}
+
+	.card-choices.wide-choices .card-choice {
+		width: 42px;
+	}
+
 	.card-side {
 		@include card-border;
 	}

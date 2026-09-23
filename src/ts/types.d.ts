@@ -16,6 +16,7 @@ interface Card {
 }
 interface SanCard extends Card {
 	name: string //translated
+	chooseOne: boolean
 }
 interface NationTile extends Card {}
 

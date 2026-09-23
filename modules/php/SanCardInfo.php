@@ -17,7 +17,7 @@ class SanCardInfo {
         public int $moveCost,
         public int $virusSpaces,
         public int $trashAfterUse,
-        public int $chooseOne,
+        public bool $chooseOne,
         public int $destroyCards,
         public int $specialEffect,
         public string $text,

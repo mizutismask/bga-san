@@ -10,7 +10,7 @@ const CARD_HEIGHT = 279 * modifierCardSize
 
 const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 	game.cardsManager.setFrontBackground(div as HTMLDivElement, card.type)
-	const tokensId = `${game.cardsManager.getId(card)}-tokens`
+	const choicesId = `${game.cardsManager.getId(card)}-choices`
 	const textId = `${game.cardsManager.getId(card)}-text`
 
 	//add help
@@ -28,17 +28,29 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 		}
 	}
 
-	//adds tokens locations
-	if (!$(tokensId)) {
+	if (card.chooseOne && !$(choicesId)) {
 		const container: HTMLDivElement = document.createElement('div')
-		container.id = tokensId
-		container.classList.add('tokens-location-wrapper')
+		container.id = choicesId
+		container.classList.add('card-choices')
+		const choiceCount = Number(card.type_arg) === 4 ? 3 : 2
+		container.classList.toggle('wide-choices', choiceCount === 2)
+		for (let choice = 1; choice <= choiceCount; choice++) {
+			const zone = document.createElement('button')
+			zone.type = 'button'
+			zone.classList.add('card-choice')
+			zone.setAttribute('aria-label', `${_('Choice')} ${choice}`)
+			zone.addEventListener('click', event => {
+				event.stopPropagation()
+				game.takeAction('actPlayCard', { cardId: card.id, choice })
+			})
+			container.appendChild(zone)
+		}
 		div.appendChild(container)
 	}
 
 	if (!$(textId)) {
 		const container: HTMLDivElement = document.createElement('div')
-		container.id = tokensId
+		container.id = textId
 		container.classList.add('bga-autofit', 'card-text-wrapper')
 		div.appendChild(container)
 	}
@@ -53,6 +65,7 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 			setupFrontDiv: setupFrontDiv(game),
 			setupDiv: (card: SanCard, div: HTMLElement) => {
 				div.classList.add('san-card')
+				div.classList.toggle('has-choices', card.chooseOne)
 				div.dataset.cardId = '' + card.id
 				div.dataset.cardType = '' + card.type
 			},
