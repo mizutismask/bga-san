@@ -88,7 +88,7 @@ interface PlayerDecisionArgs {
 }
 
 interface PlayerTurnArgs {
-	canUndo: boolean
+	canResetTurn: boolean
 	canCancel: boolean
 	canPass: boolean
 	selectableHandCards: NationTile[]

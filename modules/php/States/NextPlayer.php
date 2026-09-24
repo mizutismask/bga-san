@@ -34,7 +34,7 @@ class NextPlayer extends \Bga\GameFramework\States\GameState {
         //$this->game->globals->set(Constants::GLBL_REMAINING_OSHAX_MOVES, 2);
         //$this->game->setPlayerGlobal($activePlayerId, Constants::GLBL_DISCOVERY_TAKEN, false);
 
-        //$this->game->contextMgr->reset();
+        $this->game->contextManager->reset();
 
         return PlayerTurn::class;
     }

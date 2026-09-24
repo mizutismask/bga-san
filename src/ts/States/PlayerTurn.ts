@@ -55,14 +55,24 @@ export class PlayerTurn {
 			}
 			updatePlaySelectedCardsButton()*/
 
-
+			const selectableCardIds = new Set(args.selectableHandCards.map((card) => card.id))
+			for (const stock of Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)) {
+				const selectableCards = stock.getCards().filter((card) => selectableCardIds.has(card.id))
+				stock.setSelectionMode(selectableCards.length > 0 ? 'single' : 'none', selectableCards)
+				stock.onSelectionChange = (selection, lastChange) => {
+					if (lastChange && selection.some((card) => card.id === lastChange.id)) {
+						this.game.takeAction('actPlayCard', { cardId: lastChange.id, choice: 0 })
+					}
+				}
+			}
+			
 			this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
 				id: 'buttonPass',
 				color: 'primary'
 			})
 			
-			this.bga.statusBar.addActionButton(_('Undo'), () => this.game.takeAction('actUndo', { qty: -1 }), {
-				id: 'buttonUndo',
+			this.bga.statusBar.addActionButton(_('Reset possible actions'), () => this.game.takeAction('actResetPlayerTurn'), {
+				id: 'buttonReset',
 				color: 'alert'
 			})
 
@@ -82,7 +92,7 @@ export class PlayerTurn {
 	private toggleActionButtons(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
 		document.getElementById('buttonPass')?.classList.toggle('disabled', !args.canPass)
 		document.getElementById('buttonCancel')?.classList.toggle('disabled', !args.canCancel)
-		document.getElementById('buttonUndo')?.classList.toggle('disabled', !args.canUndo)
+		document.getElementById('buttonReset')?.classList.toggle('disabled', !args.canResetTurn)
 	}
 
 	/**

@@ -36,10 +36,11 @@ class PlayerTurn extends GameState {
      */
     public function getArgs(int $activePlayerId): array {
         // Get some values from the current game situation from the database.
+        $hasPlayed = !empty($this->game->cardManager->getPlayedCards($activePlayerId));
         return [
-            "canPass" => !empty($this->game->cardManager->getPlayedCards($activePlayerId)),
-            "canResetTurn" => $this->globals->get(Constants::CAN_RESET_TURN),
-            "possibleCards" => $this->getPossibleCards($activePlayerId),
+            "canPass" => $hasPlayed,
+            "canResetTurn" => $hasPlayed,
+            "selectableHandCards" => $this->getPossibleCards($activePlayerId),
         ];
     }
 
@@ -47,7 +48,7 @@ class PlayerTurn extends GameState {
     public function actPlayCard(int $cardId, #[IntParam(min: 0, max: 3)] ?int $choice, int $activePlayerId, array $args) {
         /** @var SanCard|null $sanCard */
         $sanCard = null;
-        foreach ($args['possibleCards'] as $card) {
+        foreach ($args['selectableHandCards'] as $card) {
             if ($card->id === $cardId) {
                 $sanCard = $card;
                 break;
@@ -87,15 +88,84 @@ class PlayerTurn extends GameState {
         }*/
     }
 
-    #[CheckAction(false)]
-    function actResetPlayerTurn() {
-        $possible = $this->globals->get(Constants::CAN_RESET_TURN);
-        if (!$possible) {
-            throw new UserException(clienttranslate("Undo is not available"));
+    #[PossibleAction]
+    function actResetPlayerTurn(int $activePlayerId) {
+        //instead of this complicated logic, we could just recount what’s left
+        $contexts = [];
+        foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
+            if ((int) $context['player'] === $activePlayerId && !$context['resolved']) {
+                $contexts[(int) $context['param1']] ??= $context;
+            }
         }
-        $this->game->undoRestorePoint();
-        //$this->toggleResetTurn(false);
-        $this->gamestate->reloadState();
+
+        $counters = [
+            Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
+            Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
+            Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
+        ];
+        $totals = array_fill_keys(array_keys($counters), 0);
+        $income = 0;
+        $returnedIds = [];
+        $hand = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId);
+
+        foreach ($this->game->cardManager->getPlayedCards($activePlayerId) as $card) {
+            $context = $contexts[$card->id] ?? null;
+            $actions = $context !== null
+                ? json_decode($context['param3'], true, 512, JSON_THROW_ON_ERROR)
+                : [
+                    [Constants::CARD_TYPE_PROPAGANDA, $card->propaganda],
+                    [Constants::CARD_TYPE_HACKING, $card->hacking],
+                    [Constants::CARD_TYPE_CORRUPTION, $card->corruption],
+                    [Constants::ACTION_DRAW, $card->draw],
+                ];
+
+            // Keep irreversible plays in place so their effects cannot be repeated.
+            foreach ($actions as [$action, $amount]) {
+                if ($amount && !isset($counters[$action])) {
+                    continue 2;
+                }
+            }
+            // A recorded choice describes the special effect that was actually used.
+            if ($card->draw || $card->destroyCards || ($card->specialEffect && $context === null)) {
+                continue;
+            }
+
+            foreach ($actions as [$action, $amount]) {
+                if (isset($counters[$action])) {
+                    $totals[$action] += $amount;
+                }
+            }
+            $income += $card->income;
+            $this->game->cardManager->moveCardToLocation($card, $hand, $activePlayerId, false);
+            $from = $card->location;
+            $fromArg = $card->location_arg;
+            $card->location = $hand;
+            $card->location_arg = $activePlayerId;
+            $this->game->notify->player($activePlayerId, 'materialMove', '', [
+                'type' => Constants::MATERIAL_TYPE_CARD,
+                'from' => $from,
+                'fromArg' => $fromArg,
+                'to' => $hand,
+                'toArg' => $activePlayerId,
+                'material' => [$card],
+            ]);
+            $returnedIds[] = $card->id;
+            if ($context !== null) {
+                $this->game->contextManager->deleteContextLog((int) $context['id']);
+            }
+        }
+
+        foreach ($totals as $action => $amount) {
+            if ($amount) {
+                $counters[$action]->inc($activePlayerId, -$amount);
+            }
+        }
+        if ($income) {
+            $this->game->incomeCounter->inc($activePlayerId, -$income);
+        }
+        $revealed = $this->game->globals->get('revealedPlayedCards', []);
+        $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, $returnedIds)));
+        return PlayerTurn::class;
     }
 
     /**
