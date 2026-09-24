@@ -51,14 +51,49 @@ html {
 
 		#river, .corruptionPanel > .corruption-slots {
 			display: grid;
-			grid-template-columns: repeat(6, $CARD_WIDTH);
+			grid-template-columns: 28px repeat(6, $CARD_WIDTH 28px);
 			gap: 8px;
+		}
+
+		.propaganda-slots {
+			display: grid;
+			grid-template-rows: 1fr 1fr;
+			gap: 12px;
+			height: $CARD_HEIGHT;
+		}
+
+		.propaganda-slot {
+			grid-column: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border: 1px solid rgba(255, 255, 255, .6);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, .25);
+		}
+
+		.propaganda-marker {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 24px;
+			min-height: 38px;
+			border-radius: 12px;
+			background: #163c35;
+			border: 1px solid currentColor;
+			font-size: 14px;
+			font-weight: bold;
 		}
 
 		.corruptionPanel {
 			grid-column: 2;
 			.corruption-panel-title { margin-bottom: 6px; font-weight: bold; }
 			.corruption-pair {
+				grid-row: 1;
+				@for $position from 1 through 6 {
+					&:nth-child(#{$position}) { grid-column: $position * 2; }
+				}
 				display: flex;
 				justify-content: center;
 				gap: 8px;

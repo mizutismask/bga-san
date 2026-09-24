@@ -97,6 +97,7 @@ export class Game extends BaseGame {
 			mapCardToSlot: (card) => riverPrefix + card.location_arg
 		})
 		this.river.addCards(gamedatas.river)
+		this.setupPropagandaTrack(gamedatas)
 		const playerOrder = gamedatas.playerOrderWorkingWithSpectators
 		playerOrder.forEach((playerId, index) => {
 			const player = gamedatas.players[playerId]
@@ -127,6 +128,56 @@ export class Game extends BaseGame {
 			for (const card of gamedatas.corruptedCards?.[playerId] ?? []) {
 				this.updateCorruptionMarker(card)
 			}
+		})
+	}
+
+	private setupPropagandaTrack(gamedatas: SanGamedatas) {
+		const river = document.getElementById('river')!
+		Array.from(river.children).forEach((slot: HTMLElement, index) => {
+			slot.style.gridColumn = String(index * 2 + 2)
+			slot.style.gridRow = '1'
+		})
+		for (let position = 0; position <= 6; position++) {
+			const pair = document.createElement('div')
+			pair.className = 'propaganda-slots'
+			pair.style.gridColumn = String(position * 2 + 1)
+			pair.style.gridRow = '1'
+			gamedatas.playerOrderWorkingWithSpectators.forEach((playerId, index) => {
+				const slot = document.createElement('div')
+				slot.id = `propaganda-slot-${playerId}-${position}`
+				slot.className = `propaganda-slot ${gamedatas.players[playerId].symbol}`
+				slot.style.gridRow = index === 0 ? '2' : '1'
+				pair.appendChild(slot)
+			})
+			river.appendChild(pair)
+		}
+		gamedatas.playerOrderWorkingWithSpectators.forEach((playerId) => {
+			const player = gamedatas.players[playerId]
+			const marker = document.createElement('div')
+			marker.id = `propaganda-marker-${playerId}`
+			marker.className = `propaganda-marker ${player.symbol}`
+			marker.style.color = `#${player.color}`
+			marker.title = `${player.name}: ${_('Propaganda')}`
+			marker.innerHTML = '<i class="fa fa-bullhorn" aria-hidden="true"></i><span class="propaganda-progress"></span>'
+			const updatePosition = (value: number) => {
+				const progress = Math.max(0, Math.min(6, Number(value)))
+				const position = player.playerNo === 1 ? progress : 6 - progress
+				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(marker)
+			}
+			updatePosition(0)
+			const counter = new ebg.counter()
+			for (const method of ['setValue', 'toValue'] as const) {
+				const updateCounter = counter[method].bind(counter)
+				counter[method] = (value: number) => {
+					updateCounter(value)
+					updatePosition(value)
+				}
+			}
+			counter.create(marker.querySelector('.propaganda-progress')!, {
+				playerCounter: 'propagandaProgress',
+				playerId: Number(playerId)
+			})
+			updatePosition(counter.getValue())
 		})
 	}
 
