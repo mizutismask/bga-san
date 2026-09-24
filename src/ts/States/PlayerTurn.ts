@@ -91,7 +91,7 @@ export class PlayerTurn {
 	onLeavingState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
 		for (const stock of Object.values(this.game.playerTables[this.game.getPlayerId()]?.handStocks ?? {})) {
 			stock.onSelectionChange = undefined
+			stock.setSelectionMode('none')
 		}
-		//this.game.playerTables[this.game.getPlayerId()].setHandSelectionMode('none', undefined)
 	}
 }

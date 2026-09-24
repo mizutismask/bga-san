@@ -76,6 +76,11 @@ interface SanGame /*extends Game*/ {
 	takeAction(action: string, data?: any, options?: { lock: boolean; checkAction: boolean }): Promise<void>
 }
 
+interface CardShoppingArgs {
+	canPass: boolean
+	possibleCards: SanCard[]
+}
+
 interface PlayerDecisionArgs {
 	canCorrupt: boolean
 	canProgressOnProp: boolean

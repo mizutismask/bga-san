@@ -20,6 +20,8 @@ class CardShopping extends GameState {
             $game,
             id: Constants::STATE_ID_SHOPPING,
             type: StateType::ACTIVE_PLAYER,
+            description: clienttranslate(_('${actplayer} can buy cards')),
+            descriptionMyTurn: clienttranslate('${you} can buy cards from the river'),
         );
     }
 
@@ -55,7 +57,7 @@ class CardShopping extends GameState {
             throw new UserException(clienttranslate('You don’t have enough income to buy this card'));
         }
         $riverRefilled = $this->game->cardManager->buyCard($card, $activePlayerId);
-        if($riverRefilled) {
+        if ($riverRefilled) {
             return CardShopping::class;
         }
         return EndScore::class;

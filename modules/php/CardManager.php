@@ -133,7 +133,7 @@ class CardManager extends DeckManager {
 
     function buyCard(SanCard $card, int $activePlayerId): bool {
         $this->insertCardOnExtremePosition($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), true, true, $activePlayerId);
-        $this->game->incomeCounter->inc($activePlayerId, $card->income * -1);
+        $this->game->incomeCounter->inc($activePlayerId, $card->cost * -1);
         return $this->refillRiver();
     }
 

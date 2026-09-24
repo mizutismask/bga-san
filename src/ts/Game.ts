@@ -9,6 +9,7 @@ import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
 import { PlayerTurn } from './States/PlayerTurn'
 import { PlayerDecision } from './States/PlayerDecision'
+import { CardShopping } from './States/CardShopping'
 
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
@@ -27,6 +28,7 @@ export class Game extends BaseGame {
 		this.bga = bga
 		this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))
 		this.bga.states.register('PlayerDecisions', new PlayerDecision(this, this.bga))
+		this.bga.states.register('CardShopping', new CardShopping(this, this.bga))
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
 
@@ -484,6 +486,9 @@ export class Game extends BaseGame {
 			} else if (card.location?.startsWith('hand_')) {
 				const playerId = Number(card.location.substring(5))
 				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card)
+			} else if (card.location?.startsWith('plyr_discard_')) {
+				const playerId = Number(notif.args.to.substring('plyr_discard_'.length))
+				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (this.playedCards.contains(card)) {
 				this.playedCards.removeCard(card)
 			}
