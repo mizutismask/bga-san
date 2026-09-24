@@ -20,7 +20,7 @@ export class VirusZone {
 				zone.appendChild(marker)
 			}
 			const section = document.createElement('div')
-			section.className = 'virus-player-deck'
+			section.className = `virus-player-deck ${gamedatas.players[playerId].symbol}`
 			section.classList.toggle('own', Number(playerId) === game.getPlayerId())
 			const deckElement = document.createElement('div')
 			deckElement.id = `virus-deck-${playerId}`

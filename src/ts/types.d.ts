@@ -22,6 +22,7 @@ interface NationTile extends Card {}
 
 interface SanPlayer extends Player {
 	playerNo: number
+	symbol: 'moon' | 'star'
 	cardsCount: number
 	tickets: number
 }

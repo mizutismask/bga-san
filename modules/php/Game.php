@@ -247,6 +247,7 @@ class Game extends \Bga\GameFramework\Table {
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);
             $player['playerNo'] = $currentPlayerOrder;
+            $player['symbol'] = $currentPlayerOrder == 1 ? "moon" : "star";
             //$player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
 
             // $player['cardsCount'] = intval($this->actionCards->countCardInLocation("hand", $playerId));

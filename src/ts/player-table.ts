@@ -17,7 +17,7 @@ export class PlayerTable {
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
 			<a id="anchor-player-${player.id}"></a>
-            <div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
+            <div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${player.symbol} ${ownClass}">
 				<span class="player-name" style="color:#${player.color}">${player.name}</span>
             </div>
         `
