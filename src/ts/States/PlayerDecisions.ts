@@ -1,7 +1,7 @@
 import { Game } from '../Game'
 import { SanGamedatas, SanPlayer, PlayerDecisionArgs } from '../types'
 
-export class PlayerDecision {
+export class PlayerDecisions {
 	private selectableMarkers: HTMLElement[] = []
 
 	constructor(
@@ -15,7 +15,9 @@ export class PlayerDecision {
 				this.bga.statusBar.setTitle(_('${you} can corrupt a card from the river'))
 				this.game.river.setSelectionMode('single')
 				const playerId = this.game.getPlayerId()
-				for (const marker of document.querySelectorAll<HTMLElement>(`#corruption-panel-${playerId} .corruption-marker`)) {
+				for (const marker of document.querySelectorAll<HTMLElement>(
+					`#corruption-panel-${playerId} .corruption-marker`
+				)) {
 					if (marker.textContent) continue
 					marker.classList.add('selectable')
 					marker.onclick = () => {

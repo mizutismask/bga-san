@@ -8,7 +8,7 @@ import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
 import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
 import { PlayerTurn } from './States/PlayerTurn'
-import { PlayerDecision } from './States/PlayerDecision'
+import { PlayerDecisions } from './States/PlayerDecisions'
 import { CardShopping } from './States/CardShopping'
 
 export class Game extends BaseGame {
@@ -27,7 +27,7 @@ export class Game extends BaseGame {
 		super()
 		this.bga = bga
 		this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))
-		this.bga.states.register('PlayerDecisions', new PlayerDecision(this, this.bga))
+		this.bga.states.register('PlayerDecisions', new PlayerDecisions(this, this.bga))
 		this.bga.states.register('CardShopping', new CardShopping(this, this.bga))
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
@@ -60,7 +60,11 @@ export class Game extends BaseGame {
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
 		const hand = document.getElementById(`hand-${this.getPlayerId()}`)
-		this.virusZone = new VirusZone(this, gamedatas, hand?.parentElement ?? document.getElementById('player-tables')!)
+		this.virusZone = new VirusZone(
+			this,
+			gamedatas,
+			hand?.parentElement ?? document.getElementById('player-tables')!
+		)
 
 		this.setupPlaymat(this.gamedatas)
 		this.setupTooltips()
@@ -158,7 +162,8 @@ export class Game extends BaseGame {
 			marker.className = `propaganda-marker ${player.symbol}`
 			marker.style.color = `#${player.color}`
 			marker.title = `${player.name}: ${_('Propaganda')}`
-			marker.innerHTML = '<i class="fa fa-bullhorn" aria-hidden="true"></i><span class="propaganda-progress"></span>'
+			marker.innerHTML =
+				'<i class="fa fa-bullhorn" aria-hidden="true"></i><span class="propaganda-progress"></span>'
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = player.playerNo === 1 ? progress : 6 - progress
@@ -191,7 +196,8 @@ export class Game extends BaseGame {
 			const marker = document.getElementById(`corruption-${card.location.substring(5)}-${card.location_arg}`)
 			if (marker) {
 				const ownerId = Number(card.location.substring(5))
-				const perspectiveId = this.getPlayerId() > 0 ? this.getPlayerId() : this.gamedatas.playerOrderWorkingWithSpectators[0]
+				const perspectiveId =
+					this.getPlayerId() > 0 ? this.getPlayerId() : this.gamedatas.playerOrderWorkingWithSpectators[0]
 				marker.textContent = ownerId === perspectiveId ? '✓ −1' : '✓ +1'
 				this.corruptedCardPositions.set(card.id, marker)
 			}
@@ -227,12 +233,16 @@ export class Game extends BaseGame {
 			'afterbegin',
 			`<div id="counters-${player.id}" class="counters">
 				
-				${additionalCounters.map(({ name, icon }) => `
+				${additionalCounters
+					.map(
+						({ name, icon }) => `
 					<div id="${name}-counter-${player.id}-wrapper" class="counter ${name}-counter">
 						<div class="fa ${icon}"></div>
 						<span id="${name}-player-counter-${player.id}"></span>
 					</div>
-				`).join('')}
+				`
+					)
+					.join('')}
 				<div id="hand-cards-counter-${player.id}-wrapper" class="counter hand-cards-counter counter-left-part">
 					<div class="fa fa-hand-paper-o"></div> 
 					<span id="hand-cards-counter-${player.id}"></span>
@@ -249,7 +259,7 @@ export class Game extends BaseGame {
             revealedTokensBackCounter.setValue(player.revealedTokensBackCount);
             this.revealedTokensBackCounters[playerId] = revealedTokensBackCounter;
 */
-		
+
 		additionalCounters.forEach(({ name, label }) => {
 			const counter = new ebg.counter()
 			counter.create(`${name}-player-counter-${player.id}`, {
