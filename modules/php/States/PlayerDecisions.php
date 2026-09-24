@@ -27,6 +27,9 @@ class PlayerDecisions extends GameState {
     }
 
     function onEnteringState(int $activePlayerId, array $args) {
+        if($args['canCorrupt'] === false && $args['canProgressOnProp'] === false) {
+            return CardShopping::class;
+        }
     }
 
     /**
