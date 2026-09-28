@@ -17,6 +17,7 @@ interface Card {
 interface SanCard extends Card {
 	name: string //translated
 	chooseOne: boolean
+	virusSpaces: number
 }
 interface NationTile extends Card {}
 

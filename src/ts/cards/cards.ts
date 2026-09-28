@@ -8,10 +8,31 @@ const modifierCardSize = .7
 const CARD_WIDTH = 200 * modifierCardSize
 const CARD_HEIGHT = 279 * modifierCardSize
 
+// Square centers in cards.webp, in percentages, following the printed path.
+const VIRUS_SLOT_POSITIONS: Record<number, [number, number][]> = {
+	3: [[34, 61.5], [38, 18], [75, 46]],
+	4: [[28, 83], [27, 40], [71, 23], [68.5, 68]],
+	5: [[33, 61.5], [27, 40], [71, 23], [75, 46], [68.5, 68]],
+	6: [[33, 61.5], [27, 40], [38, 18], [71, 23], [75, 46], [68.5, 68]],
+	7: [[28, 83], [33, 61.5], [27, 40], [38, 18], [71, 23], [75, 46], [68.5, 68]]
+}
+
 const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 	game.cardsManager.setFrontBackground(div as HTMLDivElement, card.type)
 	const choicesId = `${game.cardsManager.getId(card)}-choices`
 	const textId = `${game.cardsManager.getId(card)}-text`
+
+	div.querySelectorAll('.virus-slot').forEach(slot => slot.remove())
+	const virusPositions = VIRUS_SLOT_POSITIONS[card.virusSpaces] ?? []
+	virusPositions.forEach(([left, top], index) => {
+		const slot = document.createElement('div')
+		slot.id = `${game.cardsManager.getId(card)}-virus-slot-${index + 1}`
+		slot.className = 'virus-slot'
+		slot.dataset.slot = `${index + 1}`
+		slot.style.left = `${left}%`
+		slot.style.top = `${top}%`
+		div.appendChild(slot)
+	})
 
 	//add help
 	const helpId = `${game.cardsManager.getId(card)}-front-info`

@@ -184,6 +184,14 @@ svg {
 }
 
 .san-card {
+	.virus-slot {
+		position: absolute;
+		width: 22%;
+		height: 16%;
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+	}
+
 	&.has-choices {
 		pointer-events: none;
 	}
