@@ -19,8 +19,6 @@ export class Game extends BaseGame {
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
 
-	private handCardsCounters: Counter[] = []
-
 	private displayedTooltip: any //dijit.Tooltip
 
 	constructor(bga: Bga<SanPlayer, SanGamedatas>) {
@@ -227,7 +225,8 @@ export class Game extends BaseGame {
 			{ name: 'propaganda', icon: 'fa-bullhorn', label: _('Propaganda') },
 			{ name: 'hacking', icon: 'fa-laptop', label: _('Hacking') },
 			{ name: 'corruption', icon: 'fa-user-secret', label: _('Corruption') },
-			{ name: 'income', icon: 'fa-money', label: _('Income') }
+			{ name: 'income', icon: 'fa-money', label: _('Income') },
+			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') }
 		]
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
 			'afterbegin',
@@ -243,10 +242,6 @@ export class Game extends BaseGame {
 				`
 					)
 					.join('')}
-				<div id="hand-cards-counter-${player.id}-wrapper" class="counter hand-cards-counter counter-left-part">
-					<div class="fa fa-hand-paper-o"></div> 
-					<span id="hand-cards-counter-${player.id}"></span>
-				</div>
 			</div>
 			<div id="additional-info-${player.id}" class="counters additional-info">
 				<div id="additional-icons-${player.id}" class="additional-icons"></div> 
@@ -263,16 +258,12 @@ export class Game extends BaseGame {
 		additionalCounters.forEach(({ name, label }) => {
 			const counter = new ebg.counter()
 			counter.create(`${name}-player-counter-${player.id}`, {
+				value: Number(player[name]),
 				playerCounter: name,
 				playerId
 			})
 			this.setTooltipToClass(`${name}-counter`, label)
 		})
-
-		const cardsCounter = new ebg.counter()
-		cardsCounter.create(`hand-cards-counter-${player.id}`)
-		cardsCounter.setValue(player.cardsCount)
-		this.handCardsCounters[playerId] = cardsCounter
 
 		if (this.gameFeatures.showPlayerHelp && this.getPlayerId() === playerId) {
 			//help

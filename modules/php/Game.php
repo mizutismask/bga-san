@@ -40,7 +40,7 @@ class Game extends \Bga\GameFramework\Table {
 
     private Deck $cards;
     public CardManager $cardManager;
-    public PlayerCounter $propagandaCounter, $propagandaProgressCounter, $hackingCounter, $corruptionCounter, $incomeCounter;
+    public PlayerCounter $propagandaCounter, $propagandaProgressCounter, $hackingCounter, $corruptionCounter, $incomeCounter, $handSizeCounter;
     public ContextManager $contextManager;
     public ExpansionManager $expansionManager;
 
@@ -66,6 +66,8 @@ class Game extends \Bga\GameFramework\Table {
         $this->hackingCounter = $this->counterFactory->createPlayerCounter("hacking");
         $this->corruptionCounter = $this->counterFactory->createPlayerCounter("corruption");
         $this->incomeCounter = $this->counterFactory->createPlayerCounter("income");
+        $handSize = $this->expansionManager->getBasicHandSize();
+        $this->handSizeCounter = $this->counterFactory->createPlayerCounter("handSize", $handSize, $handSize + 2);
 
         $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = false;
@@ -123,6 +125,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->hackingCounter->initDb(array_keys($players));
         $this->corruptionCounter->initDb(array_keys($players));
         $this->incomeCounter->initDb(array_keys($players));
+        $this->handSizeCounter->initDb(array_keys($players), $this->expansionManager->getBasicHandSize());
 
         // TODO: setup the initial game situation here
         $this->globals->set(Constants::LAST_TURN, 0); // last turn is the id of the last player, 0 if it's not last turn
@@ -241,6 +244,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->hackingCounter->fillResult($result);
         $this->corruptionCounter->fillResult($result);
         $this->incomeCounter->fillResult($result);
+        $this->handSizeCounter->fillResult($result);
 
         $result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
 
