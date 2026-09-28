@@ -29,12 +29,38 @@
 	}
 
 	.virus-central-marker {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
 		padding: 8px 20px;
 		border: 2px solid #245b28;
 		border-radius: 20px;
 		background: rgba(255, 255, 255, .8);
 		font-weight: bold;
 		text-align: center;
+	}
+}
+
+.virus-token {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	box-sizing: border-box;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	background: #a51b35;
+	color: #fff;
+	box-shadow: 0 1px 4px #000;
+	pointer-events: none;
+
+	.virus-slot > & {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 	}
 }
 

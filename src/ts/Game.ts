@@ -533,6 +533,7 @@ export class Game extends BaseGame {
 				this.cardsManager.removeCard(card)
 			} else if (card.location?.startsWith('virus_')) {
 				this.virusZone.decks[Number(card.location.substring(6))]?.addCard(card)
+					.then(() => this.virusZone.refreshToken())
 			} else if (card.location === 'river') {
 				this.river.addCard(card)
 			} else if (card.location?.startsWith('hand_')) {
@@ -541,6 +542,8 @@ export class Game extends BaseGame {
 			} else if (card.location?.startsWith('plyr_discard_')) {
 				const playerId = Number(notif.args.to.substring('plyr_discard_'.length))
 				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
+			} else if (Object.values(this.virusZone.decks).some(deck => deck.contains(card))) {
+				this.cardsManager.removeCard(card)
 			} else if (this.playedCards.contains(card)) {
 				this.playedCards.removeCard(card)
 			}
