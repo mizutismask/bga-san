@@ -92,8 +92,8 @@ class ExpansionManager {
         return $cards;
     }
 
-    function getHandSize(): int {
-        return 6;
+    function getBasicHandSize(): int {
+        return $this->game->tableOptions->get(101) == 0 ? 6 : 7;
     }
 
     function isZoneDefenseOn(): bool {
