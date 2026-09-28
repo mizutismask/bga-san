@@ -217,9 +217,9 @@ class PlayerTurn extends GameState {
             return $hand;
         }
 
-        return array_filter(
+        return array_values(array_filter(
             $hand,
             fn($card) => !isset($restrictedTypes[$card->type_arg]) || $card->type_arg === $playedRestrictedType
-        );
+        ));
     }
 }

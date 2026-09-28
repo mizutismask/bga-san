@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Bga\Games\San;
 
 use Bga\GameFramework\Components\Counters\PlayerCounter;
+use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
 use Bga\GameFramework\Table;
 use Bga\Games\San\ExpansionManager;
@@ -41,6 +42,7 @@ class Game extends \Bga\GameFramework\Table {
     private Deck $cards;
     public CardManager $cardManager;
     public PlayerCounter $propagandaCounter, $propagandaProgressCounter, $hackingCounter, $corruptionCounter, $incomeCounter, $handSizeCounter;
+    public TableCounter $virusTokenPositionCounter;
     public ContextManager $contextManager;
     public ExpansionManager $expansionManager;
 
@@ -68,6 +70,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->incomeCounter = $this->counterFactory->createPlayerCounter("income");
         $handSize = $this->expansionManager->getBasicHandSize();
         $this->handSizeCounter = $this->counterFactory->createPlayerCounter("handSize", $handSize, $handSize + 2);
+        $this->virusTokenPositionCounter = $this->counterFactory->createTableCounter("virusTokenPosition", -7, 7);
 
         $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = false;
@@ -126,6 +129,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter->initDb(array_keys($players));
         $this->incomeCounter->initDb(array_keys($players));
         $this->handSizeCounter->initDb(array_keys($players), $this->expansionManager->getBasicHandSize());
+        $this->virusTokenPositionCounter->initDb(0);
 
         // TODO: setup the initial game situation here
         $this->globals->set(Constants::LAST_TURN, 0); // last turn is the id of the last player, 0 if it's not last turn
@@ -245,6 +249,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter->fillResult($result);
         $this->incomeCounter->fillResult($result);
         $this->handSizeCounter->fillResult($result);
+        $this->virusTokenPositionCounter->fillResult($result);
 
         $result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
 

@@ -27,7 +27,7 @@ class PlayerDecisions extends GameState {
     }
 
     function onEnteringState(int $activePlayerId, array $args) {
-        if($args['canCorrupt'] === false && $args['canProgressOnProp'] === false) {
+        if ($args['canCorrupt'] === false && $args['canProgressOnProp'] === false && $args['canHack'] === false) {
             return CardShopping::class;
         }
     }
@@ -41,6 +41,7 @@ class PlayerDecisions extends GameState {
         // Get some values from the current game situation from the database.
         return [
             "canCorrupt" => $this->game->corruptionCounter->get($activePlayerId) > 2,
+            "canHack" => $this->game->hackingCounter->get($activePlayerId) > 0,
             "canProgressOnProp" => $this->canProgressOnProp($activePlayerId),
         ];
     }
@@ -52,7 +53,7 @@ class PlayerDecisions extends GameState {
         /** @var SanCard|null $nextCard */
         $nextCard = $this->game->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
         if (!$nextCard) {
-            return false;//todo
+            return false; //todo
         }
         $opponentId = $this->game->getOpponentId($playerId);
 
@@ -107,6 +108,62 @@ class PlayerDecisions extends GameState {
         } else {
             return 7 - $slot;
         }
+    }
+
+    #[PossibleAction]
+    public function actProgressOnHacking(int $activePlayerId, array $args) {
+        if ($args['canHack'] === false) {
+            throw new UserException(clienttranslate('You don’t have enough virus to hack'));
+        }
+        /*
+         * Virus token position:
+         *   0:          Central port space.
+         *   1 to 7:     Matching space on player 2's card.
+         *   -7 to -1:   Matching space on player 1's card.
+         */
+
+        $position = $this->game->virusTokenPositionCounter->get();
+        $direction = $this->game->getPlayerNoById($activePlayerId) == 1 ? 1 : -1;
+        $opponentId = $this->game->getOpponentId($activePlayerId);
+        $virusLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $opponentId);
+        $completedCard = null;
+
+        if ($position * $direction < 0) {
+            // Retreat towards the central port on our own Virus card.
+            $newPosition = $position + $direction;
+        } else {
+            $card = $this->game->cardManager->getTopOfLocation($virusLocation);
+            if ($card === null) {
+                throw new UserException(clienttranslate('There is no opposing Virus card to advance on'));
+            }
+
+            $newPosition = $position + $direction;
+            if (abs($newPosition) > $card->virusSpaces) {
+                $newPosition = 0;
+                $completedCard = $card;
+            }
+        }
+
+        $this->game->hackingCounter->inc($activePlayerId, -1);
+        $this->game->virusTokenPositionCounter->set($newPosition);
+
+        if ($completedCard !== null) {
+            $this->game->cardManager->insertCardOnExtremePosition(
+                $completedCard,
+                $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $opponentId),
+                true,
+                true,
+                $opponentId
+            );
+
+            if ($this->game->cardManager->countCardsInLocation($virusLocation) === 0) {
+                $this->game->playerScore->set($activePlayerId, 1);
+                $this->game->playerScore->set($opponentId, 0);
+                return EndScore::class;
+            }
+        }
+
+        return PlayerDecisions::class;
     }
 
     /**

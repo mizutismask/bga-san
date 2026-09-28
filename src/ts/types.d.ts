@@ -54,6 +54,7 @@ interface SanGamedatas {
 	riverDeckCount: number
 	corruptedCards: Record<number, SanCard[]>
 	virusCards: Record<number, SanCard[]>
+	virusTokenPosition: number
 }
 
 interface CounterValue {
@@ -85,6 +86,7 @@ interface CardShoppingArgs {
 interface PlayerDecisionArgs {
 	canCorrupt: boolean
 	canProgressOnProp: boolean
+	canHack: boolean
 }
 
 interface PlayerTurnArgs {
