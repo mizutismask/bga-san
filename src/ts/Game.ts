@@ -83,6 +83,7 @@ export class Game extends BaseGame {
 		this.playedCards.addCards(gamedatas.playedCards ?? [], { initialSide: 'front', finalSide: 'front' })
 
 		const centralLine = document.getElementById('central-line')!
+		centralLine.classList.toggle('reversed', Number(gamedatas.players[this.getPlayerId()]?.playerNo) === 2)
 		//deck
 		centralLine.insertAdjacentHTML('beforeend', '<div id="river-deck"></div>')
 		this.riverDeck = new BgaCards.Deck<SanCard>(this.cardsManager, document.getElementById('river-deck')!, {

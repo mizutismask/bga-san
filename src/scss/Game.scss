@@ -70,6 +70,20 @@ html {
 			gap: 8px;
 		}
 
+		&.reversed {
+			#river, .corruptionPanel > .corruption-slots {
+				direction: rtl;
+
+				> * {
+					direction: ltr;
+				}
+			}
+
+			.corruption-pair {
+				flex-direction: row-reverse;
+			}
+		}
+
 		.propaganda-slots {
 			display: grid;
 			grid-template-rows: 1fr 1fr;
