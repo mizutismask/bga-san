@@ -1,6 +1,11 @@
 @use 'GameVars' as vars;
 
 .player-board {
+	.player-side {
+		margin-right: 5px;
+		margin-left: 3px;
+	}
+
 	.player-name,
 	.player-name a {
 		text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
