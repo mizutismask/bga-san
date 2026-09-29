@@ -8,7 +8,7 @@
 
 $BASE_CARD_WIDTH: 200;
 $BASE_CARD_HEIGHT: 279;
-$cardSizeModifier: .7;
+$cardSizeModifier: 0.7;
 $CARD_WIDTH: calc(#{$BASE_CARD_WIDTH}px * $cardSizeModifier); //also change in stock-utils.ts
 $CARD_HEIGHT: calc(#{$BASE_CARD_HEIGHT}px * $cardSizeModifier);
 $CARD_RATIO: list.slash($BASE_CARD_WIDTH, $BASE_CARD_HEIGHT);
@@ -41,12 +41,12 @@ html {
 	padding: 5px;
 
 	#playing-zone {
-		background: rgba(255, 255, 255, .25);
+		background: rgba(255, 255, 255, 0.25);
 
 		.zone-title {
 			padding: 0 0 4px;
 			font-size: 12px;
-			color: rgba(0, 0, 0, .5);
+			color: rgba(0, 0, 0, 0.5);
 			font-weight: bold;
 		}
 	}
@@ -55,23 +55,31 @@ html {
 		min-height: $CARD_HEIGHT;
 	}
 
-	#central-line{
+	#central-line {
 		display: grid;
 		grid-template-columns: $CARD_WIDTH auto;
 		gap: 15px;
 		align-items: center;
 
-		#river-deck { grid-column: 1; grid-row: 2; }
-		#river { grid-column: 2; grid-row: 2; }
+		#river-deck {
+			grid-column: 1;
+			grid-row: 2;
+		}
+		#river {
+			grid-column: 2;
+			grid-row: 2;
+		}
 
-		#river, .corruptionPanel > .corruption-slots {
+		#river,
+		.corruptionPanel > .corruption-slots {
 			display: grid;
 			grid-template-columns: 28px repeat(6, $CARD_WIDTH 28px);
 			gap: 8px;
 		}
 
 		&.reversed {
-			#river, .corruptionPanel > .corruption-slots {
+			#river,
+			.corruptionPanel > .corruption-slots {
 				direction: rtl;
 
 				> * {
@@ -96,9 +104,9 @@ html {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border: 1px solid rgba(255, 255, 255, .6);
+			border: 1px solid rgba(255, 255, 255, 0.6);
 			border-radius: 14px;
-			background: rgba(255, 255, 255, .25);
+			background: rgba(255, 255, 255, 0.25);
 		}
 
 		.propaganda-marker {
@@ -117,11 +125,16 @@ html {
 
 		.corruptionPanel {
 			grid-column: 2;
-			.corruption-panel-title { margin-bottom: 6px; font-weight: bold; }
+			.corruption-panel-title {
+				margin-bottom: 6px;
+				font-weight: bold;
+			}
 			.corruption-pair {
 				grid-row: 1;
 				@for $position from 1 through 6 {
-					&:nth-child(#{$position}) { grid-column: $position * 2; }
+					&:nth-child(#{$position}) {
+						grid-column: $position * 2;
+					}
 				}
 				display: flex;
 				justify-content: center;
@@ -130,9 +143,9 @@ html {
 			.corruption-marker {
 				width: 54px;
 				height: 28px;
-				border: 1px solid rgba(0, 0, 0, .5);
+				border: 1px solid rgba(0, 0, 0, 0.5);
 				border-radius: 4px;
-				background: rgba(255, 255, 255, .7);
+				background: rgba(255, 255, 255, 0.7);
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -147,6 +160,11 @@ html {
 	}
 
 	.cstm-player-hand {
+		.hand-pile {
+			width: $CARD_WIDTH;
+			flex-shrink: 0;
+		}
+
 		.san-card {
 			margin-top: -150px;
 			&:first-child {
@@ -246,8 +264,9 @@ svg {
 		height: 25px;
 		padding: 0;
 		cursor: pointer;
-		
-		&:hover, &:focus-visible {
+
+		&:hover,
+		&:focus-visible {
 			border: 1px solid #333;
 			border-radius: 3px;
 			outline: 2px solid black;
