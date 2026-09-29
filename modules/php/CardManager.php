@@ -30,19 +30,28 @@ class CardManager extends DeckManager {
         return $this->game->expansionManager->getBasicHandSize(); //todo adjust with variables
     }
 
-    public function replenishHands() {
-        $players = $this->game->loadPlayersBasicInfos();
-        $cardsAdded = false;
-        foreach ($players as $playerId => $player) {
-            $goal = $this->getPlayerHandSize($playerId);
-            $cardsCount = count($this->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId)));
-            if ($cardsCount < $goal) {
-                $this->addCardsToHand($goal - $cardsCount, $playerId, true);
-                $cardsAdded = true;
+    /**
+     * Complete hand in deckbuilding style, pick in the deck all that’s available then shuffle and complete if necessary
+     * @return void 
+     */
+    public function replenishHands(int $playerId): void {
+        $goal = $this->getPlayerHandSize($playerId);
+        $cardsCount = count($this->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId)));
+        if ($cardsCount < $goal) {
+            $deckLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId);
+            $cardsNeeded = $goal - $cardsCount;
+            $availableCards = $this->countCardsInLocation($deckLocation);
+            if ($availableCards < $cardsNeeded) {
+                if ($availableCards > 0) {
+                    $this->addCardsToHand($availableCards, $playerId, true);
+                    $cardsNeeded -= $availableCards;
+                }
+                $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId);
+                $this->deck->moveAllCardsInLocation($discardLocation, $deckLocation);
+                $this->deck->shuffle($deckLocation);
             }
+            $this->addCardsToHand($cardsNeeded, $playerId, true);
         }
-        //$this->game->notifyCounterChange();
-        return $cardsAdded;
     }
 
     public function getPlayedCards(int $playerId) {

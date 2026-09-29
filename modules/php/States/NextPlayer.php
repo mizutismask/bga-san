@@ -29,7 +29,7 @@ class NextPlayer extends \Bga\GameFramework\States\GameState {
     function onEnteringState() {
 
         $activePlayerId = $this->game->activateNextPlayerCustom();
-        $this->game->cardManager->replenishHands();
+        $this->game->cardManager->replenishHands((int) $this->game->getOpponentId($activePlayerId));
 
         //$this->game->globals->set(Constants::GLBL_REMAINING_OSHAX_MOVES, 2);
         //$this->game->setPlayerGlobal($activePlayerId, Constants::GLBL_DISCOVERY_TAKEN, false);

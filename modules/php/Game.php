@@ -192,7 +192,6 @@ class Game extends \Bga\GameFramework\Table {
      */
     function activateNextPlayerCustom() {
         $player_id = $this->activeNextPlayer();
-        $this->cardManager->replenishHands();
         $this->giveExtraTime($player_id);
         $this->playerStats->inc('turns_number', 1, $player_id);
         $this->tableStats->inc('turns_number', 1);
