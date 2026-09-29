@@ -36,10 +36,17 @@ export class VirusZone {
 			zone.appendChild(section)
 			const deck = new BgaCards.Deck<SanCard>(game.cardsManager, deckElement, {
 				cardNumber: 0,
+				autoUpdateCardNumber: false,
 				autoRemovePreviousCards: false,
 				counter: { show: false }
 			})
 			this.decks[playerId] = deck
+			const updateDeck = () => {
+				deck.setCardNumber(deck.getCards().length, null)
+				this.refreshToken()
+			}
+			deck.onCardAdded = updateDeck
+			deck.onCardRemoved = updateDeck
 			return deck.addCards([...(gamedatas.virusCards[playerId] ?? [])].sort((a, b) => a.location_arg - b.location_arg))
 		})
 
