@@ -82,6 +82,12 @@ class PlayerDecisions extends GameState {
 
         $card = $this->game->cardManager->getCard($cardId);
         $this->game->cardManager->corruptCard($card, $slot, $position + 1, $activePlayerId);
+        $this->game->notify->all('msg', clienttranslate('${player_name} corrupts a card (${corruptedCount}/12)'), [
+            'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'corruptedCount' => $this->game->cardManager->countCardsInLocation(
+                $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $activePlayerId)
+            ),
+        ]);
         return PlayerDecisions::class;
     }
 
@@ -92,6 +98,10 @@ class PlayerDecisions extends GameState {
         }
 
         $newPosition = $this->game->propagandaProgressCounter->inc($activePlayerId, 1);
+        $this->game->notify->all('msg', clienttranslate('${player_name} advances to position ${position} on the propaganda track'), [
+            'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'position' => $newPosition,
+        ]);
 
         //todo hand size +1 eventually
 
@@ -128,7 +138,8 @@ class PlayerDecisions extends GameState {
         $virusLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $opponentId);
         $completedCard = null;
 
-        if ($position * $direction < 0) {
+        $isDefending = $position * $direction < 0;
+        if ($isDefending) {
             // Retreat towards the central port on our own Virus card.
             $newPosition = $position + $direction;
         } else {
@@ -146,6 +157,12 @@ class PlayerDecisions extends GameState {
 
         $this->game->hackingCounter->inc($activePlayerId, -1);
         $this->game->virusTokenPositionCounter->set($newPosition);
+        $message = $isDefending
+            ? clienttranslate('${player_name} defends on Virus track')
+            : clienttranslate('${player_name} attacks on Virus track');
+        $this->game->notify->all('msg', $message, [
+            'player_name' => $this->game->getPlayerNameById($activePlayerId),
+        ]);
 
         if ($completedCard !== null) {
             $this->game->cardManager->insertCardOnExtremePosition(
@@ -155,6 +172,10 @@ class PlayerDecisions extends GameState {
                 true,
                 $opponentId
             );
+            $this->game->notify->all('msg', clienttranslate('${player_name} adds a Virus card to the top of ${player_name2}\'s deck'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                'player_name2' => $this->game->getPlayerNameById($opponentId),
+            ]);
 
             if ($this->game->cardManager->countCardsInLocation($virusLocation) === 0) {
                 $this->game->playerScore->set($activePlayerId, 1);
