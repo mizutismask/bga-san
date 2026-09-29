@@ -21,7 +21,7 @@ class CardShopping extends GameState {
             id: Constants::STATE_ID_SHOPPING,
             type: StateType::ACTIVE_PLAYER,
             description: clienttranslate(_('${actplayer} can buy cards')),
-            descriptionMyTurn: clienttranslate('${you} can buy cards from the river'),
+            descriptionMyTurn: clienttranslate('${you} can spend ${income} to buy cards from the river'),
         );
     }
 
@@ -40,6 +40,7 @@ class CardShopping extends GameState {
         // Get some values from the current game situation from the database.
         return [
             "canPass" => true,
+            "income" => $this->game->incomeCounter->get($activePlayerId),
             "possibleCards" => $this->getPossibleCards($activePlayerId),
         ];
     }
