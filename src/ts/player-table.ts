@@ -1,12 +1,14 @@
 import { LineStock } from '../../bga-cards'
 import { BgaCards } from './libs'
 import { SanCard, SanGame, SanPlayer } from './types'
+import { CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE } from './constants'
 
 /**
  * Player table.
  */
 export class PlayerTable {
 	public readonly handStocks: Record<number, LineStock<SanCard>> = {}
+	public readonly playAllButtons: Record<number, HTMLButtonElement> = {}
 
 	constructor(
 		private game: SanGame,
@@ -33,10 +35,24 @@ export class PlayerTable {
 		container.classList.add('cstm-player-hand')
 		document.getElementById(`player-table-${player.id}`)!.prepend(container)
 
-		for (const typeArg of [1, 2, 3, 4]) {
+		for (const typeArg of [CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE]) {
+			const pile = document.createElement('div')
+			pile.className = 'hand-pile'
+			container.appendChild(pile)
+			if (typeArg !== CARD_TYPE_HARDWARE) {
+				const button = document.createElement('button')
+				button.type = 'button'
+				button.className = 'bgabutton bgabutton_blue play-all'
+				button.textContent = _('Play all')
+				button.title = _('Play all simple cards, others will be ignored')
+				button.disabled = true
+				button.addEventListener('click', () => this.game.takeAction('actPlayAll', { typeArg }))
+				pile.appendChild(button)
+				this.playAllButtons[typeArg] = button
+			}
 			const element = document.createElement('div')
 			element.id = `${container.id}-type-${typeArg}`
-			container.appendChild(element)
+			pile.appendChild(element)
 			const stock = new BgaCards.LineStock<SanCard>(this.game.cardsManager, element, {
 				direction: 'column',
 				wrap: 'nowrap',

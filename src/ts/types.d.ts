@@ -17,6 +17,9 @@ interface Card {
 interface SanCard extends Card {
 	name: string //translated
 	chooseOne: boolean
+	draw: number
+	destroyCards: number
+	specialEffect: number
 	virusSpaces: number
 }
 interface NationTile extends Card {}
@@ -94,7 +97,7 @@ interface PlayerTurnArgs {
 	canResetTurn: boolean
 	canCancel: boolean
 	canPass: boolean
-	selectableHandCards: NationTile[]
+	selectableHandCards: SanCard[]
 	canUseHammer: Boolean
 	canUseFairy: Boolean
 	ghostBlockedSquareIds: number[]

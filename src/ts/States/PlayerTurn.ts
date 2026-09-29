@@ -18,6 +18,11 @@ export class PlayerTurn {
 	 * This method is called each time we are entering the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onEnteringState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
+		for (const [typeArg, button] of Object.entries(this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {})) {
+			button.disabled = !isCurrentPlayerActive || !args.selectableHandCards.some(card =>
+				Number(card.type_arg) === Number(typeArg) && !card.chooseOne && !card.draw && !card.destroyCards && !card.specialEffect
+			)
+		}
 		/*this.bga.statusBar.setTitle(
 			isCurrentPlayerActive ? _('${You} must play cards from your hand') : _('${actplayer} must play cards from his hand')
 		)*/
@@ -99,6 +104,9 @@ export class PlayerTurn {
 	 * This method is called each time we are leaving the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onLeavingState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
+		for (const button of Object.values(this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {})) {
+			button.disabled = true
+		}
 		for (const stock of Object.values(this.game.playerTables[this.game.getPlayerId()]?.handStocks ?? {})) {
 			stock.onSelectionChange = undefined
 			stock.setSelectionMode('none')

@@ -45,6 +45,20 @@ class PlayerTurn extends GameState {
     }
 
     #[PossibleAction]
+    public function actPlayAll(#[IntParam(min: Constants::CARD_TYPE_CORRUPTION, max: Constants::CARD_TYPE_HACKING)] int $typeArg, int $activePlayerId, array $args) {
+        $cards = array_filter($args['selectableHandCards'], fn($card) =>
+            $card->type_arg === $typeArg && !$card->chooseOne && !$this->game->cardManager->hasImmediateAction($card)
+        );
+        if (empty($cards)) {
+            throw new UserException(clienttranslate('You cannot play this card'));
+        }
+        foreach ($cards as $card) {
+            $this->actPlayCard($card->id, 0, $activePlayerId, $this->getArgs($activePlayerId));
+        }
+        return PlayerTurn::class;
+    }
+
+    #[PossibleAction]
     public function actPlayCard(int $cardId, #[IntParam(min: 0, max: 3)] ?int $choice, int $activePlayerId, array $args) {
         /** @var SanCard|null $sanCard */
         $sanCard = null;
