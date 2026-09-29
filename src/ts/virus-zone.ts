@@ -68,23 +68,28 @@ export class VirusZone {
 
 	public refreshToken() {
 		if (!this.ready) return
-
+		let destination: HTMLElement
 		if (this.position === 0) {
-			this.centralMarker.appendChild(this.token)
-			return
-		}
-		const playerNo = this.position < 0 ? 1 : 2
-		const playerId = this.gamedatas.playerOrderWorkingWithSpectators.find(
-			id => Number(this.gamedatas.players[id].playerNo) === playerNo
-		)
-		const card = playerId === undefined ? null : this.decks[playerId]?.getTopCard()
-		const slot = card && document.getElementById(
-			`${this.game.cardsManager.getId(card)}-virus-slot-${Math.abs(this.position)}`
-		)
-		if (slot) {
-			slot.appendChild(this.token)
+			destination = this.centralMarker
 		} else {
-			this.token.remove()
+			const playerNo = this.position < 0 ? 1 : 2
+			const playerId = this.gamedatas.playerOrderWorkingWithSpectators.find(
+				id => Number(this.gamedatas.players[id].playerNo) === playerNo
+			)!
+			const card = this.decks[playerId].getTopCard()!
+			destination = document.getElementById(
+				`${this.game.cardsManager.getId(card)}-virus-slot-${Math.abs(this.position)}`
+			)!
+		}
+		if (!this.token.isConnected || !this.game.animationManager.animationsActive()) {
+			destination.appendChild(this.token)
+		} else if (this.token.parentElement !== destination) {
+			this.game.animationManager.slideAndAttach(this.token, destination, {
+				fromPlaceholder: 'off',
+				toPlaceholder: 'off',
+				preserveScale: true,
+				bump: 1
+			})
 		}
 	}
 }
