@@ -36,5 +36,6 @@ export class CardShopping {
 	onLeavingState(args: CardShoppingArgs, isCurrentPlayerActive: boolean) {
 		this.game.river.onSelectionChange = undefined
 		this.game.river.setSelectionMode('none')
+		this.game.playedCards.removeAll()
 	}
 }

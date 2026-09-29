@@ -170,9 +170,9 @@ class CardManager extends DeckManager {
         $cards = $this->getPlayedCards($activePlayerId);
         foreach ($cards as $card) {
             if ($card->trashAfterUse) {
-                $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, true, $activePlayerId);
+                $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, false);
             } else {
-                $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, true, $activePlayerId);
+                $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
             }
         }
     }
