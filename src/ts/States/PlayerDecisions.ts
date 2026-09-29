@@ -36,6 +36,10 @@ export class PlayerDecisions {
 			}
 			if (args.canProgressOnProp) {
 				this.bga.statusBar.setTitle(_('${you} can move your propaganda marker'))
+				this.bga.statusBar.addActionButton(_('Progress on propaganda'), () => this.game.takeAction('actProgressOnProp'), {
+					id: 'progressOnPropaganda',
+					color: 'primary'
+				})
 			}
 			if (args.canHack) {
 				this.bga.statusBar.addActionButton(_('Progress on hacking'), () => this.game.takeAction('actProgressOnHacking'), {
