@@ -38,31 +38,30 @@ class PlayerDecisions extends GameState {
      * This method returns some additional information that is very specific to the `PlayerTurn` game state.
      */
     public function getArgs(int $activePlayerId): array {
-        // Get some values from the current game situation from the database.
+        $propagandaCost = $this->getPropagandaCost($activePlayerId);
         return [
             "canCorrupt" => $this->game->corruptionCounter->get($activePlayerId) > 2,
             "canHack" => $this->game->hackingCounter->get($activePlayerId) > 0,
-            "canProgressOnProp" => $this->canProgressOnProp($activePlayerId),
+            "propagandaCost" => $propagandaCost,
+            "canProgressOnProp" => $propagandaCost !== null
+                && $this->game->propagandaCounter->get($activePlayerId) >= $propagandaCost,
         ];
     }
 
-    function canProgressOnProp(int $playerId): bool {
+    function getPropagandaCost(int $playerId): ?int {
         $propPosition = $this->game->propagandaProgressCounter->get($playerId);
         $slot = $this->mirrorSlot($propPosition, $playerId);
         /** @var SanCard|null $nextCard */
         $nextCard = $this->game->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
         if (!$nextCard) {
-            return false; //todo
+            return null;
         }
         $opponentId = $this->game->getOpponentId($playerId);
 
         $opponentSlot = $this->mirrorSlot($propPosition, $opponentId);
         $playerCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $playerId));
         $opponentCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($opponentSlot, $opponentId));
-        $nextCardCost = $nextCard->moveCost - $playerCorruption + $opponentCorruption;
-        $requiredPropaganda = max(0, $nextCardCost);
-        $availablePropaganda = $this->game->propagandaCounter->get($playerId);
-        return $availablePropaganda >= $requiredPropaganda;
+        return max(0, $nextCard->moveCost - $playerCorruption + $opponentCorruption);
     }
 
     #[PossibleAction]
@@ -96,15 +95,7 @@ class PlayerDecisions extends GameState {
         }
 
         $newPosition = $this->game->propagandaProgressCounter->inc($activePlayerId, 1);
-        $propPosition = $newPosition - 1;
-        $slot = $this->mirrorSlot($propPosition, $activePlayerId);
-        $nextCard = $this->game->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0];
-        $opponentId = $this->game->getOpponentId($activePlayerId);
-        $opponentSlot = $this->mirrorSlot($propPosition, $opponentId);
-        $playerCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $activePlayerId));
-        $opponentCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($opponentSlot, $opponentId));
-        $requiredPropaganda = max(0, $nextCard->moveCost - $playerCorruption + $opponentCorruption);
-        $this->game->propagandaCounter->inc($activePlayerId, -$requiredPropaganda);
+        $this->game->propagandaCounter->inc($activePlayerId, -$args['propagandaCost']);
         $this->game->notify->all('msg', clienttranslate('${player_name} advances to position ${position} on the propaganda track'), [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
             'position' => $newPosition,

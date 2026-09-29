@@ -89,6 +89,7 @@ interface CardShoppingArgs {
 
 interface PlayerDecisionArgs {
 	canCorrupt: boolean
+	propagandaCost: number | null
 	canProgressOnProp: boolean
 	canHack: boolean
 }
