@@ -91,13 +91,13 @@ interface CardShoppingArgs {
 
 interface PlayerDecisionArgs {
 	canCorrupt: boolean
-	propagandaCost: number | null
+	propagandaCost: number
 	canProgressOnProp: boolean
 	canHack: boolean
 }
 
 interface PlayerTurnArgs {
-	propagandaCost: number | null
+	propagandaCost: number
 	canResetTurn: boolean
 	canCancel: boolean
 	canPass: boolean

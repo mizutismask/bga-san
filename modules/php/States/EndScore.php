@@ -46,11 +46,10 @@ class EndScore extends \Bga\GameFramework\States\GameState {
             return ST_END_GAME;
         }
     }
-
     public function scorePoints() {
         foreach ($this->game->getPlayers() as $playerId => $player) {
             $points = $this->getPoints($playerId);
-            $this->playerScore->inc($playerId, $points, new NotificationMessage(clienttranslate('${player_name} gains ${points} points'), ['points' => $points]));
+            $this->game->playerScore->inc($playerId, $points, new NotificationMessage(clienttranslate('${player_name} gains ${points} points'), ['points' => $points]));
         }
     }
 

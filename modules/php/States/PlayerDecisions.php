@@ -43,8 +43,7 @@ class PlayerDecisions extends GameState {
             "canCorrupt" => $this->game->corruptionCounter->get($activePlayerId) > 2,
             "canHack" => $this->game->hackingCounter->get($activePlayerId) > 0,
             "propagandaCost" => $propagandaCost,
-            "canProgressOnProp" => $propagandaCost !== null
-                && $this->game->propagandaCounter->get($activePlayerId) >= $propagandaCost,
+            "canProgressOnProp" => $this->game->propagandaCounter->get($activePlayerId) >= $propagandaCost,
         ];
     }
 
@@ -93,7 +92,9 @@ class PlayerDecisions extends GameState {
             ]);
         }
 
-        if ($newPosition == 7) {
+        if ($newPosition >= CardManager::RIVER_SIZE) {
+            $this->game->playerScore->set($activePlayerId, 1);
+            $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
             return EndScore::class;
         }
 

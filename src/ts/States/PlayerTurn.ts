@@ -2,7 +2,7 @@ import { Game } from '../Game'
 import { log } from '../base-game'
 import { SanGamedatas, SanPlayer, PlayerTurnArgs } from '../types'
 import { Utils } from '../utils'
-import { CARD_TYPE_VIRUS } from '../constants'
+import { CARD_TYPE_PROPAGANDA, CARD_TYPE_VIRUS } from '../constants'
 
 /**
  * We create one State class per declared state on the PHP side, to handle all state specific code here.
@@ -22,6 +22,11 @@ export class PlayerTurn {
 		for (const [typeArg, button] of Object.entries(
 			this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {}
 		)) {
+			if (Number(typeArg) === CARD_TYPE_PROPAGANDA) {
+				button.textContent = isCurrentPlayerActive
+					? this.bga.gameui.format_string(_('Play all (next: ${cost})'), { cost: String(args.propagandaCost) })
+					: _('Play all')
+			}
 			button.disabled =
 				!isCurrentPlayerActive ||
 				!args.selectableHandCards.some(
@@ -79,7 +84,6 @@ export class PlayerTurn {
 					confirm: () => {
 						const warnings: string[] = []
 						if (
-							args.propagandaCost !== null &&
 							this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() > 0 &&
 							this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() < args.propagandaCost
 						) {

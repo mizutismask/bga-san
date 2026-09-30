@@ -80,19 +80,29 @@ class Game extends \Bga\GameFramework\Table {
         $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "SanCard", Constants::MATERIAL_TYPE_CARD, ["material" => Material::getCards()[Constants::EXPANSION]]);
         $this->contextManager = new ContextManager($this);
     }
-    public function getPropagandaCost(int $playerId): ?int {
+    public function getPropagandaCost(int $playerId): int {
         $propPosition = $this->propagandaProgressCounter->get($playerId);
-        $slot = $this->mirrorSlot($propPosition, $playerId);
+        $nextPosition = $propPosition + 1;
+        $slot = $this->mirrorSlot($nextPosition, $playerId);
+        $slotCards = $this->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot);
         /** @var SanCard|null $nextCard */
-        $nextCard = $this->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
-        if (!$nextCard) {
-            return null;
-        }
+        $nextCard = $slotCards[0] ?? null;
         $opponentId = $this->getOpponentId($playerId);
 
-        $opponentSlot = $this->mirrorSlot($propPosition, $opponentId);
+
+        if ($nextCard === null) {
+            throw new \BgaSystemException('Missing river card in getPropagandaCost: ' . json_encode([
+                'playerId' => $playerId,
+                'opponentId' => $opponentId,
+                'propagandaPosition' => $propPosition,
+                'slot' => $slot,
+                'slotCards' => $slotCards,
+                'riverCards' => $this->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER),
+            ]));
+        }
+        
         $playerCorruption = count($this->cardManager->getCorruptedCardsOnSlot($slot, $playerId));
-        $opponentCorruption = count($this->cardManager->getCorruptedCardsOnSlot($opponentSlot, $opponentId));
+        $opponentCorruption = count($this->cardManager->getCorruptedCardsOnSlot($slot, $opponentId));
         return max(0, $nextCard->moveCost - $playerCorruption + $opponentCorruption);
     }
 
@@ -100,7 +110,7 @@ class Game extends \Bga\GameFramework\Table {
         if ($this->getPlayerNoById($playerId) == 1) {
             return $slot;
         } else {
-            return 6 - $slot;
+            return CardManager::RIVER_SIZE + 1 - $slot;
         }
     }
 
@@ -149,7 +159,7 @@ class Game extends \Bga\GameFramework\Table {
 
         $this->initStats();
         $this->propagandaCounter->initDb(array_keys($players));
-        $this->propagandaProgressCounter->initDb(array_keys($players));
+        $this->propagandaProgressCounter->initDb(array_keys($players), 0);
         $this->hackingCounter->initDb(array_keys($players));
         $this->corruptionCounter->initDb(array_keys($players));
         $this->incomeCounter->initDb(array_keys($players));
