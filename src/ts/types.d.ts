@@ -95,6 +95,7 @@ interface PlayerDecisionArgs {
 }
 
 interface PlayerTurnArgs {
+	propagandaCost: number | null
 	canResetTurn: boolean
 	canCancel: boolean
 	canPass: boolean

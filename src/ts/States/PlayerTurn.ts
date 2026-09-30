@@ -73,7 +73,10 @@ export class PlayerTurn {
 			
 			this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
 				id: 'buttonPass',
-				color: 'primary'
+				color: 'primary',
+				confirm: () => args.propagandaCost === null || this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() >= args.propagandaCost
+					? undefined
+					: _('You do not have enough propaganda to advance on the track. Validate your choices anyway?')
 			})
 			
 			this.bga.statusBar.addActionButton(_('Reset possible actions'), () => this.game.takeAction('actResetPlayerTurn'), {

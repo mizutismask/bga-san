@@ -39,6 +39,7 @@ class PlayerTurn extends GameState {
         $hasPlayed = !empty($this->game->cardManager->getPlayedCards($activePlayerId));
         return [
             "canPass" => $hasPlayed,
+            "propagandaCost" => $this->game->getPropagandaCost($activePlayerId),
             "canResetTurn" => $hasPlayed,
             "selectableHandCards" => $this->getPossibleCards($activePlayerId),
         ];

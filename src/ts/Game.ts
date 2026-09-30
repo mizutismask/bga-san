@@ -18,6 +18,7 @@ export class Game extends BaseGame {
 	public playedCards!: LineStock<SanCard>
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
+	public propagandaCounters = new Map<number, Counter>()
 
 	private displayedTooltip: any //dijit.Tooltip
 
@@ -266,6 +267,7 @@ export class Game extends BaseGame {
 				playerId
 			})
 			this.setTooltipToClass(`${name}-counter`, label)
+			if (name === 'propaganda') this.propagandaCounters.set(playerId, counter)
 		})
 
 		if (this.gameFeatures.showPlayerHelp && this.getPlayerId() === playerId) {

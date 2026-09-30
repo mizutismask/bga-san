@@ -38,7 +38,7 @@ class PlayerDecisions extends GameState {
      * This method returns some additional information that is very specific to the `PlayerTurn` game state.
      */
     public function getArgs(int $activePlayerId): array {
-        $propagandaCost = $this->getPropagandaCost($activePlayerId);
+        $propagandaCost = $this->game->getPropagandaCost($activePlayerId);
         return [
             "canCorrupt" => $this->game->corruptionCounter->get($activePlayerId) > 2,
             "canHack" => $this->game->hackingCounter->get($activePlayerId) > 0,
@@ -48,29 +48,13 @@ class PlayerDecisions extends GameState {
         ];
     }
 
-    function getPropagandaCost(int $playerId): ?int {
-        $propPosition = $this->game->propagandaProgressCounter->get($playerId);
-        $slot = $this->mirrorSlot($propPosition, $playerId);
-        /** @var SanCard|null $nextCard */
-        $nextCard = $this->game->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
-        if (!$nextCard) {
-            return null;
-        }
-        $opponentId = $this->game->getOpponentId($playerId);
-
-        $opponentSlot = $this->mirrorSlot($propPosition, $opponentId);
-        $playerCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $playerId));
-        $opponentCorruption = count($this->game->cardManager->getCorruptedCardsOnSlot($opponentSlot, $opponentId));
-        return max(0, $nextCard->moveCost - $playerCorruption + $opponentCorruption);
-    }
-
     #[PossibleAction]
     public function actCorrupt(int $cardId, int $slot, int $activePlayerId, array $args) {
         if ($args['canCorrupt'] === false) {
             throw new UserException(clienttranslate('You don’t have enough corruption'));
         }
 
-        $slot = $this->mirrorSlot($slot, $activePlayerId);
+        $slot = $this->game->mirrorSlot($slot, $activePlayerId);
         $position = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $activePlayerId));
 
         if ($position >= 2) {
@@ -108,14 +92,6 @@ class PlayerDecisions extends GameState {
         }
 
         return PlayerDecisions::class;
-    }
-
-    function mirrorSlot(int $slot, int $playerId) {
-        if ($this->game->getPlayerNoById($playerId) == 1) {
-            return $slot;
-        } else {
-            return 6 - $slot;
-        }
     }
 
     #[PossibleAction]

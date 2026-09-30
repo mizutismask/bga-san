@@ -78,6 +78,29 @@ class Game extends \Bga\GameFramework\Table {
         $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "SanCard", Constants::MATERIAL_TYPE_CARD, ["material" => Material::getCards()[Constants::EXPANSION]]);
         $this->contextManager = new ContextManager($this);
     }
+    public function getPropagandaCost(int $playerId): ?int {
+        $propPosition = $this->propagandaProgressCounter->get($playerId);
+        $slot = $this->mirrorSlot($propPosition, $playerId);
+        /** @var SanCard|null $nextCard */
+        $nextCard = $this->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot)[0] ?? null;
+        if (!$nextCard) {
+            return null;
+        }
+        $opponentId = $this->getOpponentId($playerId);
+
+        $opponentSlot = $this->mirrorSlot($propPosition, $opponentId);
+        $playerCorruption = count($this->cardManager->getCorruptedCardsOnSlot($slot, $playerId));
+        $opponentCorruption = count($this->cardManager->getCorruptedCardsOnSlot($opponentSlot, $opponentId));
+        return max(0, $nextCard->moveCost - $playerCorruption + $opponentCorruption);
+    }
+
+    public function mirrorSlot(int $slot, int $playerId): int {
+        if ($this->getPlayerNoById($playerId) == 1) {
+            return $slot;
+        } else {
+            return 6 - $slot;
+        }
+    }
 
     /*
         setupNewGame:
