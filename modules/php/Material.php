@@ -178,7 +178,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
       ],
       11 => [
@@ -195,7 +195,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
       ],
       12 => [
@@ -212,7 +212,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +2 Income")
       ],
       13 => [
@@ -467,7 +467,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
       ],
       28 => [
@@ -484,7 +484,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
       ],
       29 => [
@@ -501,7 +501,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_HACKING_OR_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +2 Income")
       ],
       30 => [
@@ -637,7 +637,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 2 Propaganda or draw 2 cards from your deck; +1 Income")
       ],
       38 => [
@@ -654,7 +654,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_PROPAGANDA_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 2 Propaganda or draw 2 cards from your deck; +1 Income")
       ],
       39 => [
@@ -807,7 +807,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_HACKING_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Move 2 spaces on the Virus track or draw 2 cards from your deck")
       ],
       48 => [
@@ -824,7 +824,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_HACKING_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Move 2 spaces on the Virus track or draw 2 cards from your deck")
       ],
       49 => [
@@ -977,7 +977,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_CORRUPTION_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 2 Corruption or draw 2 cards from your deck; +1 Income")
       ],
       58 => [
@@ -994,7 +994,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CHOOSE_CORRUPTION_OR_DRAW,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 2 Corruption or draw 2 cards from your deck; +1 Income")
       ],
       59 => [
