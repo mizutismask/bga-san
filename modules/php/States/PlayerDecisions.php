@@ -177,7 +177,7 @@ class PlayerDecisions extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $end = $this->game->hasReachedEndOfGameRequirements();
-        if ($end) {
+        if (!$end) {
             return CardShopping::class;
         } else {
             return NextPlayer::class;

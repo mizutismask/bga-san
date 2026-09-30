@@ -47,6 +47,10 @@ export class PlayerDecisions {
 					color: 'primary'
 				})
 			}
+			this.bga.statusBar.addActionButton(_('Pass'), () => this.game.takeAction('actPass'), {
+				id: 'buttonPass',
+				color: 'alert'
+			})
 		}
 	}
 
