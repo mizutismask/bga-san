@@ -185,11 +185,23 @@ class CardManager extends DeckManager {
         ]);
     }
 
+    public function getCardTypeName(SanCard $card): string {
+        return match ((int) $card->cardCategory) {
+            Constants::CARD_TYPE_PROPAGANDA => clienttranslate('Propaganda'),
+            Constants::CARD_TYPE_HACKING => clienttranslate('Hacking'),
+            Constants::CARD_TYPE_CORRUPTION => clienttranslate('Corruption'),
+            Constants::CARD_TYPE_HARDWARE => clienttranslate('Hardware'),
+            Constants::CARD_TYPE_VIRUS => clienttranslate('Virus'),
+        };
+    }
+
     function buyCard(SanCard $card, int $activePlayerId): bool {
         $this->insertCardOnExtremePosition($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), true, true, $activePlayerId);
         $this->game->incomeCounter->inc($activePlayerId, $card->cost * -1);
-        $this->game->notify->all('msg', clienttranslate('${player_name} buys a card for ${price}'), [
+        $this->game->notify->all('msg', clienttranslate('${player_name} buys a ${card_type} card for ${price}'), [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'card_type' => $this->getCardTypeName($card),
+            'i18n' => ['card_type'],
             'price' => $card->cost,
         ]);
         return $this->refillRiver();
