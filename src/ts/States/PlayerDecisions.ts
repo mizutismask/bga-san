@@ -12,7 +12,7 @@ export class PlayerDecisions {
 	onEnteringState(args: PlayerDecisionArgs, isCurrentPlayerActive: boolean) {
 		if (isCurrentPlayerActive) {
 			if (args.canCorrupt) {
-				this.bga.statusBar.setTitle(_('${you} can corrupt a card from the river'))
+				this.bga.statusBar.setTitle(_('${you} can corrupt a card from the river and choose where to place it'))
 				this.game.river.setSelectionMode('single')
 				const playerId = this.game.getPlayerId()
 				for (const marker of document.querySelectorAll<HTMLElement>(
