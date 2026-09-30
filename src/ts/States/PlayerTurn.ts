@@ -72,24 +72,26 @@ export class PlayerTurn {
 				}
 			}
 
-			this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
-				id: 'buttonPass',
-				color: 'primary',
-				confirm: () => {
-					const warnings: string[] = []
-					if (
-						args.propagandaCost !== null &&
-						this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() > 0 &&
-						this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() < args.propagandaCost
-					) {
-						warnings.push(_('You do not have enough propaganda to advance on the track.'))
+			if (args.canPass) {
+				this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
+					id: 'buttonPass',
+					color: 'primary',
+					confirm: () => {
+						const warnings: string[] = []
+						if (
+							args.propagandaCost !== null &&
+							this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() > 0 &&
+							this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() < args.propagandaCost
+						) {
+							warnings.push(_('You do not have enough propaganda to advance on the track.'))
+						}
+						if (args.selectableHandCards.some((card) => Number(card.type_arg) === CARD_TYPE_VIRUS)) {
+							warnings.push(_('You still have Virus cards in your hand.'))
+						}
+						return warnings.length > 0 ? [...warnings, _('Validate your choices anyway?')].join(' ') : undefined
 					}
-					if (args.selectableHandCards.some((card) => Number(card.type_arg) === CARD_TYPE_VIRUS)) {
-						warnings.push(_('You still have Virus cards in your hand.'))
-					}
-					return warnings.length > 0 ? [...warnings, _('Validate your choices anyway?')].join(' ') : undefined
-				}
-			})
+				})
+			}
 
 			this.bga.statusBar.addActionButton(
 				_('Reset possible actions'),
