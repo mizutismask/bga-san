@@ -35,7 +35,7 @@ export class PlayerTable {
 		container.classList.add('cstm-player-hand')
 		document.getElementById(`player-table-${player.id}`)!.prepend(container)
 
-		for (const typeArg of [CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE, CARD_TYPE_VIRUS]) {
+		for (const typeArg of [CARD_TYPE_VIRUS,CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE]) {
 			const pile = document.createElement('div')
 			pile.className = 'hand-pile'
 			container.appendChild(pile)
@@ -49,6 +49,13 @@ export class PlayerTable {
 				button.addEventListener('click', () => this.game.takeAction('actPlayAll', { typeArg }))
 				pile.appendChild(button)
 				this.playAllButtons[typeArg] = button
+			} else {
+				const spacer = document.createElement('span')
+				spacer.className = 'bgabutton bgabutton_blue play-all'
+				spacer.textContent = _('Play all')
+				spacer.style.visibility = 'hidden'
+				spacer.setAttribute('aria-hidden', 'true')
+				pile.appendChild(spacer)
 			}
 			const element = document.createElement('div')
 			element.id = `${container.id}-type-${typeArg}`
