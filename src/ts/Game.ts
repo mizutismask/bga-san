@@ -257,7 +257,7 @@ export class Game extends BaseGame {
 						({ name, icon }) => `
 					<div id="${name}-counter-${player.id}-wrapper" class="counter ${name}-counter">
 						<div class="fa ${icon}"></div>
-						<span id="${name}-player-counter-${player.id}"></span>
+						<span><span id="${name}-player-counter-${player.id}"></span>${name === 'remainingCardsInDeck' ? `/<span id="totalCardsForPlayer-player-counter-${player.id}"></span>` : ''}</span>
 					</div>
 				`
 					)
@@ -284,6 +284,13 @@ export class Game extends BaseGame {
 			})
 			this.setTooltipToClass(`${name}-counter`, label)
 			if (name === 'propaganda') this.propagandaCounters.set(playerId, counter)
+		})
+
+		const totalCardsCounter = new ebg.counter()
+		totalCardsCounter.create(`totalCardsForPlayer-player-counter-${player.id}`, {
+			value: Number(player.totalCardsForPlayer),
+			playerCounter: 'totalCardsForPlayer',
+			playerId
 		})
 
 		if (this.gameFeatures.showPlayerHelp && this.getPlayerId() === playerId) {

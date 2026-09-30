@@ -31,6 +31,7 @@ interface SanPlayer extends Player {
 	symbol: 'moon' | 'star'
 	handSize: number
 	remainingCardsInDeck: number
+	totalCardsForPlayer: number
 	tickets: number
 }
 
