@@ -27,6 +27,7 @@ interface NationTile extends Card {}
 
 interface SanPlayer extends Player {
 	playerNo: number
+	propagandaProgress: number
 	symbol: 'moon' | 'star'
 	handSize: number
 	remainingCardsInDeck: number

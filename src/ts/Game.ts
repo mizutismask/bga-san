@@ -176,13 +176,13 @@ export class Game extends BaseGame {
 				'<i class="fa fa-bullhorn" aria-hidden="true"></i><span class="propaganda-progress"></span>'
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
-				const position = player.playerNo === 1 ? progress : 6 - progress
+				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
 				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(marker)
 				handSizeTokens.forEach(({ milestone, token }) => {
 					token.hidden = progress >= milestone
 				})
 			}
-			updatePosition(0)
+			updatePosition(Number(player.propagandaProgress))
 			const counter = new ebg.counter()
 			for (const method of ['setValue', 'toValue'] as const) {
 				const updateCounter = counter[method].bind(counter)
@@ -192,6 +192,7 @@ export class Game extends BaseGame {
 				}
 			}
 			counter.create(marker.querySelector('.propaganda-progress')!, {
+				value: Number(player.propagandaProgress),
 				playerCounter: 'propagandaProgress',
 				playerId: Number(playerId)
 			})
