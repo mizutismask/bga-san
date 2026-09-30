@@ -158,7 +158,7 @@ class CardManager extends DeckManager {
                 default => [],
             };
         } else {
-            return match ($card->type_arg) {
+            return match ($card->type) {
                 37 => $choice == 1 ? [Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE_PROPAGANDA] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
                 38 => $choice == 1 ? [Constants::CARD_TYPE_PROPAGANDA, Constants::CARD_TYPE_PROPAGANDA] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
                 47 => $choice == 1 ? [Constants::CARD_TYPE_HACKING, Constants::CARD_TYPE_HACKING] : [Constants::ACTION_DRAW, Constants::ACTION_DRAW],
