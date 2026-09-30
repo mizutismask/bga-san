@@ -10,7 +10,7 @@ import { generateSlotsIds } from './stock-utils'
 import { PlayerTurn } from './States/PlayerTurn'
 import { PlayerDecisions } from './States/PlayerDecisions'
 import { CardShopping } from './States/CardShopping'
-
+import { ImmediateAction } from './States/ImmediateAction'
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
@@ -28,6 +28,7 @@ export class Game extends BaseGame {
 		this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))
 		this.bga.states.register('PlayerDecisions', new PlayerDecisions(this, this.bga))
 		this.bga.states.register('CardShopping', new CardShopping(this, this.bga))
+		this.bga.states.register('ImmediateAction', new ImmediateAction(this, this.bga))
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
 

@@ -236,10 +236,12 @@ class CardManager extends DeckManager {
         }
     }
 
-    public function corruptCard(SanCard $card, int $slot, int $position, int $playerId): void {
+    public function corruptCard(SanCard $card, int $slot, int $position, int $playerId, bool $fromHand = false): void {
         $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId), $slot * 10 + $position, true, $playerId);
-        $this->game->corruptionCounter->inc($playerId, -3);
-        $this->refillRiver();
+        if (!$fromHand) {
+            $this->game->corruptionCounter->inc($playerId, -3);
+            $this->refillRiver();
+        }
     }
 
     public function getCorruptedCardsOnSlot(int $slot, int $playerId): array {
