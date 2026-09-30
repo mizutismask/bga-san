@@ -166,6 +166,7 @@ class DeckManager {
 
     public function insertCardOnExtremePosition($card, string $location, bool $bOnTop, bool $notify = true, $playerId = null, string $msg = "", array $msgArgs = []): void {
         $this->deck->insertCardOnExtremePosition($card->id, $location, $bOnTop);
+        $this->game->notifyCounterChange();
         if ($notify && $playerId) {
             $this->game->notify->all("materialMove",  $msg, array_merge($msgArgs, [
                 'playerId' => $playerId,
@@ -182,6 +183,7 @@ class DeckManager {
 
     public function addCardsToHand(int $qty, int $playerId, bool $notify = false) {
         $cards = $this->deck->pickCardsForLocation($qty, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId), $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId), $playerId, false);
+        $this->game->notifyCounterChange();
         if ($notify) {
             $this->game->notify->player($playerId, "materialMove",  "", [
                 'playerId' => $playerId,

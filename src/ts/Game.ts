@@ -243,7 +243,8 @@ export class Game extends BaseGame {
 			{ name: 'hacking', icon: 'fa-laptop', label: _('Hacking') },
 			{ name: 'corruption', icon: 'fa-user-secret', label: _('Corruption') },
 			{ name: 'income', icon: 'fa-money', label: _('Income') },
-			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') }
+			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') },
+			{ name: 'remainingCardsInDeck', icon: 'fa-stack-overflow', label: _('Remaining cards in deck') }
 		]
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
 			'afterbegin',
