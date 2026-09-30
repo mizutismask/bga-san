@@ -181,8 +181,24 @@ class DeckManager {
         }
     }
 
+    /**
+     * Add to hand in deckbuilding style, pick in the deck all that’s available then shuffle and complete if necessary
+     * @param int $qty 
+     * @param int $playerId 
+     * @param bool $notify 
+     * @return void 
+     */
     public function addCardsToHand(int $qty, int $playerId, bool $notify = false) {
-        $cards = $this->deck->pickCardsForLocation($qty, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId), $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId), $playerId, false);
+        $deckLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId);
+        $handLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId);
+        $cards = $this->deck->pickCardsForLocation($qty, $deckLocation, $handLocation, $playerId, false);
+        $remaining = $qty - count($cards);
+        if ($remaining > 0) {
+            $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId);
+            $this->deck->moveAllCardsInLocation($discardLocation, $deckLocation);
+            $this->deck->shuffle($deckLocation);
+            $cards = array_merge($cards, $this->deck->pickCardsForLocation($remaining, $deckLocation, $handLocation, $playerId, false));
+        }
         $this->game->notifyCounterChange();
         if ($notify) {
             $this->game->notify->player($playerId, "materialMove",  "", [
