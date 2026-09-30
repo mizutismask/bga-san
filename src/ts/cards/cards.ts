@@ -111,11 +111,11 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 	}
 
 	public getTooltipContent(): TooltipElement<SanCard>[] {
-		return [{ title: _('Objective'), contentProvider: (c: SanCard) => this.getDesc(c) }]
+		return [{ title:"", contentProvider: (c: SanCard) => this.getDesc(c) }]
 	}
 
 	public getDesc(card: SanCard) {
-		return 'todo'
+		return card.text
 	}
 
 	public setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {

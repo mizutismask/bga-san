@@ -706,7 +706,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 3,
-        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (inclunding this one); +1 Income")
+        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (including this one); +1 Income")
       ],
       42 => [
         "cardId"        => 42,
@@ -723,7 +723,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 3,
-        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (inclunding this one); +1 Income")
+        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (including this one); +1 Income")
       ],
       43 => [
         "cardId"        => 43,
@@ -876,7 +876,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 5,
-        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (inclunding this one)")
+        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (including this one)")
       ],
       52 => [
         "cardId"        => 52,
@@ -893,7 +893,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 5,
-        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (inclunding this one)")
+        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (including this one)")
       ],
       53 => [
         "cardId"        => 53,
@@ -1046,7 +1046,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 7,
-        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (inclunding this one); +1 Income")
+        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (including this one); +1 Income")
       ],
       62 => [
         "cardId"        => 62,
@@ -1063,7 +1063,7 @@ class Material {
         "chooseOne"     => 0,
         "destroyCards"  => 0,
         "specialEffect" => 7,
-        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (inclunding this one); +1 Income")
+        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (including this one); +1 Income")
       ],
       63 => [
         "cardId"        => 63,

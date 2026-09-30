@@ -16,6 +16,7 @@ interface Card {
 }
 interface SanCard extends Card {
 	name: string //translated
+	text: string
 	chooseOne: boolean
 	draw: number
 	destroyCards: number
