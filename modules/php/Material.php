@@ -801,7 +801,7 @@ class Material {
         "corruption"    => 0,
         "draw"          => 2,
         "income"        => 0,
-        "cost"          => 2,
+        "cost"          => 3,
         "moveCost"      => 6,
         "virusSpaces"   => 0,
         "trashAfterUse" => 0,
