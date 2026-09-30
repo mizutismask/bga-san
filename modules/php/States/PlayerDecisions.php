@@ -153,12 +153,14 @@ class PlayerDecisions extends GameState {
                 true,
                 $opponentId
             );
-            $this->game->notify->all('msg', clienttranslate('${player_name} adds a Virus card to the top of ${player_name2}\'s deck'), [
+            $remainingVirusCards = $this->game->cardManager->countCardsInLocation($virusLocation);
+            $this->game->notify->all('msg', clienttranslate('${player_name} adds a Virus card to the top of ${player_name2}\'s deck (${givenCount}/5)'), [
                 'player_name' => $this->game->getPlayerNameById($activePlayerId),
                 'player_name2' => $this->game->getPlayerNameById($opponentId),
+                'givenCount' => 5 - $remainingVirusCards,
             ]);
 
-            if ($this->game->cardManager->countCardsInLocation($virusLocation) === 0) {
+            if ($remainingVirusCards === 0) {
                 $this->game->playerScore->set($activePlayerId, 1);
                 $this->game->playerScore->set($opponentId, 0);
                 return EndScore::class;
