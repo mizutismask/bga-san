@@ -85,7 +85,13 @@ class PlayerDecisions extends GameState {
             'position' => $newPosition,
         ]);
 
-        //todo hand size +1 eventually
+        if ($newPosition == 2 || $newPosition == 4) {
+            $handSize = $this->game->handSizeCounter->inc($activePlayerId, 1);
+            $this->game->notify->all('msg', clienttranslate('${player_name} increases their hand size to ${handSize}'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                'handSize' => $handSize,
+            ]);
+        }
 
         if ($newPosition == 7) {
             return EndScore::class;

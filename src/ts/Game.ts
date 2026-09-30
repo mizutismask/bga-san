@@ -157,6 +157,16 @@ export class Game extends BaseGame {
 		}
 		gamedatas.playerOrderWorkingWithSpectators.forEach((playerId) => {
 			const player = gamedatas.players[playerId]
+			const handSizeTokens = [2, 4].map(milestone => {
+				const position = Number(player.playerNo) === 1 ? milestone : 6 - milestone
+				const token = document.createElement('div')
+				token.className = `hand-size-token ${player.symbol}`
+				token.style.color = `#${player.color}`
+				token.title = _('Increase your hand size by 1')
+				token.innerHTML = `<i class="fa ${player.symbol === 'moon' ? 'fa-moon-o' : 'fa-star'}" aria-hidden="true"></i><span>+1</span>`
+				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(token)
+				return { milestone, token }
+			})
 			const marker = document.createElement('div')
 			marker.id = `propaganda-marker-${playerId}`
 			marker.className = `propaganda-marker ${player.symbol}`
@@ -168,6 +178,9 @@ export class Game extends BaseGame {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = player.playerNo === 1 ? progress : 6 - progress
 				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(marker)
+				handSizeTokens.forEach(({ milestone, token }) => {
+					token.hidden = progress >= milestone
+				})
 			}
 			updatePosition(0)
 			const counter = new ebg.counter()

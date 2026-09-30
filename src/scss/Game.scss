@@ -109,6 +109,23 @@ html {
 			background: rgba(255, 255, 255, 0.25);
 		}
 
+		.hand-size-token {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 24px;
+			min-height: 38px;
+			border: 1px solid currentColor;
+			border-radius: 12px;
+			background: #163c35;
+			font-size: 14px;
+			font-weight: bold;
+			&[hidden] {
+				display: none;
+			}
+		}
+
 		.propaganda-marker {
 			display: flex;
 			flex-direction: column;

@@ -27,7 +27,7 @@ class CardManager extends DeckManager {
     }
 
     public function getPlayerHandSize(int $playerId) {
-        return $this->game->expansionManager->getBasicHandSize(); //todo adjust with variables
+        return $this->game->handSizeCounter->get($playerId);
     }
 
     /**
