@@ -46,8 +46,13 @@ class PlayerTurn extends GameState {
     }
 
     #[PossibleAction]
-    public function actPlayAll(#[IntParam(min: Constants::CARD_TYPE_CORRUPTION, max: Constants::CARD_TYPE_HACKING)] int $typeArg, int $activePlayerId, array $args) {
-        $cards = array_filter($args['selectableHandCards'], fn($card) =>
+    public function actPlayAll(#[IntParam(min: Constants::CARD_TYPE_CORRUPTION, max: Constants::CARD_TYPE_VIRUS)] int $typeArg, int $activePlayerId, array $args) {
+        if ($typeArg === Constants::CARD_TYPE_HARDWARE) {
+            throw new UserException(clienttranslate('You cannot play this type of card all at once'));
+        }
+        $cards = array_filter(
+            $args['selectableHandCards'],
+            fn($card) =>
             $card->type_arg === $typeArg && !$card->chooseOne && !$this->game->cardManager->hasImmediateAction($card)
         );
         if (empty($cards)) {

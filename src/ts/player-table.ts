@@ -1,7 +1,7 @@
 import { LineStock } from '../../bga-cards'
 import { BgaCards } from './libs'
 import { SanCard, SanGame, SanPlayer } from './types'
-import { CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE } from './constants'
+import { CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE, CARD_TYPE_VIRUS } from './constants'
 
 /**
  * Player table.
@@ -35,7 +35,7 @@ export class PlayerTable {
 		container.classList.add('cstm-player-hand')
 		document.getElementById(`player-table-${player.id}`)!.prepend(container)
 
-		for (const typeArg of [CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE]) {
+		for (const typeArg of [CARD_TYPE_CORRUPTION, CARD_TYPE_PROPAGANDA, CARD_TYPE_HACKING, CARD_TYPE_HARDWARE, CARD_TYPE_VIRUS]) {
 			const pile = document.createElement('div')
 			pile.className = 'hand-pile'
 			container.appendChild(pile)
