@@ -2,7 +2,14 @@ import { Game } from '../Game'
 import { log } from '../base-game'
 import { SanGamedatas, SanPlayer, PlayerTurnArgs } from '../types'
 import { Utils } from '../utils'
-import { CARD_TYPE_PROPAGANDA, CARD_TYPE_VIRUS } from '../constants'
+import {
+	CARD_TYPE_PROPAGANDA,
+	CARD_TYPE_VIRUS,
+	SPECIAL_EFFECT_NONE,
+	SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
+	SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
+	SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD
+} from '../constants'
 
 /**
  * We create one State class per declared state on the PHP side, to handle all state specific code here.
@@ -35,7 +42,12 @@ export class PlayerTurn {
 						!card.chooseOne &&
 						!card.draw &&
 						!card.destroyCards &&
-						!card.specialEffect
+						[
+							SPECIAL_EFFECT_NONE,
+							SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
+							SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
+							SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD
+						].includes(card.specialEffect)
 				)
 		}
 		/*this.bga.statusBar.setTitle(

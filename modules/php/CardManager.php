@@ -147,7 +147,12 @@ class CardManager extends DeckManager {
     }
 
     public function hasImmediateAction(SanCard $card) {
-        return $card->destroyCards || $card->specialEffect || $card->draw;
+        return $card->destroyCards || $card->draw || !in_array($card->specialEffect, [
+            Constants::SPECIAL_EFFECT_NONE,
+            Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
+            Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
+            Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD,
+        ], true);
     }
 
     public function refillRiver() {
