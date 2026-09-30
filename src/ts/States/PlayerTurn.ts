@@ -2,6 +2,7 @@ import { Game} from '../Game'
 import { log } from '../base-game'
 import { SanGamedatas, SanPlayer, PlayerTurnArgs } from '../types'
 import { Utils } from '../utils'
+import { CARD_TYPE_VIRUS } from '../constants'
 
 /**
  * We create one State class per declared state on the PHP side, to handle all state specific code here.
@@ -74,9 +75,16 @@ export class PlayerTurn {
 			this.bga.statusBar.addActionButton(_('Validate my choices'), () => this.game.takeAction('actPass'), {
 				id: 'buttonPass',
 				color: 'primary',
-				confirm: () => args.propagandaCost === null || this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() >= args.propagandaCost
-					? undefined
-					: _('You do not have enough propaganda to advance on the track. Validate your choices anyway?')
+				confirm: () => {
+					const warnings: string[] = []
+					if (args.propagandaCost !== null && this.game.propagandaCounters.get(this.game.getPlayerId())!.getValue() < args.propagandaCost) {
+						warnings.push(_('You do not have enough propaganda to advance on the track.'))
+					}
+					if (args.selectableHandCards.some(card => Number(card.type_arg) === CARD_TYPE_VIRUS)) {
+						warnings.push(_('You still have Virus cards in your hand.'))
+					}
+					return warnings.length > 0 ? [...warnings, _('Validate your choices anyway?')].join(' ') : undefined
+				}
 			})
 			
 			this.bga.statusBar.addActionButton(_('Reset possible actions'), () => this.game.takeAction('actResetPlayerTurn'), {
