@@ -86,12 +86,16 @@ class CardManager extends DeckManager {
         if ($choice || $this->getPerCardCounter($card) !== null) {
             $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
         }
-
         foreach ($actions as [$action, $amount]) {
             if ($amount && $action === Constants::ACTION_DRAW) {
                 $this->addCardsToHand($amount, $activePlayerId, true);
+                $this->game->notify->all('msg', clienttranslate('${player_name} draws ${qty} card(s)'), [
+                    'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                    'qty' => $amount,
+                ]);
             }
         }
+
         $this->recalculateCounters($activePlayerId);
     }
 

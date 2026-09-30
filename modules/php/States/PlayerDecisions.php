@@ -79,7 +79,7 @@ class PlayerDecisions extends GameState {
 
         $newPosition = $this->game->propagandaProgressCounter->inc($activePlayerId, 1);
         $this->game->propagandaCounter->inc($activePlayerId, -$args['propagandaCost']);
-        $this->game->notify->all('msg', clienttranslate('${player_name} advances to position ${position} on the propaganda track'), [
+        $this->game->notify->all('msg', clienttranslate('${player_name} crosses card ${position} on the propaganda track'), [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
             'position' => $newPosition,
         ]);

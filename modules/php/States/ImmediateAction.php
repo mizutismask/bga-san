@@ -31,12 +31,7 @@ class ImmediateAction extends GameState {
             }
             return;
         }
-        if ($card->draw) {
-            $this->notify->all("message", clienttranslate('${playerName} draws ${qty} card(s)'), ['qty' => $card->draw, 'playerName' => $this->game->getPlayerNameById($activePlayerId)]);
-            $this->game->cardManager->addCardsToHand($card->draw, $activePlayerId, true);
-            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
-            return PlayerTurn::class;
-        }
+        
         //todo other effect
         return PlayerTurn::class;
     }
