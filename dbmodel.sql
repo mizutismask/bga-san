@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `context_log` (
  `action` varchar(32) NOT NULL,
  `param1` varchar(20),
  `param2` varchar(20),
- `param3` varchar(20),
+ `param3` varchar(56),
  `resolved` INT(1) UNSIGNED NOT NULL DEFAULT '0',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -110,7 +110,6 @@ class PlayerTurn extends GameState {
 
     #[PossibleAction]
     function actResetPlayerTurn(int $activePlayerId) {
-        //instead of this complicated logic, we could just recount what’s left
         $contexts = [];
         foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
             if ((int) $context['player'] === $activePlayerId && !$context['resolved']) {
@@ -122,10 +121,7 @@ class PlayerTurn extends GameState {
             Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
             Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
             Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
-        ];
-        $totals = array_fill_keys(array_keys($counters), 0);
-        $income = 0;
-        $returnedIds = [];
+        ];        $returnedIds = [];
         $hand = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId);
 
         foreach ($this->game->cardManager->getPlayedCards($activePlayerId) as $card) {
@@ -145,17 +141,11 @@ class PlayerTurn extends GameState {
                     continue 2;
                 }
             }
-            // A recorded choice describes the special effect that was actually used.
+            // Recorded actions identify reversible choices and per-card effects.
             if ($card->draw || $card->destroyCards || ($card->specialEffect && $context === null)) {
                 continue;
             }
 
-            foreach ($actions as [$action, $amount]) {
-                if (isset($counters[$action])) {
-                    $totals[$action] += $amount;
-                }
-            }
-            $income += $card->income;
             $this->game->cardManager->moveCardToLocation($card, $hand, $activePlayerId, false);
             $from = $card->location;
             $fromArg = $card->location_arg;
@@ -174,15 +164,8 @@ class PlayerTurn extends GameState {
                 $this->game->contextManager->deleteContextLog((int) $context['id']);
             }
         }
-
-        foreach ($totals as $action => $amount) {
-            if ($amount) {
-                $counters[$action]->inc($activePlayerId, -$amount);
-            }
-        }
-        if ($income) {
-            $this->game->incomeCounter->inc($activePlayerId, -$income);
-        }
+ 
+        $this->game->cardManager->recalculateCounters($activePlayerId);
         $revealed = $this->game->globals->get('revealedPlayedCards', []);
         $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, $returnedIds)));
         return PlayerTurn::class;

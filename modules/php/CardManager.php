@@ -72,11 +72,6 @@ class CardManager extends DeckManager {
             'material' => [$this->castSingle($this->deck->getCard($card->id))],
         ]);
 
-        $counters = [
-            Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
-            Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
-            Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
-        ];
         if (!$choice) {
             $actions = [
                 [Constants::CARD_TYPE_PROPAGANDA, $card->propaganda],
@@ -86,22 +81,68 @@ class CardManager extends DeckManager {
             ];
         } else {
             $actions = array_map(fn($action) => [$action, 1], $this->getChoiceActions($card, $choice));
+        }
+
+        if ($choice || $this->getPerCardCounter($card) !== null) {
             $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
         }
 
         foreach ($actions as [$action, $amount]) {
-            if (!$amount) {
-                continue;
-            }
-            if (isset($counters[$action])) {
-                $counters[$action]->inc($activePlayerId, $amount);
-            } elseif ($action === Constants::ACTION_DRAW) {
+            if ($amount && $action === Constants::ACTION_DRAW) {
                 $this->addCardsToHand($amount, $activePlayerId, true);
             }
         }
-        if ($card->income) {
-            $this->game->incomeCounter->inc($activePlayerId, $card->income);
+        $this->recalculateCounters($activePlayerId);
+    }
+
+    private function getPerCardCounter(SanCard $card): ?int {
+        return match ($card->specialEffect) {
+            Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD => Constants::CARD_TYPE_PROPAGANDA,
+            Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD => Constants::CARD_TYPE_HACKING,
+            Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD => Constants::CARD_TYPE_CORRUPTION,
+            default => null,
+        };
+    }
+
+    public function recalculateCounters(int $playerId): void {
+        $cards = $this->getPlayedCards($playerId);
+        $typeCounts = array_count_values(array_column($cards, 'type_arg'));
+        $recordedActions = [];
+        foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
+            if ((int) $context['player'] === $playerId && !$context['resolved']) {
+                $recordedActions[(int) $context['param1']] ??= json_decode($context['param3'], true, 512, JSON_THROW_ON_ERROR);
+            }
         }
+
+        $counters = [
+            Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
+            Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
+            Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
+        ];
+        $totals = array_fill_keys(array_keys($counters), 0);
+        $income = 0;
+        foreach ($cards as $card) {
+            $actions = $recordedActions[$card->id] ?? [
+                [Constants::CARD_TYPE_PROPAGANDA, $card->propaganda],
+                [Constants::CARD_TYPE_HACKING, $card->hacking],
+                [Constants::CARD_TYPE_CORRUPTION, $card->corruption],
+            ];
+            $perCardCounter = $this->getPerCardCounter($card);
+            foreach ($actions as [$action, $amount]) {
+                if (isset($counters[$action]) && $action !== $perCardCounter) {
+                    $totals[$action] += $amount;
+                }
+            }
+            if ($perCardCounter !== null) {
+                $totals[$perCardCounter] += $typeCounts[$card->type_arg];
+            }
+            $income += $card->income;
+        }
+
+        foreach ($counters as $action => $counter) {
+            $counter->set($playerId, $totals[$action]);
+        }
+        $this->game->incomeCounter->set($playerId, $income);
     }
 
     private function getChoiceActions(SanCard $card, int $choice) {
