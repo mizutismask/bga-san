@@ -159,7 +159,7 @@ export class Game extends BaseGame {
 		}
 		gamedatas.playerOrderWorkingWithSpectators.forEach((playerId) => {
 			const player = gamedatas.players[playerId]
-			const handSizeTokens = [2, 4].map(milestone => {
+			const handSizeTokens = [2, 4].map((milestone) => {
 				const position = Number(player.playerNo) === 1 ? milestone : 6 - milestone
 				const token = document.createElement('div')
 				token.className = `hand-size-token ${player.symbol}`
@@ -175,8 +175,7 @@ export class Game extends BaseGame {
 			marker.className = `propaganda-marker ${player.symbol}`
 			marker.style.color = `#${player.color}`
 			marker.title = `${player.name}: ${_('Propaganda')}`
-			marker.innerHTML =
-				'<span class="propaganda-progress" hidden></span>'
+			marker.innerHTML = '<span class="propaganda-progress" hidden></span>'
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
@@ -342,11 +341,25 @@ export class Game extends BaseGame {
 			{ icon: 2, description: _('Fill the Corruption area.') },
 			{ icon: 3, description: _('Move forward or backward one space on the Virus track.') },
 			{ icon: 4, description: _('Advance on the Propaganda track.') },
-			{ icon: 0, value: '3', description: _('Crossing cost: number of Propaganda points required to cross a card.') },
-			{ icon: 14,  description: _('Card cost: number of coins you must spend to buy the card.') },
-			{ icon: 14, value: '+X', small: true, description: _('Income: number of coins gained when you play the card.') },
+			{
+				icon: 0,
+				value: '3',
+				description: _('Crossing cost: number of Propaganda points required to cross a card.')
+			},
+			{ icon: 14, description: _('Card cost: number of coins you must spend to buy the card.') },
+			{
+				icon: 14,
+				value: '+X',
+				small: true,
+				description: _('Income: number of coins gained when you play the card.')
+			},
 			{ icon: 5, description: _('Increase your hand size by one card.') },
-			{ icon: 6, description: _('Gain Corruption, Propaganda, or Hacking for each played card of the corresponding type.') },
+			{
+				icon: 6,
+				description: _(
+					'Gain Corruption, Propaganda, or Hacking for each played card of the corresponding type.'
+				)
+			},
 			{ icon: 1, description: _('Single use: trash this card after use.') },
 			{ icon: 7, description: _('Copy a played card.') },
 			{ icon: 8, description: _('Copy a card from the river.') },
@@ -356,11 +369,15 @@ export class Game extends BaseGame {
 			{ icon: 12, description: _('Play a card from your discard pile.') },
 			{ icon: 13, description: _('Corrupt a card from your hand.') }
 		]
-		return `<ul id="help-popin" class="symbol-help">${symbols.map(({ icon, value, small, description }) => `
+		return `<ul id="help-popin" class="symbol-help">${symbols
+			.map(
+				({ icon, value, small, description }) => `
 			<li>
 				<span class="symbol-help-icon symbol-help-icon-${icon}${small ? ' symbol-help-icon-small' : ''}" aria-hidden="true">${value ?? ''}</span>
 				<span>${description}</span>
-			</li>`).join('')}</ul>`
+			</li>`
+			)
+			.join('')}</ul>`
 	}
 
 	/* This enable to inject translatable styled things to logs or action bar */
@@ -589,17 +606,22 @@ export class Game extends BaseGame {
 			} else if (card.location?.startsWith('corr_')) {
 				this.cardsManager.removeCard(card)
 			} else if (card.location?.startsWith('virus_')) {
-				this.virusZone.decks[Number(card.location.substring(6))]?.addCard(card)
+				this.virusZone.decks[Number(card.location.substring(6))]
+					?.addCard(card)
 					.then(() => this.virusZone.refreshToken())
 			} else if (card.location === 'river') {
 				this.river.addCard(card)
+			} else if (card.location === 'destroyed') {
+				this.cardsManager.removeCard(card, { fadeOut: true })
 			} else if (card.location?.startsWith('hand_')) {
 				const playerId = Number(card.location.substring(5))
-				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card)
+				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
+					fromElement: this.bga.playerPanels.getElement(playerId)
+				})
 			} else if (card.location?.startsWith('plyr_discard_')) {
 				const playerId = Number(notif.args.to.substring('plyr_discard_'.length))
 				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
-			} else if (Object.values(this.virusZone.decks).some(deck => deck.contains(card))) {
+			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
 				this.cardsManager.removeCard(card)
 			} else if (this.playedCards.contains(card)) {
 				this.playedCards.removeCard(card)

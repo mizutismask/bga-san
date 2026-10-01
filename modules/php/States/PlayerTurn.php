@@ -84,6 +84,9 @@ class PlayerTurn extends GameState {
 
         if ($this->game->cardManager->hasImmediateAction($sanCard)) {
             $this->game->globals->set(Constants::GLB_CURRENT_CARD, $sanCard);
+            if ($card->destroyCards > 0) {
+                $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, $card->destroyCards);
+            }
             return ImmediateAction::class;
         }
         return PlayerTurn::class;

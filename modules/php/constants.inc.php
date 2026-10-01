@@ -48,6 +48,7 @@ class Constants {
     const ACTION_DRAW = 4;
 
     const GLB_CURRENT_CARD = "currentCard";
+    const GLBL_REMAINING_DESTROYS = "remainingDestroys";
 
     /**
      * Options

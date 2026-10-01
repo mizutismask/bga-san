@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bga\Games\San\States;
 
 use Bga\GameFramework\Actions\CheckAction;
+use Bga\GameFramework\Actions\Types\IntArrayParam;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
@@ -29,11 +30,9 @@ class ImmediateAction extends GameState {
                 $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
                 return PlayerTurn::class;
             }
-            return;
         }
-        
+
         //todo other effect
-        return PlayerTurn::class;
     }
 
     /**
@@ -57,6 +56,7 @@ class ImmediateAction extends GameState {
             "corruptionSlots" => $corruptionSlots,
             "canPass" => true,
             "canResetTurn" => $this->globals->get(Constants::CAN_RESET_TURN),
+            "remainingDestroysFromHand" => $this->globals->get(Constants::GLBL_REMAINING_DESTROYS),
         ];
     }
 
@@ -92,23 +92,37 @@ class ImmediateAction extends GameState {
         return PlayerTurn::class;
     }
 
+
     #[PossibleAction]
-    public function actPlayCard(int $cardId, int $activePlayerId, array $args) {
-        $sanCard = null;
-        foreach ($args['possibleCards'] as $card) {
-            if ($card->id === $cardId) {
-                $sanCard = $card;
-                break;
+    public function actDestroy(#[IntArrayParam] array $cardIds, int $activePlayerId, array $args) {
+        $remainingDestroys = $this->game->globals->get(Constants::GLBL_REMAINING_DESTROYS, 0);
+        if ($remainingDestroys < 1 || count($cardIds) > $remainingDestroys) {
+            throw new UserException(clienttranslate('You cannot destroy a card now'));
+        }
+        $cards = [];
+        foreach ($cardIds as $id) {
+            if ($id < 0 || isset($cards[$id])) {
+                throw new UserException(clienttranslate('Select a card from your hand'));
             }
+            $card = $this->game->cardManager->getCard($id);
+            if ($card === null || $card->location !== $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId)) {
+                throw new UserException(clienttranslate('Select a card from your hand'));
+            }
+            $cards[$id] = $card;
         }
-        if ($sanCard === null) {
-            throw new UserException(clienttranslate('You cannot play this card'));
+        foreach ($cards as $card) {
+            $this->game->cardManager->destroyCard($card, true, $activePlayerId);
+            $this->game->notify->all('msg', clienttranslate('${player_name} destroys a card from his hand'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            ]);
         }
-        $this->game->cardManager->playCard($card, $activePlayerId);
-        if ($this->game->cardManager->hasImmediateAction($card)) {
-            $this->game->globals->set(Constants::GLB_CURRENT_CARD, $card);
-            return ImmediateAction::class;
-        }
+        $amount = count($cards);
+        $this->game->notify->all('msg', clienttranslate('${player_name} destroys ${amount} card(s) from his hand'), [
+            'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'amount' => $amount,
+        ]);
+        $this->game->globals->delete(Constants::GLBL_REMAINING_DESTROYS);
+        $this->game->globals->delete(Constants::GLB_CURRENT_CARD); //check if this does not cause problems
         return PlayerTurn::class;
     }
 
@@ -120,20 +134,14 @@ class ImmediateAction extends GameState {
      */
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
-        $end = $this->game->hasReachedEndOfGameRequirements();
-        if ($end) {
-            if ($end && $this->globals->get(Constants::LAST_TURN) == 0) {
-                $this->globals->set(Constants::LAST_TURN, $this->game->getLastPlayer()); //we play until the last player to finish the round
-                if (!$this->game->isLastPlayer($activePlayerId)) {
-                    $this->notify->all('lastTurn', clienttranslate('${player_name} triggered the end of the game, finishing round !'), ['player_name' => $this->game->getPlayerNameById($activePlayerId)]);
-                    return NextPlayer::class;
-                } else {
-                    return EndOfRound::class;
-                }
-            }
-        } else {
-            return NextPlayer::class;
+        $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->destroyCards) {
+            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         }
+        if ($card->destroyCards) {
+            $this->game->globals->delete(Constants::GLBL_REMAINING_DESTROYS);
+        }
+        return PlayerTurn::class;
     }
 
     #[CheckAction(false)]

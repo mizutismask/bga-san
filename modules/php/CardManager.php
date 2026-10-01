@@ -217,7 +217,7 @@ class CardManager extends DeckManager {
     }
 
     public function hasImmediateAction(SanCard $card) {
-        return $card->destroyCards || $card->draw || !in_array($card->specialEffect, [
+        return $card->destroyCards || !in_array($card->specialEffect, [
             Constants::SPECIAL_EFFECT_NONE,
             Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
             Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
@@ -254,11 +254,16 @@ class CardManager extends DeckManager {
         $cards = $this->getPlayedCards($activePlayerId);
         foreach ($cards as $card) {
             if ($card->trashAfterUse) {
-                $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, false);
+                $this->destroyCard($card, false, $activePlayerId);
             } else {
                 $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
             }
         }
+    }
+
+    public function destroyCard(SanCard $card, bool $notify, int $playerId) {
+        $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, $notify, $playerId);
+        $this->game->notifyCounterChange();
     }
 
     public function corruptCard(SanCard $card, int $slot, int $position, int $playerId, bool $fromHand = false): void {

@@ -116,6 +116,11 @@ interface NotifPointsArgs {
 	scoreType: string
 }
 
+interface ImmediateActionArgs {
+	corruptionSlots: number[]
+	remainingDestroysFromHand: number
+}
+
 interface NotifCounter {
 	counterName: string
 	counterValue: number
