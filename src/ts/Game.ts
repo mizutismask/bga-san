@@ -622,7 +622,8 @@ export class Game extends BaseGame {
 				const playerId = Number(notif.args.to.substring('plyr_discard_'.length))
 				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
-				this.cardsManager.removeCard(card)
+				const playerId = Number(notif.args.to.substring('player_deck_'.length))
+				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (this.playedCards.contains(card)) {
 				this.playedCards.removeCard(card)
 			}
