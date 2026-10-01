@@ -240,8 +240,8 @@ export class Game extends BaseGame {
 
 	private setupMiniPlayerBoard(player: SanPlayer) {
 		const playerId = Number(player.id)
-		const sideLabel = player.symbol === 'moon' ? _('Moon') : _('Sun')
-		const sideIcon = player.symbol === 'moon' ? 'fa-moon-o' : 'fa-sun-o'
+		const sideLabel = player.symbol === 'moon' ? _('Moon') : _('Star')
+		const sideIcon = player.symbol === 'moon' ? 'moon' : 'star'
 		const additionalCounters = [
 			{ name: 'propaganda', icon: 4, label: _('Propaganda') },
 			{ name: 'hacking', icon: 3, label: _('Hacking') },
@@ -253,7 +253,7 @@ export class Game extends BaseGame {
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
 			'afterbegin',
 			`<div id="counters-${player.id}" class="counters">
-				<span class="player-side" role="img" aria-label="${sideLabel}"><i class="fa ${sideIcon}" aria-hidden="true"></i></span>
+				<span class="player-side propaganda-marker ${sideIcon}" role="img" aria-label="${sideLabel}"></span>
 				${additionalCounters
 					.map(
 						({ name, icon }) => `

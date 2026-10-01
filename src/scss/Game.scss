@@ -27,6 +27,25 @@ html {
 	background-attachment: fixed;
 	background-position: 50%;
 	background-size: cover;
+
+	.propaganda-marker {
+		width: 30px;
+		height: 30px;
+		flex-shrink: 0;
+		box-shadow: 0 1px 3px #000;
+		@each $symbol in moon, star {
+			&.#{$symbol} {
+				@include punches.round($symbol);
+			}
+		}
+	}
+
+	.player-board {
+		.propaganda-marker {
+			width: 22px;
+			height: 22px;
+		}
+	}
 }
 
 .hidden {
@@ -115,20 +134,12 @@ html {
 			height: 50px;
 			flex-shrink: 0;
 			@each $symbol in moon, star {
-				&.#{$symbol} { @include punches.hand-size($symbol); }
+				&.#{$symbol} {
+					@include punches.hand-size($symbol);
+				}
 			}
 			&[hidden] {
 				display: none;
-			}
-		}
-
-		.propaganda-marker {
-			width: 30px;
-			height: 30px;
-			flex-shrink: 0;
-			box-shadow: 0 1px 3px #000;
-			@each $symbol in moon, star {
-				&.#{$symbol} { @include punches.round($symbol); }
 			}
 		}
 
@@ -491,7 +502,8 @@ svg {
 	margin-right: 10px;
 }
 
-html:not([data-theme='dark']) .game-symbol:not(.game-symbol-14):not(.log-resource-icon):not(.player-board .counter .game-symbol) {
+html:not([data-theme='dark'])
+	.game-symbol:not(.game-symbol-14):not(.log-resource-icon):not(.player-board .counter .game-symbol) {
 	filter: brightness(0.2);
 }
 
