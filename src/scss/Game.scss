@@ -3,7 +3,7 @@
 @use 'playerboards';
 @use 'bga-hacks';
 @use 'player-table';
-@use '../../node_modules/bga-help/bga-help';
+@use '../ts/libs/help-manager/bga-help';
 @use 'GameVars' as vars;
 
 $BASE_CARD_WIDTH: 200;
@@ -435,6 +435,67 @@ svg {
 	.fa6 {
 		font-size: 1.9em;
 		font-weight: 500;
+	}
+}
+
+.symbol-help {
+	list-style: none;
+	margin: 0;
+	padding: 12px;
+	width: 100%;
+	box-sizing: border-box;
+	background: #263238;
+	color: #fff;
+	border-radius: 8px;
+
+	li {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 6px 0;
+		line-height: 1.4;
+	}
+
+	li + li {
+		border-top: 1px solid #ffffff26;
+	}
+
+	li > span:last-child {
+		min-width: 0;
+		font-size: 13px;
+		overflow-wrap: anywhere;
+	}
+}
+
+.symbol-help-icon {
+	flex: 0 0 64px;
+	height: 63px;
+	background-image: url('img/icons.webp');
+	background-size: 320px 189px;
+	background-repeat: no-repeat;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+	line-height: 1;
+	text-align: center;
+	font-weight: bold;
+
+	&-0 {
+		color: #559dcc;
+		text-indent: -12px;
+	}
+
+	&-small {
+		transform: scale(0.75);
+	}
+
+	@for $row from 0 through 2 {
+		@for $column from 0 through 4 {
+			&-#{$row * 5 + $column} {
+				background-position: #{$column * -64px} #{$row * -63px};
+			}
+		}
 	}
 }
 

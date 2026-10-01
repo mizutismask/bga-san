@@ -1,4 +1,5 @@
 import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
+import { HelpManager, BgaHelpPopinButton, BgaHelpExpandableButton } from './libs/help-manager/help-manager'
 import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
@@ -68,7 +69,7 @@ export class Game extends BaseGame {
 
 		this.setupPlaymat(this.gamedatas)
 		this.setupTooltips()
-		//this.setupHelpPopin()
+		this.setupHelpPopin()
 
 		if (!this.isCustomSoundsOn()) {
 			this.bga.sounds.dontPreloadSounds(this.customSounds)
@@ -326,37 +327,39 @@ export class Game extends BaseGame {
 		new HelpManager(this, {
 			buttons: [
 				new BgaHelpPopinButton({
-					title: _('Roles in play'),
+					title: _('Symbols guide'),
 					html: this.getHelpHtml(),
 					buttonBackground: 'white',
 					buttonColor: '#266059'
-				}),
-				new BgaHelpExpandableButton({
-					unfoldedHtml: `<div id="player-help-visible-wrapper" >
-										<div id="player-help-visible" class="player-help-visible" style="margin: 5px;" data-player-color="${
-											this.getCurrentPlayer()?.color ?? 'fff'
-										}"></div>
-									</div>`,
-					//foldedHtml: `?`,
-					expandedWidth: '250px',
-					expandedHeight: '182px',
-					expandedRadius: '3%',
-					foldedContentExtraClasses: 'button-help-expandable'
 				})
 			]
 		})
 	}
 
 	private getHelpHtml() {
-		let html = `
-        <div id="help-popin"> `
-		/*new Set(this.gamedatas.rolesInPlay).forEach((r) => {
-			html += this.getRoleHtml(r, this.gamedatas.rolesInPlay.filter((allR) => allR === r).length)
-		})*/
-		html += `
-        </div>
-        `
-		return html
+		const symbols = [
+			{ icon: 2, description: _('Fill the Corruption area.') },
+			{ icon: 3, description: _('Move forward or backward one space on the Virus track.') },
+			{ icon: 4, description: _('Advance on the Propaganda track.') },
+			{ icon: 0, value: '3', description: _('Crossing cost: number of Propaganda points required to cross a card.') },
+			{ icon: 14,  description: _('Card cost: number of coins you must spend to buy the card.') },
+			{ icon: 14, value: '+X', small: true, description: _('Income: number of coins gained when you play the card.') },
+			{ icon: 5, description: _('Increase your hand size by one card.') },
+			{ icon: 6, description: _('Gain Corruption, Propaganda, or Hacking for each played card of the corresponding type.') },
+			{ icon: 1, description: _('Single use: trash this card after use.') },
+			{ icon: 7, description: _('Copy a played card.') },
+			{ icon: 8, description: _('Copy a card from the river.') },
+			{ icon: 9, description: _('Trash a card from your hand.') },
+			{ icon: 10, description: _('Draw a card from your deck.') },
+			{ icon: 11, description: _('Play card types of your choice.') },
+			{ icon: 12, description: _('Play a card from your discard pile.') },
+			{ icon: 13, description: _('Corrupt a card from your hand.') }
+		]
+		return `<ul id="help-popin" class="symbol-help">${symbols.map(({ icon, value, small, description }) => `
+			<li>
+				<span class="symbol-help-icon symbol-help-icon-${icon}${small ? ' symbol-help-icon-small' : ''}" aria-hidden="true">${value ?? ''}</span>
+				<span>${description}</span>
+			</li>`).join('')}</ul>`
 	}
 
 	/* This enable to inject translatable styled things to logs or action bar */

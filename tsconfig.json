@@ -12,7 +12,6 @@
 		"*.d.ts",
 		"src/ts/**/*.d.ts",
 		"src/ts/**/*.ts",
-		"node_modules/bga-help/src/help-manager.ts",
 		"node_modules/bga-jump-to/src/jump-to-manager.ts"
 	]
 }
