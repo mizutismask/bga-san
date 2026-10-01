@@ -494,11 +494,33 @@ svg {
 }
 
 .log-resource-value {
+	display: inline-block;
+	vertical-align: middle;
 	margin-right: 10px;
 }
 
-html:not([data-theme='dark']) .game-symbol:not(.game-symbol-14) {
+html:not([data-theme='dark']) .game-symbol:not(.game-symbol-14):not(.log-resource-icon):not(.player-board .counter .game-symbol) {
 	filter: brightness(0.2);
+}
+
+@each $icon, $color in (2: #e3b632, 3: #bd4147, 4: #65a5d2) {
+	.player-board .counter .game-symbol-#{$icon},
+	.log-resource-icon.game-symbol-#{$icon} {
+		background-image: none;
+		position: relative;
+		filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background-color: $color;
+			mask-image: url('img/icons.webp');
+			mask-size: 500% 300%;
+			mask-position: #{$icon * 25%} 0%;
+			mask-repeat: no-repeat;
+		}
+	}
 }
 
 html:not([data-theme='dark']) :is(.propaganda-marker, .virus-token) .game-symbol {
