@@ -175,7 +175,7 @@ export class Game extends BaseGame {
 			marker.style.color = `#${player.color}`
 			marker.title = `${player.name}: ${_('Propaganda')}`
 			marker.innerHTML =
-				'<i class="fa fa-bullhorn" aria-hidden="true"></i><span class="propaganda-progress"></span>'
+				'<span class="game-symbol game-symbol-4" aria-hidden="true"></span><span class="propaganda-progress"></span>'
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
@@ -242,10 +242,10 @@ export class Game extends BaseGame {
 		const sideLabel = player.symbol === 'moon' ? _('Moon') : _('Sun')
 		const sideIcon = player.symbol === 'moon' ? 'fa-moon-o' : 'fa-sun-o'
 		const additionalCounters = [
-			{ name: 'propaganda', icon: 'fa-bullhorn', label: _('Propaganda') },
-			{ name: 'hacking', icon: 'fa-laptop', label: _('Hacking') },
-			{ name: 'corruption', icon: 'fa-user-secret', label: _('Corruption') },
-			{ name: 'income', icon: 'fa-money', label: _('Income') },
+			{ name: 'propaganda', icon: 4, label: _('Propaganda') },
+			{ name: 'hacking', icon: 3, label: _('Hacking') },
+			{ name: 'corruption', icon: 2, label: _('Corruption') },
+			{ name: 'income', icon: 14, label: _('Income') },
 			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') },
 			{ name: 'remainingCardsInDeck', icon: 'fa-stack-overflow', label: _('Remaining cards in deck/owned cards') }
 		]
@@ -257,7 +257,7 @@ export class Game extends BaseGame {
 					.map(
 						({ name, icon }) => `
 					<div id="${name}-counter-${player.id}-wrapper" class="counter ${name}-counter">
-						<div class="fa ${icon}"></div>
+						<div class="${typeof icon === 'number' ? `game-symbol game-symbol-${icon}` : `fa ${icon}`}" aria-hidden="true"></div>
 						<span><span id="${name}-player-counter-${player.id}"></span>${name === 'remainingCardsInDeck' ? `/<span id="totalCardsForPlayer-player-counter-${player.id}"></span>` : ''}</span>
 					</div>
 				`
@@ -368,6 +368,30 @@ export class Game extends BaseGame {
 		try {
 			if (log && args && !args.processed) {
 				args.processed = true
+
+				const resourceIcons = [
+					{ name: 'propaganda', icon: 4, label: _('Propaganda') },
+					{ name: 'hacking', icon: 3, label: _('Hacking') },
+					{ name: 'corruption', icon: 2, label: _('Corruption') },
+					{ name: 'income', icon: 14, label: _('Income') }
+				]
+				for (const { name, icon, label } of resourceIcons) {
+					const key = `${name}Icon`
+					if (args[key] === name) {
+						const element = document.createElement('span')
+						element.className = `game-symbol game-symbol-${icon} log-resource-icon`
+						element.setAttribute('role', 'img')
+						element.setAttribute('aria-label', label)
+						element.title = label
+						args[key] = element.outerHTML
+						if (typeof args[name] === 'number') {
+							const value = document.createElement('span')
+							value.className = 'log-resource-value'
+							value.textContent = String(args[name])
+							args[name] = value.outerHTML
+						}
+					}
+				}
 
 				//displays gems
 				;['gemType'].forEach((field) => {

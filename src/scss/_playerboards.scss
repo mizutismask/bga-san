@@ -1,6 +1,17 @@
 @use 'GameVars' as vars;
 
 .player-board {
+	.counter .game-symbol {
+		width: 30px;
+		height: 29.53125px;
+		flex-basis: 30px;
+	}
+
+	.counter .game-symbol + span {
+		padding-left: 0;
+		margin-left: -3px;
+	}
+
 	.player-side {
 		margin-right: 5px;
 		margin-left: 3px;

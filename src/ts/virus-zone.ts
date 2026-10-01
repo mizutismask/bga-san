@@ -17,7 +17,7 @@ export class VirusZone {
 		this.token.id = 'virus-token'
 		this.token.className = 'virus-token'
 		this.token.title = _('Virus')
-		this.token.innerHTML = '<i class="fa fa-bug" aria-hidden="true"></i>'
+		this.token.innerHTML = '<span class="game-symbol game-symbol-3" aria-hidden="true"></span>'
 
 		const players = [...gamedatas.playerOrderWorkingWithSpectators].reverse()
 		const decksReady = players.map((playerId, index) => {

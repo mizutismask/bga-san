@@ -98,8 +98,12 @@ class PlayerTurn extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $this->game->cardManager->revealPlayedCards($activePlayerId);
-        $this->game->notify->all('msg', clienttranslate('${propaganda} propaganda, ${hacking} hacking, ${corruption} corruption and ${income} income'), [
+        $this->game->notify->all('msg', clienttranslate('${propagandaIcon}${propaganda}${hackingIcon}${hacking}${corruptionIcon}${corruption}${incomeIcon}${income}'), [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'propagandaIcon' => 'propaganda',
+            'hackingIcon' => 'hacking',
+            'corruptionIcon' => 'corruption',
+            'incomeIcon' => 'income',
             'propaganda' => $this->game->propagandaCounter->get($activePlayerId),
             'hacking' => $this->game->hackingCounter->get($activePlayerId),
             'corruption' => $this->game->corruptionCounter->get($activePlayerId),

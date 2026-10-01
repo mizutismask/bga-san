@@ -467,6 +467,44 @@ svg {
 	}
 }
 
+.game-symbol {
+	display: inline-block;
+	width: 24px;
+	height: 23.625px;
+	flex: 0 0 24px;
+	padding: 0;
+	vertical-align: middle;
+	background-image: url('img/icons.webp');
+	background-size: 500% 300%;
+	background-repeat: no-repeat;
+
+	@for $row from 0 through 2 {
+		@for $column from 0 through 4 {
+			&-#{$row * 5 + $column} {
+				background-position: #{$column * 25%} #{$row * 50%};
+			}
+		}
+	}
+}
+
+.log-resource-icon {
+	width: 30px;
+	height: 29.53125px;
+	margin-right: -3px;
+}
+
+.log-resource-value {
+	margin-right: 10px;
+}
+
+html:not([data-theme='dark']) .game-symbol:not(.game-symbol-14) {
+	filter: brightness(0.2);
+}
+
+html:not([data-theme='dark']) :is(.propaganda-marker, .virus-token) .game-symbol {
+	filter: none;
+}
+
 .symbol-help-icon {
 	flex: 0 0 64px;
 	height: 63px;
