@@ -139,10 +139,11 @@ class PlayerDecisions extends GameState {
         $this->game->hackingCounter->inc($activePlayerId, -1);
         $this->game->virusTokenPositionCounter->set($newPosition);
         $message = $isDefending
-            ? clienttranslate('${player_name} defends on Virus track')
-            : clienttranslate('${player_name} attacks on Virus track');
+            ? clienttranslate('${player_name} defends ${virusIcon}')
+            : clienttranslate('${player_name} attacks ${virusIcon}');
         $this->game->notify->all('msg', $message, [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            'virusIcon' => 'virus',
         ]);
 
         if ($completedCard !== null) {

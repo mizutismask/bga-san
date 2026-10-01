@@ -373,7 +373,8 @@ export class Game extends BaseGame {
 					{ name: 'propaganda', icon: 4, label: _('Propaganda') },
 					{ name: 'hacking', icon: 3, label: _('Hacking') },
 					{ name: 'corruption', icon: 2, label: _('Corruption') },
-					{ name: 'income', icon: 14, label: _('Income') }
+					{ name: 'income', icon: 14, label: _('Income') },
+					{ name: 'virus', icon: 3, label: _('Virus track') }
 				]
 				for (const { name, icon, label } of resourceIcons) {
 					const key = `${name}Icon`
