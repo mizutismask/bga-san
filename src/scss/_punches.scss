@@ -1,0 +1,34 @@
+@use 'sass:math';
+
+// Crop coordinates in the original 978 × 2456 sprite sheet.
+@mixin crop($x, $y, $width, $height) {
+	background-image: url('img/punches.png');
+	background-repeat: no-repeat;
+	background-size: math.div(978, $width) * 100% math.div(2456, $height) * 100%;
+	background-position: math.div($x, 978 - $width) * 100% math.div($y, 2456 - $height) * 100%;
+}
+
+@mixin hand-size($symbol) {
+	@if $symbol == moon {
+		@include crop(35, 0, 164, 342);
+	} @else {
+		@include crop(531, 0, 164, 342);
+	}
+}
+
+@mixin round($symbol) {
+	border-radius: 50%;
+	@if $symbol == moon {
+		@include crop(30, 1074, 216, 216);
+	} @else if $symbol == star {
+		@include crop(383, 1074, 216, 216);
+	} @else {
+		@include crop(735, 1090, 216, 216);
+	}
+}
+
+@mixin virus-center {
+	// Full sheet width: use an explicit horizontal position to avoid division by zero.
+	background: url('img/punches.png') no-repeat 0 math.div(425, 2456 - 316) * 100%;
+	background-size: 100% math.div(2456, 316) * 100%;
+}

@@ -5,6 +5,7 @@
 @use 'player-table';
 @use '../ts/libs/help-manager/bga-help';
 @use 'GameVars' as vars;
+@use 'punches';
 
 $BASE_CARD_WIDTH: 200;
 $BASE_CARD_HEIGHT: 279;
@@ -110,34 +111,25 @@ html {
 		}
 
 		.hand-size-token {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
 			width: 24px;
-			min-height: 38px;
-			border: 1px solid currentColor;
-			border-radius: 12px;
-			background: #163c35;
-			font-size: 14px;
-			font-weight: bold;
+			height: 50px;
+			flex-shrink: 0;
+			@each $symbol in moon, star {
+				&.#{$symbol} { @include punches.hand-size($symbol); }
+			}
 			&[hidden] {
 				display: none;
 			}
 		}
 
 		.propaganda-marker {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			width: 24px;
-			min-height: 38px;
-			border-radius: 12px;
-			background: #163c35;
-			border: 1px solid currentColor;
-			font-size: 14px;
-			font-weight: bold;
+			width: 30px;
+			height: 30px;
+			flex-shrink: 0;
+			box-shadow: 0 1px 3px #000;
+			@each $symbol in moon, star {
+				&.#{$symbol} { @include punches.round($symbol); }
+			}
 		}
 
 		.corruptionPanel {

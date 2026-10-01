@@ -165,7 +165,8 @@ export class Game extends BaseGame {
 				token.className = `hand-size-token ${player.symbol}`
 				token.style.color = `#${player.color}`
 				token.title = _('Increase your hand size by 1')
-				token.innerHTML = `<i class="fa ${player.symbol === 'moon' ? 'fa-moon-o' : 'fa-star'}" aria-hidden="true"></i><span>+1</span>`
+				token.setAttribute('role', 'img')
+				token.setAttribute('aria-label', token.title)
 				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(token)
 				return { milestone, token }
 			})
@@ -175,7 +176,7 @@ export class Game extends BaseGame {
 			marker.style.color = `#${player.color}`
 			marker.title = `${player.name}: ${_('Propaganda')}`
 			marker.innerHTML =
-				'<span class="game-symbol game-symbol-4" aria-hidden="true"></span><span class="propaganda-progress"></span>'
+				'<span class="propaganda-progress" hidden></span>'
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress

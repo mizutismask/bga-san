@@ -1,7 +1,10 @@
+@use 'punches';
+
 .cstm-player-hand {
 	display: flex;
 	align-items: flex-start;
 	gap: 16px;
+	margin-inline: auto;
 
 	.hand-pile {
 		display: flex;
@@ -45,6 +48,10 @@
 
 		&.own .san-card {
 			rotate: 180deg;
+
+			.virus-token {
+				rotate: 180deg;
+			}
 		}
 	}
 
@@ -52,13 +59,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
-		padding: 8px 20px;
-		border: 2px solid #245b28;
-		border-radius: 20px;
-		background: rgba(255, 255, 255, .8);
-		font-weight: bold;
-		text-align: center;
+		width: 140px;
+		height: 45.24px;
+		@include punches.virus-center;
 	}
 }
 
@@ -69,10 +72,7 @@
 	width: 24px;
 	height: 24px;
 	box-sizing: border-box;
-	border: 2px solid #fff;
-	border-radius: 50%;
-	background: #a51b35;
-	color: #fff;
+	@include punches.round(virus);
 	box-shadow: 0 1px 4px #000;
 	pointer-events: none;
 

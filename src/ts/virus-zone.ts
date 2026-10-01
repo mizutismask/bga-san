@@ -17,14 +17,15 @@ export class VirusZone {
 		this.token.id = 'virus-token'
 		this.token.className = 'virus-token'
 		this.token.title = _('Virus')
-		this.token.innerHTML = '<span class="game-symbol game-symbol-3" aria-hidden="true"></span>'
+		this.token.setAttribute('role', 'img')
+		this.token.setAttribute('aria-label', this.token.title)
 
 		const players = [...gamedatas.playerOrderWorkingWithSpectators].reverse()
 		const decksReady = players.map((playerId, index) => {
 			if (index === 1) {
 				const marker = this.centralMarker
 				marker.className = 'virus-central-marker'
-				marker.textContent = _('Virus')
+				marker.title = _('Virus')
 				zone.appendChild(marker)
 			}
 			const section = document.createElement('div')
