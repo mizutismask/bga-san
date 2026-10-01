@@ -25,6 +25,10 @@
 	z-index: 25; // so new animations are over the map
 }
 
+#player-tables:has(.player-table.own) .player-table:not(.own) {
+	display: none;
+}
+
 .virus-zone {
 	display: flex;
 	flex-direction: column;
