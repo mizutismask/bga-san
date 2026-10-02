@@ -62,12 +62,21 @@ class PlayerDecisions extends GameState {
 
         $card = $this->game->cardManager->getCard($cardId);
         $this->game->cardManager->corruptCard($card, $slot, $position + 1, $activePlayerId);
+        $corruptedCount = $this->game->cardManager->countCardsInLocation(
+            $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $activePlayerId)
+        );
         $this->game->notify->all('msg', clienttranslate('${player_name} corrupts a card (${corruptedCount}/12)'), [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            'corruptedCount' => $this->game->cardManager->countCardsInLocation(
-                $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $activePlayerId)
-            ),
+            'corruptedCount' => $corruptedCount,
         ]);
+        if ($corruptedCount >= 12) {
+            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            ]);
+            $this->game->playerScore->set($activePlayerId, 1);
+            $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
+            return EndScore::class;
+        }
         return PlayerDecisions::class;
     }
 
@@ -93,6 +102,9 @@ class PlayerDecisions extends GameState {
         }
 
         if ($newPosition >= CardManager::RIVER_SIZE) {
+            $this->game->announceEndCondition(clienttranslate('${player_name} reaches the end of the propaganda track.'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            ]);
             $this->game->playerScore->set($activePlayerId, 1);
             $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
             return EndScore::class;
@@ -162,6 +174,9 @@ class PlayerDecisions extends GameState {
             ]);
 
             if ($remainingVirusCards === 0) {
+                $this->game->announceEndCondition(clienttranslate('${player_name} gives their opponent all five Virus cards.'), [
+                    'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                ]);
                 $this->game->playerScore->set($activePlayerId, 1);
                 $this->game->playerScore->set($opponentId, 0);
                 return EndScore::class;
@@ -203,14 +218,44 @@ class PlayerDecisions extends GameState {
     function zombie(int $playerId) {
         //zombie level 1
         $args = $this->getArgs($playerId);
-        $mandatoryMoveDone = $args['mandatoryMoveDone'];
-        if ($mandatoryMoveDone) {
-            return $this->actPass($playerId);
-        } else {
-            //random oshax move
-            $oshaxValidMoves = $args['oshaxValidMoves'];
-            $slot = $this->game->getRandomValue($oshaxValidMoves);
-            return $this->actMoveOshax($slot, $playerId, $args);
+        if ($args['canProgressOnProp']) {
+            return $this->actProgressOnProp($playerId, $args);
         }
+        if ($args['canHack']) {
+            return $this->actProgressOnHacking($playerId, $args);
+        }
+        if ($args['canCorrupt']) {
+            $riverCards = $this->game->cardManager->getRiverCards();
+            if (!empty($riverCards)) {
+
+                //the card to be corrupted is the one after the opponent progression if its progression cost is under 5, or the one after the player progression if it’s over 4, or any card in the river if none of the above
+                $card = reset($riverCards);
+                $opponentId = (int) $this->game->getOpponentId($playerId);
+                $opponentSlot = $this->game->mirrorSlot(
+                    $this->game->propagandaProgressCounter->get($opponentId) + 1,
+                    $opponentId
+                );
+                $playerSlot = $this->game->mirrorSlot(
+                    $this->game->propagandaProgressCounter->get($playerId) + 1,
+                    $playerId
+                );
+                foreach ($riverCards as $riverCard) {
+                    if ($riverCard->location_arg === $opponentSlot && $riverCard->moveCost < 5) {
+                        $card = $riverCard;
+                        break;
+                    }
+                    if ($riverCard->location_arg === $playerSlot && $riverCard->moveCost > 4) {
+                        $card = $riverCard;
+                    }
+                }
+                for ($slot = 1; $slot <= CardManager::RIVER_SIZE; $slot++) {
+                    $boardSlot = $this->game->mirrorSlot($slot, $playerId);
+                    if (count($this->game->cardManager->getCorruptedCardsOnSlot($boardSlot, $playerId)) < 2) {
+                        return $this->actCorrupt($card->id, $slot, $playerId, $args);
+                    }
+                }
+            }
+        }
+        return $this->actPass($playerId);
     }
 }

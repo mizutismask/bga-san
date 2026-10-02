@@ -254,6 +254,7 @@ class Game extends \Bga\GameFramework\Table {
         $isEnd = $stateName === 'EndScore' || $stateName === 'gameEnd' || $stateName === 'DebugGameEnd';
 
         $result = [];
+        $result['endCondition'] = $this->globals->get('endCondition', null);
         $result['expansion'] = $this->expansionManager->getExpansion();
         $result['version'] = $this->getGameVersion();
 
@@ -307,6 +308,12 @@ class Game extends \Bga\GameFramework\Table {
             $result['lastTurn'] = $this->globals->get(Constants::LAST_TURN) > 0;
         }
         return $result;
+    }
+
+    public function announceEndCondition(string $message, array $args = []): void {
+        $endCondition = ['type' => 'WIN', 'message' => $message, 'args' => $args];
+        $this->globals->set('endCondition', $endCondition);
+        $this->notify->all('importantMessage', '', $endCondition);
     }
 
     function notifyCounterChange() {

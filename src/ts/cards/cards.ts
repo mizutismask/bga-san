@@ -62,6 +62,10 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 			zone.setAttribute('aria-label', `${_('Choice')} ${choice}`)
 			zone.addEventListener('click', event => {
 				event.stopPropagation()
+				if (document.getElementById('immediate-discard-cards')?.contains(zone)) {
+					game.takeAction('actPlayFromDiscard', { cardId: card.id, choice })
+					return
+				}
 				const hand = document.getElementById(`hand-${game.getPlayerId()}`)
 				if (!hand?.contains(zone)) {
 					return

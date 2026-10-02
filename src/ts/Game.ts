@@ -46,6 +46,11 @@ export class Game extends BaseGame {
 			animationsActive: () => this.gameui.bgaAnimationsActive()
 		})
 		this.cardsManager = new CardsManager(this)
+		if (gamedatas.endCondition) {
+			this.bga.gameArea.addWinConditionBanner(
+				this.gameui.format_string_recursive(_(gamedatas.endCondition.message), gamedatas.endCondition.args)
+			)
+		}
 
 		if (gamedatas.lastTurn) {
 			this.notif_lastTurn()

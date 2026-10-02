@@ -49,6 +49,7 @@ interface SanGamedatas {
 	players: { [playerId: number]: SanPlayer }
 	tablespeed: string
 	lastTurn: boolean
+	endCondition: NotifImportantMessageArgs | null
 	turnOrderClockwise: boolean
 	expansion: number
 	// counters
@@ -117,6 +118,7 @@ interface NotifPointsArgs {
 }
 
 interface ImmediateActionArgs {
+	_private?: { discardCards: SanCard[] }
 	corruptionSlots: number[]
 	remainingDestroysFromHand: number
 }

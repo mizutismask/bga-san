@@ -1,8 +1,11 @@
 import { Game } from '../Game'
-import { ImmediateActionArgs, SanGamedatas, SanPlayer } from '../types'
+import { ImmediateActionArgs, SanCard, SanGamedatas, SanPlayer } from '../types'
+import { LineStock } from '../../../bga-cards'
+import { BgaCards } from '../libs'
 
 export class ImmediateAction {
 	private selectableMarkers: HTMLElement[] = []
+	private discardStock?: LineStock<SanCard>
 
 	constructor(
 		private game: Game,
@@ -14,6 +17,28 @@ export class ImmediateAction {
 		isCurrentPlayerActive: boolean
 	) {
 		if (!isCurrentPlayerActive) return
+		const discardCards = args._private?.discardCards ?? []
+		if (discardCards.length) {
+			this.bga.statusBar.setTitle(_('${you} can play a card from your discard pile'))
+			if (!this.discardStock) {
+				const container = document.createElement('div')
+				container.id = 'immediate-discard-cards'
+				document.getElementById('played-cards')!.before(container)
+				this.discardStock = new BgaCards.LineStock<SanCard>(this.game.cardsManager, container)
+			}
+			document.getElementById('immediate-discard-cards')!.style.display = ''
+			this.discardStock.addCards(discardCards, { initialSide: 'front', finalSide: 'front' })
+			this.discardStock.setSelectionMode('single')
+			this.discardStock.onSelectionChange = (selection, lastChange) => {
+				if (lastChange && !lastChange.chooseOne && selection.some(card => card.id === lastChange.id)) {
+					this.game.takeAction('actPlayFromDiscard', { cardId: lastChange.id, choice: 0 })
+				}
+			}
+			this.bga.statusBar.addActionButton(_('Pass'), () => this.game.takeAction('actPass'), {
+				id: 'buttonPass',
+				color: 'secondary'
+			})
+		}
 		if (args.corruptionSlots.length) {
 			this.bga.statusBar.setTitle(_('${you} must select a card from your hand and choose where to corrupt it'))
 			const stocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
@@ -76,8 +101,13 @@ export class ImmediateAction {
 			})
 		}
 	}
-
 	onLeavingState() {
+		if (this.discardStock) {
+			this.discardStock.onSelectionChange = undefined
+			this.discardStock.setSelectionMode('none')
+			document.getElementById('immediate-discard-cards')!.style.display = 'none'
+			this.discardStock.removeAll()
+		}
 		for (const marker of this.selectableMarkers) {
 			marker.onclick = null
 			marker.classList.remove('selectable')

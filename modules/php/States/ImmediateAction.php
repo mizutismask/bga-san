@@ -94,6 +94,9 @@ class ImmediateAction extends GameState {
         ]);
         $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         if ($corruptedCount >= 12) {
+            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+            ]);
             $this->game->playerScore->set($activePlayerId, 1);
             $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
             return EndScore::class;
@@ -173,15 +176,22 @@ class ImmediateAction extends GameState {
         return PlayerTurn::class;
     }
 
-    #[CheckAction(false)]
-    function actResetPlayerTurn() {
-        $possible = $this->globals->get(Constants::CAN_RESET_TURN);
-        if (!$possible) {
-            throw new UserException(clienttranslate("Undo is not available"));
+    /** @return array{beginningCardIds: int[], virusCardIds: int[], cheapestCard: ?SanCard} */
+    private function getZombieHandCards(int $playerId): array {
+        $beginningCardIds = [];
+        $virusCardIds = [];
+        $cheapestCard = null;
+        foreach ($this->game->cardManager->getPlayerHand($playerId) as $handCard) {
+            if ($handCard->type_arg === Constants::CARD_TYPE_VIRUS) {
+                $virusCardIds[] = $handCard->id;
+            } elseif (($handCard->type >= 1 && $handCard->type <= 12) || ($handCard->type >= 18 && $handCard->type <= 29)) {
+                $beginningCardIds[] = $handCard->id;
+            }
+            if ($cheapestCard === null || $handCard->cost < $cheapestCard->cost) {
+                $cheapestCard = $handCard;
+            }
         }
-        $this->game->undoRestorePoint();
-        //$this->toggleResetTurn(false);
-        $this->gamestate->reloadState();
+        return compact('beginningCardIds', 'virusCardIds', 'cheapestCard');
     }
 
     /**
@@ -198,29 +208,40 @@ class ImmediateAction extends GameState {
      * but use the $playerId passed in parameter and $this->game->getPlayerNameById($playerId) instead.
      */
     function zombie(int $playerId) {
+        //zombie level 1
         $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {
+            $cardToPlay = null;
+            foreach ($this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId)) as $discardCard) {
+                if ($cardToPlay === null || $discardCard->cost > $cardToPlay->cost) {
+                    $cardToPlay = $discardCard;
+                }
+            }
+            if ($cardToPlay !== null) {
+                return $this->actPlayFromDiscard($cardToPlay->id, $cardToPlay->chooseOne ? 1 : 0, $playerId);
+            }
             return $this->actPass($playerId);
         }
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND) {
             $args = $this->getArgs($playerId);
-            $hand = array_values($this->game->cardManager->getPlayerHand($playerId));
-            if ($hand && $args['corruptionSlots']) {
-                return $this->actCorrupt($hand[0]->id, $args['corruptionSlots'][0], $playerId, $args);
+            if ($args['corruptionSlots']) {
+                $handCards = $this->getZombieHandCards($playerId);
+                $cardId = $handCards['beginningCardIds'][0] ?? $handCards['cheapestCard']?->id;
+                if ($cardId !== null) {
+                    return $this->actCorrupt($cardId, $args['corruptionSlots'][0], $playerId, $args);
+                }
             }
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
             return PlayerTurn::class;
         }
-        //zombie level 1
-        $args = $this->getArgs($playerId);
-        $mandatoryMoveDone = $args['mandatoryMoveDone'];
-        if ($mandatoryMoveDone) {
-            return $this->actPass($playerId);
-        } else {
-            //random oshax move
-            $oshaxValidMoves = $args['oshaxValidMoves'];
-            $slot = $this->game->getRandomValue($oshaxValidMoves);
-            return $this->actMoveOshax($slot, $playerId, $args);
+        $remainingDestroys = $this->game->globals->get(Constants::GLBL_REMAINING_DESTROYS, 0);
+        if ($remainingDestroys > 0) {
+            $handCards = $this->getZombieHandCards($playerId);
+            $cardIds = array_slice(array_merge($handCards['virusCardIds'], $handCards['beginningCardIds']), 0, $remainingDestroys);
+            if (empty($cardIds) && $handCards['cheapestCard'] !== null) {
+                $cardIds[] = $handCards['cheapestCard']->id;
+            }
+            return $this->actDestroy($cardIds, $playerId, []);
         }
     }
 }

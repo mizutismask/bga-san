@@ -76,17 +76,6 @@ class CardShopping extends GameState {
         return NextPlayer::class;
     }
 
-    #[CheckAction(false)]
-    function actResetPlayerTurn() {
-        $possible = $this->globals->get(Constants::CAN_RESET_TURN);
-        if (!$possible) {
-            throw new UserException(clienttranslate("Undo is not available"));
-        }
-        $this->game->undoRestorePoint();
-        //$this->toggleResetTurn(false);
-        $this->gamestate->reloadState();
-    }
-
     /**
      * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
      * You can do whatever you want in order to make sure the turn of this player ends appropriately
@@ -103,15 +92,42 @@ class CardShopping extends GameState {
     function zombie(int $playerId) {
         //zombie level 1
         $args = $this->getArgs($playerId);
-        $mandatoryMoveDone = $args['mandatoryMoveDone'];
-        if ($mandatoryMoveDone) {
+        // buy the highest cost hardware card that you can afford, or the highest cost of the type you have the most in your entire deck that you can afford
+        if (empty($args['possibleCards'])) {
             return $this->actPass($playerId);
-        } else {
-            //random oshax move
-            $oshaxValidMoves = $args['oshaxValidMoves'];
-            $slot = $this->game->getRandomValue($oshaxValidMoves);
-            return $this->actMoveOshax($slot, $playerId, $args);
         }
+
+        $bestCard = null;
+        foreach ($args['possibleCards'] as $card) {
+            if ($card->type_arg === Constants::CARD_TYPE_HARDWARE
+                && ($bestCard === null || $card->cost > $bestCard->cost)) {
+                $bestCard = $card;
+            }
+        }
+
+        if ($bestCard === null) {
+            $typeCounts = [];
+            foreach ([Constants::MATERIAL_LOCATION_PLAYER_DECK, Constants::MATERIAL_LOCATION_HAND, Constants::MATERIAL_LOCATION_PLAYER_DISCARD, Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA] as $location) {
+                foreach ($this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation($location, $playerId)) as $card) {
+                    $typeCounts[$card->type_arg] = ($typeCounts[$card->type_arg] ?? 0) + 1;
+                }
+            }
+
+            $bestCount = empty($typeCounts) ? 0 : max($typeCounts);
+            foreach ($args['possibleCards'] as $card) {
+                $count = $typeCounts[$card->type_arg] ?? 0;
+                if ($count > 0 && $count === $bestCount
+                    && ($bestCard === null || $card->cost > $bestCard->cost)) {
+                    $bestCard = $card;
+                }
+            }
+        }
+
+        if ($bestCard === null) {
+            return $this->actPass($playerId);
+        }
+
+        return $this->actBuyCard($bestCard->id, $playerId, $args);
     }
 
     function getPossibleCards(int $activePlayerId) {

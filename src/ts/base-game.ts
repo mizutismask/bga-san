@@ -243,7 +243,7 @@ export abstract class BaseGame {
 
 		if (notif.args.type == 'WIN') {
 			this.bga.gameArea.addWinConditionBanner(
-				this.gameui.format_string_recursive(notif.args.message, notif.args.args)
+				this.gameui.format_string_recursive(_(notif.args.message), notif.args.args)
 			)
 		} else {
 			this.bga.dialogs.showMessage(

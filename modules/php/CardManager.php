@@ -232,6 +232,7 @@ class CardManager extends DeckManager {
                 $emptySlot = $this->getFirstEmptySlotInLocation(CardManager::RIVER_SIZE, Constants::MATERIAL_LOCATION_RIVER);
                 $card = $this->castSingle($this->deck->pickCardForLocation(Constants::MATERIAL_LOCATION_DECK, Constants::MATERIAL_LOCATION_RIVER, $emptySlot), true);
                 if ($card === null) {
+                    $this->game->announceEndCondition(clienttranslate('The game ends because the river can no longer be refilled.'));
                     return false;
                 }
                 $this->game->notify->all('materialMove', '', [

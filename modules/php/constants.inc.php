@@ -61,8 +61,6 @@ class Constants {
     const STATE_ID_BGA_GAME_SETUP = 1;
 
     const STATE_ID_NEXT_PLAYER = 2;
-    const STATE_ID_NEXT_ROUND = 3;
-    const STATE_ID_END_OF_ROUND = 4;
     const STATE_ID_PLAYER_TURN = 30;
     const STATE_ID_IMMEDIATE_ACTION = 31;
     const STATE_ID_PLAYER_DECISION = 32;

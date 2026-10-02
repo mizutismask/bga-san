@@ -199,17 +199,72 @@ class PlayerTurn extends GameState {
      * but use the $playerId passed in parameter and $this->game->getPlayerNameById($playerId) instead.
      */
     function zombie(int $playerId) {
-        //zombie level 1
+        //plays the cards type that will give the most symbols
         $args = $this->getArgs($playerId);
-        $mandatoryMoveDone = $args['mandatoryMoveDone'];
-        if ($mandatoryMoveDone) {
-            return $this->actPass($playerId);
-        } else {
-            //random oshax move
-            $oshaxValidMoves = $args['oshaxValidMoves'];
-            $slot = $this->game->getRandomValue($oshaxValidMoves);
-            return $this->actMoveOshax($slot, $playerId, $args);
+        $symbols = [
+            Constants::CARD_TYPE_PROPAGANDA => ['propaganda', 1],
+            Constants::CARD_TYPE_HACKING => ['hacking', 2],
+            Constants::CARD_TYPE_CORRUPTION => ['corruption', 3],
+        ];
+        $playedCards = $this->game->cardManager->getPlayedCards($playerId);
+        $bestType = null;
+        foreach ($playedCards as $card) {
+            if (isset($symbols[$card->type_arg])) {
+                $bestType = $card->type_arg;
+                break;
+            }
         }
+        if ($bestType === null) {
+            $scores = [
+                Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter->get($playerId),
+                Constants::CARD_TYPE_HACKING => $this->game->hackingCounter->get($playerId),
+                Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter->get($playerId),
+            ];
+            $typeCounts = array_count_values(array_column($args['selectableHandCards'], 'type_arg'));
+            foreach ($args['selectableHandCards'] as $card) {
+                $perCardType = match ($card->specialEffect) {
+                    Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD => Constants::CARD_TYPE_PROPAGANDA,
+                    Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD => Constants::CARD_TYPE_HACKING,
+                    Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD => Constants::CARD_TYPE_CORRUPTION,
+                    default => null,
+                };
+                foreach ($symbols as $type => [$property]) {
+                    if (!isset($symbols[$card->type_arg]) || $card->type_arg === $type) {
+                        $scores[$type] += $perCardType === $type ? $typeCounts[$card->type_arg] : $card->$property;
+                    }
+                }
+            }
+            $bestType = array_search(max($scores), $scores, true);
+        }
+
+        while (!empty($args['selectableHandCards'])) {
+            $cardToPlay = null;
+            foreach ($args['selectableHandCards'] as $card) {
+                if (isset($symbols[$card->type_arg]) && $card->type_arg !== $bestType) {
+                    continue;
+                }
+                if ($card->type_arg === Constants::CARD_TYPE_HARDWARE) {
+                    $cardToPlay = $card;
+                    break;
+                }
+                if ($cardToPlay === null) {
+                    $cardToPlay = $card;
+                }
+            }
+            if ($cardToPlay === null) {
+                return $this->actPass($playerId);
+            }
+            $choice = 0;
+            if ($cardToPlay->chooseOne) {
+                $choice = $cardToPlay->type_arg === Constants::CARD_TYPE_HARDWARE ? $symbols[$bestType][1] : 1;
+            }
+            $nextState = $this->actPlayCard($cardToPlay->id, $choice, $playerId, $args);
+            if ($nextState !== PlayerTurn::class) {
+                return $nextState;
+            }
+            $args = $this->getArgs($playerId);
+        }
+        return $this->actPass($playerId);
     }
 
     function getPossibleCards(int $activePlayerId) {
