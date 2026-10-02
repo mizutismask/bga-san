@@ -1351,7 +1351,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_GAIN_PROPAGANDA_HACKING_AND_CORRUPTION,
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
         "text"          => clienttranslate("Gain 3 Propaganda, move 3 spaces on the Virus track, and gain 3 Corruption")
       ],
       80 => [
