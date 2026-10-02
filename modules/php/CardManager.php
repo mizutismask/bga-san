@@ -267,12 +267,36 @@ class CardManager extends DeckManager {
         $this->game->notifyCounterChange();
     }
 
-    public function corruptCard(SanCard $card, int $slot, int $position, int $playerId, bool $fromHand = false): void {
+    public function corruptCard(SanCard $card, int $slot, int $playerId, bool $fromHand = false): bool {
+        $slot = $this->game->mirrorSlot($slot, $playerId);
+        $position = count($this->getCorruptedCardsOnSlot($slot, $playerId)) + 1;
+        if ($position > 2) {
+            throw new \Bga\GameFramework\UserException(clienttranslate('You can only corrupt 2 cards per slot'));
+        }
         $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId), $slot * 10 + $position, true, $playerId);
         if (!$fromHand) {
             $this->game->corruptionCounter->inc($playerId, -3);
             $this->refillRiver();
         }
+        $corruptedCount = $this->countCardsInLocation(
+            $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId)
+        );
+        $message = $fromHand
+            ? clienttranslate('${player_name} corrupts a card from his hand (${corruptedCount}/12)')
+            : clienttranslate('${player_name} corrupts a card (${corruptedCount}/12)');
+        $this->game->notify->all('msg', $message, [
+            'player_name' => $this->game->getPlayerNameById($playerId),
+            'corruptedCount' => $corruptedCount,
+        ]);
+        if ($corruptedCount >= 12) {
+            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
+                'player_name' => $this->game->getPlayerNameById($playerId),
+            ]);
+            $this->game->playerScore->set($playerId, 1);
+            $this->game->playerScore->set((int) $this->game->getOpponentId($playerId), 0);
+            return true;
+        }
+        return false;
     }
 
     public function getCorruptedCardsOnSlot(int $slot, int $playerId): array {

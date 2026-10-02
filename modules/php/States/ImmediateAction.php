@@ -82,23 +82,9 @@ class ImmediateAction extends GameState {
         if ($card === null || $card->location !== $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId)) {
             throw new UserException(clienttranslate('Select a card from your hand'));
         }
-        $boardSlot = $this->game->mirrorSlot($slot, $activePlayerId);
-        $position = count($this->game->cardManager->getCorruptedCardsOnSlot($boardSlot, $activePlayerId));
-        $this->game->cardManager->corruptCard($card, $boardSlot, $position + 1, $activePlayerId, true);
-        $corruptedCount = $this->game->cardManager->countCardsInLocation(
-            $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $activePlayerId)
-        );
-        $this->game->notify->all('msg', clienttranslate('${player_name} corrupts a card from his hand (${corruptedCount}/12)'), [
-            'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            'corruptedCount' => $corruptedCount,
-        ]);
+        $gameEnded = $this->game->cardManager->corruptCard($card, $slot, $activePlayerId, true);
         $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
-        if ($corruptedCount >= 12) {
-            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
-                'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            ]);
-            $this->game->playerScore->set($activePlayerId, 1);
-            $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
+        if ($gameEnded) {
             return EndScore::class;
         }
         return PlayerTurn::class;

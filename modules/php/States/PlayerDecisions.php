@@ -53,28 +53,8 @@ class PlayerDecisions extends GameState {
             throw new UserException(clienttranslate('You don’t have enough corruption'));
         }
 
-        $slot = $this->game->mirrorSlot($slot, $activePlayerId);
-        $position = count($this->game->cardManager->getCorruptedCardsOnSlot($slot, $activePlayerId));
-
-        if ($position >= 2) {
-            throw new UserException(clienttranslate('You can only corrupt 2 cards per slot'));
-        }
-
         $card = $this->game->cardManager->getCard($cardId);
-        $this->game->cardManager->corruptCard($card, $slot, $position + 1, $activePlayerId);
-        $corruptedCount = $this->game->cardManager->countCardsInLocation(
-            $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $activePlayerId)
-        );
-        $this->game->notify->all('msg', clienttranslate('${player_name} corrupts a card (${corruptedCount}/12)'), [
-            'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            'corruptedCount' => $corruptedCount,
-        ]);
-        if ($corruptedCount >= 12) {
-            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
-                'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            ]);
-            $this->game->playerScore->set($activePlayerId, 1);
-            $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
+        if ($this->game->cardManager->corruptCard($card, $slot, $activePlayerId)) {
             return EndScore::class;
         }
         return PlayerDecisions::class;
