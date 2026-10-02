@@ -6,6 +6,7 @@ namespace Bga\Games\San\States;
 
 use Bga\GameFramework\Actions\CheckAction;
 use Bga\GameFramework\Actions\Types\IntArrayParam;
+use Bga\GameFramework\Actions\Types\IntParam;
 use Bga\GameFramework\StateType;
 use Bga\GameFramework\States\GameState;
 use Bga\GameFramework\States\PossibleAction;
@@ -32,7 +33,10 @@ class ImmediateAction extends GameState {
             }
         }
 
-        //todo other effect
+        if ($card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD && empty($args['_private'][$activePlayerId]['discardCards'])) {
+            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
+            return PlayerTurn::class;
+        }
     }
 
     /**
@@ -53,6 +57,11 @@ class ImmediateAction extends GameState {
         }
         // Get some values from the current game situation from the database.
         return [
+            '_private' => [$activePlayerId => [
+                'discardCards' => $card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD
+                    ? array_values($this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId)))
+                    : [],
+            ]],
             "corruptionSlots" => $corruptionSlots,
             "canPass" => true,
             "canResetTurn" => $this->globals->get(Constants::CAN_RESET_TURN),
@@ -126,6 +135,26 @@ class ImmediateAction extends GameState {
         return PlayerTurn::class;
     }
 
+    #[PossibleAction]
+    public function actPlayFromDiscard(int $cardId, #[IntParam(min: 0, max: 3)] int $choice, int $activePlayerId) {
+        $effectCard = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        if ($effectCard === null || $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {
+            throw new UserException(clienttranslate('You cannot play a card from your discard pile now'));
+        }
+        $card = $this->game->cardManager->getCard($cardId);
+        if ($card === null || $card->location !== $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId)) {
+            throw new UserException(clienttranslate('Select a card from your discard pile'));
+        }
+        if (($card->chooseOne && ($choice < 1 || $choice > ($card->type_arg === Constants::CARD_TYPE_HARDWARE ? 3 : 2))) || (!$card->chooseOne && $choice !== 0)) {
+            throw new UserException(clienttranslate('You must choose which option to play'));
+        }
+        $nextState = (new PlayerTurn($this->game))->actPlayCard($cardId, $choice, $activePlayerId, ['selectableHandCards' => [$card]]);
+        if ($nextState === PlayerTurn::class) {
+            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
+        }
+        return $nextState;
+    }
+
     /**
      * Player action, example content.
      *
@@ -135,7 +164,7 @@ class ImmediateAction extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
-        if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->destroyCards) {
+        if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD || $card->destroyCards) {
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         }
         if ($card->destroyCards) {
@@ -170,6 +199,9 @@ class ImmediateAction extends GameState {
      */
     function zombie(int $playerId) {
         $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {
+            return $this->actPass($playerId);
+        }
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND) {
             $args = $this->getArgs($playerId);
             $hand = array_values($this->game->cardManager->getPlayerHand($playerId));
