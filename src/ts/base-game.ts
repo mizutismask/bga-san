@@ -225,10 +225,10 @@ export abstract class BaseGame {
 	/**
 	 * Show important message banner.
 	 */
-	notif_importantMessage(notif: Notif<NotifImportantMessageArgs>, animate: boolean = true) {
+	notif_importantMessage(args: NotifImportantMessageArgs, animate: boolean = true) {
 		let msgClass = ''
 		let msgType: 'info' | 'error' = 'info'
-		switch (notif.args.type) {
+		switch (args.type) {
 			case 'POSITIVE':
 				msgClass = 'important-msg-positive'
 				break
@@ -241,13 +241,13 @@ export abstract class BaseGame {
 				break
 		}
 
-		if (notif.args.type == 'WIN') {
+		if (args.type == 'WIN') {
 			this.bga.gameArea.addWinConditionBanner(
-				this.gameui.format_string_recursive(_(notif.args.message), notif.args.args)
+				this.gameui.format_string_recursive(_(args.message), args.args)
 			)
 		} else {
 			this.bga.dialogs.showMessage(
-				this.gameui.format_string_recursive(notif.args.message, notif.args.args),
+				this.gameui.format_string_recursive(args.message, args.args),
 				msgType
 			)
 			const lastVisible = Array.from(document.querySelectorAll<HTMLElement>(`.head_${msgType}`))
@@ -255,6 +255,7 @@ export abstract class BaseGame {
 				.find((el) => el.style.display !== 'none')
 			lastVisible?.classList.add(msgClass) //to add background color since the framework doesn't support it
 		}
+		return this.gameui.wait(animate ? 3000 : 0)
 	}
 
 	public takeAction(action: string, data?: any, options?: { lock: boolean; checkAction: boolean }): Promise<void> {

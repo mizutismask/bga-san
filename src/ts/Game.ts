@@ -1,6 +1,6 @@
 import { BgaCards, BgaAnimations, BgaAutofit } from './libs'
 import { HelpManager, BgaHelpPopinButton, BgaHelpExpandableButton } from './libs/help-manager/help-manager'
-import { BaseGame, log, isDebug, ANIMATION_MS, ACTION_TIMER_DURATION } from './base-game'
+import { BaseGame, log, isDebug, ACTION_TIMER_DURATION } from './base-game'
 import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
 import { VirusZone } from './virus-zone'
@@ -16,7 +16,6 @@ export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
-	public affordableRiverCards: SanCard[] | null = null
 	public playedCards!: LineStock<SanCard>
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
@@ -571,85 +570,48 @@ export class Game extends BaseGame {
     
     */
 	setupNotifications() {
-		log('notifications subscriptions setup')
-
-		// TODO: here, associate your game notifications with local methods
-
-		// Example 1: standard notification handling
-		// dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-
-		// Example 2: standard notification handling + tell the user interface to wait
-		//            during 3 seconds after calling the method in order to let the players
-		//            see what is happening in the game.
-		// dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-		// this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
-		//
-
-		const notifs = [
-			['materialMove', ANIMATION_MS],
-			['riverDeckUpdated', 1],
-			['lastTurn', 1],
-			['importantMessage', 3000]
-		]
-
-		notifs.forEach((notif) => {
-			dojo.subscribe(notif[0], this, `notif_${notif[0]}`)
-			//comment to prevent formating to glue these 2 lines
-			;(this.gameui as any).notifqueue.setSynchronous(notif[0], notif[1])
+		this.bga.notifications.setupPromiseNotifications({
+			minDuration: 1,
+			minDurationNoText: 1,
+			logger: log,
 		})
 	}
-
-	notif_riverDeckUpdated(notif: Notif<{ topCard: SanCard | null; count: number }>) {
-		this.riverDeck.setCardNumber(notif.args.count, notif.args.topCard ?? undefined)
+	notif_riverDeckUpdated(args: { topCard: SanCard | null; count: number }) {
+		return this.riverDeck.setCardNumber(args.count, args.topCard ?? undefined)
 	}
 
-	notif_materialMove(notif: Notif<NotifMaterialMove>) {
-		log('notif_materialMove', notif)
-		for (const card of notif.args.material as SanCard[]) {
+	async notif_materialMove(args: NotifMaterialMove) {
+		log('notif_materialMove', args)
+		for (const card of args.material as SanCard[]) {
 			this.updateCorruptionMarker(card)
 			if (card.location?.startsWith('play_area_')) {
-				this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
+				await this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
 			} else if (card.location?.startsWith('corr_')) {
-				this.cardsManager.removeCard(card)
+				await this.cardsManager.removeCard(card)
 			} else if (card.location?.startsWith('virus_')) {
-				this.virusZone.decks[Number(card.location.substring(6))]
+				await this.virusZone.decks[Number(card.location.substring(6))]
 					?.addCard(card)
 					.then(() => this.virusZone.refreshToken())
 			} else if (card.location === 'river') {
-				this.river.addCard(card, { selectable: false }).then(() => {
-					// The shopping state may have refreshed while the refill was animating.
-					if (this.affordableRiverCards !== null) {
-						this.river.setSelectableCards(this.affordableRiverCards)
-					}
-				})
+				await this.river.addCard(card)
 			} else if (card.location === 'destroyed') {
-				this.cardsManager.removeCard(card, { fadeOut: true })
+				await this.cardsManager.removeCard(card, { fadeOut: true })
 			} else if (card.location?.startsWith('hand_')) {
 				const playerId = Number(card.location.substring(5))
-				this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
+				await this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
 					fromElement: this.bga.playerPanels.getElement(playerId)
 				})
 			} else if (card.location?.startsWith('plyr_discard_')) {
-				const playerId = Number(notif.args.to.substring('plyr_discard_'.length))
-				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
+				const playerId = Number(args.to.substring('plyr_discard_'.length))
+				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
-				const playerId = Number(notif.args.to.substring('player_deck_'.length))
-				this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
+				const playerId = Number(args.to.substring('player_deck_'.length))
+				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (this.playedCards.contains(card)) {
-				this.playedCards.removeCard(card)
+				await this.playedCards.removeCard(card)
 			}
 		}
-		/*switch (notif.args.type) {
-			case "MISSION":
-				const cards = notif.args.material as Array<MissionCard>
-				this.notif_missionMove(cards, notif)
-				break
-			default:
-				console.error('Material type move not handled', notif)
-				break
-		}*/
 	}
-
 	/* notif_missionMove(cards: MissionCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
 		switch (notif.args.to) {

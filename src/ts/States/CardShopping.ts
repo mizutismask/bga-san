@@ -9,7 +9,6 @@ export class CardShopping {
 
 	onEnteringState(args: CardShoppingArgs, isCurrentPlayerActive: boolean) {
 		if (!isCurrentPlayerActive) return
-		this.game.affordableRiverCards = args.possibleCards
 		this.game.river.setSelectionMode('single', args.possibleCards)
 		this.bga.statusBar.addActionButton(_('Buy selected card'), () => {
 			const card = this.game.river.getSelection()[0]
@@ -35,7 +34,6 @@ export class CardShopping {
 	}
 
 	onLeavingState(args: CardShoppingArgs, isCurrentPlayerActive: boolean) {
-		this.game.affordableRiverCards = null
 		this.game.river.onSelectionChange = undefined
 		this.game.river.setSelectionMode('none')
 		this.game.playedCards.removeAll()
