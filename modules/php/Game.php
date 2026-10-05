@@ -368,7 +368,11 @@ class Game extends \Bga\GameFramework\Table {
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
-    ////////////    
+    ////////////   
+    function getCardToResolve() {
+        return $this->globals->get(Constants::GLB_CURRENT_CARD);
+    }
+    
     function makeSavepoint($player_id = null) {
         $this->undoSavepoint();
     }

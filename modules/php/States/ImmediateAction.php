@@ -25,7 +25,7 @@ class ImmediateAction extends GameState {
         );
     }
     function onEnteringState(int $activePlayerId, array $args) {
-        $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $card = $this->game->getCardToResolve();
         if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND) {
             if (empty($this->game->cardManager->getPlayerHand($activePlayerId)) || empty($args['corruptionSlots'])) {
                 $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
@@ -45,7 +45,7 @@ class ImmediateAction extends GameState {
      * This method returns some additional information that is very specific to the `PlayerTurn` game state.
      */
     public function getArgs(int $activePlayerId): array {
-        $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $card = $this->game->getCardToResolve();
         $corruptionSlots = [];
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND) {
             for ($slot = 1; $slot <= 6; $slot++) {
@@ -71,7 +71,7 @@ class ImmediateAction extends GameState {
 
     #[PossibleAction]
     public function actCorrupt(int $cardId, int $slot, int $activePlayerId, array $args) {
-        $effectCard = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $effectCard = $this->game->getCardToResolve();
         if ($effectCard === null || $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND) {
             throw new UserException(clienttranslate('You cannot corrupt a card from your hand now'));
         }
@@ -126,7 +126,7 @@ class ImmediateAction extends GameState {
 
     #[PossibleAction]
     public function actPlayFromDiscard(int $cardId, #[IntParam(min: 0, max: 3)] int $choice, int $activePlayerId) {
-        $effectCard = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $effectCard = $this->game->getCardToResolve();
         if ($effectCard === null || $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {
             throw new UserException(clienttranslate('You cannot play a card from your discard pile now'));
         }
@@ -152,7 +152,7 @@ class ImmediateAction extends GameState {
      */
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
-        $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $card = $this->game->getCardToResolve();
         if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD || $card->destroyCards) {
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         }
@@ -195,7 +195,7 @@ class ImmediateAction extends GameState {
      */
     function zombie(int $playerId) {
         //zombie level 1
-        $card = $this->game->globals->get(Constants::GLB_CURRENT_CARD);
+        $card = $this->game->getCardToResolve();
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {
             $cardToPlay = null;
             foreach ($this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId)) as $discardCard) {
