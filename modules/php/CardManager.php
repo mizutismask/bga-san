@@ -62,23 +62,42 @@ class CardManager extends DeckManager {
         }
     }
 
-    public function getPlayedCards(int $playerId) {
-        return $this->cast($this->deck->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId)));
+    public function getPlayedCards(int $playerId, bool $withCopiedEffects = false) {
+        $cards = $this->cast($this->deck->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId)));
+        if (!$withCopiedEffects) {
+            return $cards;
+        }
+        $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+        foreach ($cards as $key => $card) {
+            if (isset($copies[$card->id])) {
+                $cards[$key] = clone $card;
+                foreach ((array) $copies[$card->id] as $property => $value) {
+                    if (!in_array($property, ['id', 'location', 'location_arg'], true)) {
+                        $cards[$key]->$property = $value;
+                    }
+                }
+            }
+        }
+        return $cards;
     }
 
     public function playCard(SanCard $card, int $choice, int $activePlayerId) {
-        $revealed = $this->game->globals->get('revealedPlayedCards', []);
-        $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, [$card->id])));
-        $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId);
-        $this->moveCardToLocation($card, $location, $activePlayerId, false);
-        $this->game->notify->player($activePlayerId, 'materialMove', '', [
-            'type' => $this->materialType,
-            'from' => $card->location,
-            'fromArg' => $card->location_arg,
-            'to' => $location,
-            'toArg' => $activePlayerId,
-            'material' => [$this->castSingle($this->deck->getCard($card->id))],
-        ]);
+        $isCopy = isset($this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, [])[$card->id]);
+        if (!$isCopy) {
+            $revealed = $this->game->globals->get('revealedPlayedCards', []);
+            $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, [$card->id])));
+            $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId);
+            $this->moveCardToLocation($card, $location, $activePlayerId, false);
+            $this->game->notify->player($activePlayerId, 'materialMove', '', [
+                'type' => $this->materialType,
+                'from' => $card->location,
+                'fromArg' => $card->location_arg,
+                'to' => $location,
+                'toArg' => $activePlayerId,
+                'material' => [$this->castSingle($this->deck->getCard($card->id))],
+            ]);
+
+        }
 
         if (!$choice) {
             $actions = [
@@ -91,7 +110,7 @@ class CardManager extends DeckManager {
             $actions = array_map(fn($action) => [$action, 1], $this->getChoiceActions($card, $choice));
         }
 
-        if ($choice || $this->getPerCardCounter($card) !== null) {
+        if ($isCopy || $choice || $this->getPerCardCounter($card) !== null) {
             $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
         }
         foreach ($actions as [$action, $amount]) {
@@ -117,7 +136,7 @@ class CardManager extends DeckManager {
     }
 
     public function recalculateCounters(int $playerId): void {
-        $cards = $this->getPlayedCards($playerId);
+        $cards = $this->getPlayedCards($playerId, true);
         $typeCounts = array_count_values(array_column($cards, 'type_arg'));
         $recordedActions = [];
         foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
@@ -155,6 +174,8 @@ class CardManager extends DeckManager {
             $counter->set($playerId, $totals[$action]);
         }
         $this->game->incomeCounter->set($playerId, $income);
+        //todo also recalculate remaining destroys, maybe
+         $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, 0);
     }
 
     private function getChoiceActions(SanCard $card, int $choice) {
@@ -253,13 +274,16 @@ class CardManager extends DeckManager {
 
     public function discardPlayedCards(int $activePlayerId): void {
         $cards = $this->getPlayedCards($activePlayerId);
+        $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
         foreach ($cards as $card) {
-            if ($card->trashAfterUse) {
+            $effectCard = $copies[$card->id] ?? $card;
+            if ($effectCard->trashAfterUse) {
                 $this->destroyCard($card, false, $activePlayerId);
             } else {
                 $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
             }
         }
+        $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARDS);
     }
 
     public function destroyCard(SanCard $card, bool $notify, int $playerId) {

@@ -81,10 +81,9 @@ class PlayerTurn extends GameState {
             throw new UserException(clienttranslate('You must choose which option to play'));
         }
         $this->game->cardManager->playCard($sanCard, $choice, $activePlayerId);
-
         if ($this->game->cardManager->hasImmediateAction($sanCard)) {
             $this->game->globals->set(Constants::GLB_CURRENT_CARD, $sanCard);
-            if ($card->destroyCards > 0) {
+            if ($sanCard->destroyCards > 0) {
                 $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, $card->destroyCards);
             }
             return ImmediateAction::class;
@@ -138,7 +137,11 @@ class PlayerTurn extends GameState {
         ];        $returnedIds = [];
         $hand = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId);
 
+        $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
         foreach ($this->game->cardManager->getPlayedCards($activePlayerId) as $card) {
+            if (isset($copies[$card->id])) {
+                continue;
+            }
             $context = $contexts[$card->id] ?? null;
             $actions = $context !== null
                 ? json_decode($context['param3'], true, 512, JSON_THROW_ON_ERROR)
@@ -206,7 +209,7 @@ class PlayerTurn extends GameState {
             Constants::CARD_TYPE_HACKING => ['hacking', 2],
             Constants::CARD_TYPE_CORRUPTION => ['corruption', 3],
         ];
-        $playedCards = $this->game->cardManager->getPlayedCards($playerId);
+        $playedCards = $this->game->cardManager->getPlayedCards($playerId, true);
         $bestType = null;
         foreach ($playedCards as $card) {
             if (isset($symbols[$card->type_arg])) {
@@ -269,7 +272,7 @@ class PlayerTurn extends GameState {
 
     function getPossibleCards(int $activePlayerId) {
         $hand = $this->game->cardManager->getPlayerHand($activePlayerId);
-        $playedTypes = array_column($this->game->cardManager->getPlayedCards($activePlayerId), 'type_arg');
+        $playedTypes = array_column($this->game->cardManager->getPlayedCards($activePlayerId, true), 'type_arg');
         //only one type is allowed from Hacking, Corruption or Propaganda. All other types are allowed
         $restrictedTypes = [
             Constants::CARD_TYPE_HACKING => true,

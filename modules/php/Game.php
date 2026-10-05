@@ -369,8 +369,13 @@ class Game extends \Bga\GameFramework\Table {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     ////////////   
-    function getCardToResolve() {
-        return $this->globals->get(Constants::GLB_CURRENT_CARD);
+    function getCardToResolve($originalOnly = false) {
+        $card = $this->globals->get(Constants::GLB_CURRENT_CARD);
+        if ($originalOnly || $card === null) {
+            return $card;
+        }
+        $copies = $this->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+        return $copies[$card->id] ?? $card;
     }
     
     function makeSavepoint($player_id = null) {

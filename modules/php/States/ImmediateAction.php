@@ -37,6 +37,12 @@ class ImmediateAction extends GameState {
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
             return PlayerTurn::class;
         }
+
+
+        if ($card->specialEffect === Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD && empty($args['_private'][$activePlayerId]['copyCards'])) {
+            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
+            return PlayerTurn::class;
+        }
     }
 
     /**
@@ -55,9 +61,20 @@ class ImmediateAction extends GameState {
                 }
             }
         }
-        // Get some values from the current game situation from the database.
+        $copyChoices = [];
+        if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD) {
+            foreach ($this->game->cardManager->getPlayedCards($activePlayerId, true) as $played) {
+                $copyChoices[$played->id] = $played->chooseOne
+                    ? ($played->type_arg === Constants::CARD_TYPE_HARDWARE ? 3 : 2)
+                    : 0;
+            }
+        }
         return [
             '_private' => [$activePlayerId => [
+                'copyChoices' => $copyChoices,
+                'copyCards' => $card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD
+                    ? array_values(array_filter($this->game->cardManager->getPlayedCards($activePlayerId), fn($played) => $played->id !== $this->game->getCardToResolve(true)->id))
+                    : [],
                 'discardCards' => $card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD
                     ? array_values($this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId)))
                     : [],
@@ -120,8 +137,54 @@ class ImmediateAction extends GameState {
             'amount' => $amount,
         ]);
         $this->game->globals->delete(Constants::GLBL_REMAINING_DESTROYS);
-        $this->game->globals->delete(Constants::GLB_CURRENT_CARD); //check if this does not cause problems
+        $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         return PlayerTurn::class;
+    }
+
+    protected function playCardAndResolve(SanCard $card, int $choice, int $activePlayerId): string {
+        $this->game->cardManager->playCard($card, $choice, $activePlayerId);
+        if ($this->game->cardManager->hasImmediateAction($card)) {
+            $this->game->globals->set(Constants::GLB_CURRENT_CARD, $card);
+            if ($card->destroyCards > 0) {
+                $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, $card->destroyCards);
+            }
+            return ImmediateAction::class;
+        }
+        return PlayerTurn::class;
+    }
+
+    #[PossibleAction]
+    public function actCopyPlayedCard(int $cardId, #[IntParam(min: 0, max: 3)] int $choice, int $activePlayerId) {
+        $effectCard = $this->game->getCardToResolve();
+        if ($effectCard === null || $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD) {
+            throw new UserException(clienttranslate('You cannot copy a card now'));
+        }
+        $original = $this->game->cardManager->getCard($this->game->getCardToResolve(true)->id);
+        $card = null;
+        foreach ($this->game->cardManager->getPlayedCards($activePlayerId, true) as $played) {
+            if ($played->id === $cardId && $played->id !== $original->id) {
+                $card = clone $played;
+                break;
+            }
+        }
+        if ($card === null) {
+            throw new UserException(clienttranslate('Select a card you played this turn'));
+        }
+        if (($card->chooseOne && ($choice < 1 || $choice > ($card->type_arg === Constants::CARD_TYPE_HARDWARE ? 3 : 2))) || (!$card->chooseOne && $choice !== 0)) {
+            throw new UserException(clienttranslate('You must choose which option to play'));
+        }
+        $card->id = $original->id;
+        $card->location = $original->location;
+        $card->location_arg = $original->location_arg;
+        $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+        $copies[$card->id] = $card;
+        $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARDS, $copies);
+        $nextState = $this->playCardAndResolve($card, $choice, $activePlayerId);
+        $this->game->globals->set(Constants::GLB_CURRENT_CARD, $original);
+        if ($nextState === PlayerTurn::class) {
+            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
+        }
+        return $nextState;
     }
 
     #[PossibleAction]
@@ -137,7 +200,7 @@ class ImmediateAction extends GameState {
         if (($card->chooseOne && ($choice < 1 || $choice > ($card->type_arg === Constants::CARD_TYPE_HARDWARE ? 3 : 2))) || (!$card->chooseOne && $choice !== 0)) {
             throw new UserException(clienttranslate('You must choose which option to play'));
         }
-        $nextState = (new PlayerTurn($this->game))->actPlayCard($cardId, $choice, $activePlayerId, ['selectableHandCards' => [$card]]);
+        $nextState = $this->playCardAndResolve($card, $choice, $activePlayerId);
         if ($nextState === PlayerTurn::class) {
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         }
@@ -153,7 +216,7 @@ class ImmediateAction extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $card = $this->game->getCardToResolve();
-        if ($card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD || $card->destroyCards) {
+        if ($card->specialEffect === Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD || $card->specialEffect === Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND || $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD || $card->destroyCards) {
             $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
         }
         if ($card->destroyCards) {
@@ -194,6 +257,11 @@ class ImmediateAction extends GameState {
      * but use the $playerId passed in parameter and $this->game->getPlayerNameById($playerId) instead.
      */
     function zombie(int $playerId) {
+        $copyCards = $this->getArgs($playerId)['_private'][$playerId]['copyCards'];
+        if ($copyCards) {
+            $copy = $copyCards[0];
+            return $this->actCopyPlayedCard($copy->id, ($this->getArgs($playerId)['_private'][$playerId]['copyChoices'][$copy->id] ?? 0) > 0 ? 1 : 0, $playerId);
+        }
         //zombie level 1
         $card = $this->game->getCardToResolve();
         if ($card !== null && $card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD) {

@@ -48,6 +48,7 @@ class Constants {
     const ACTION_DRAW = 4;
 
     const GLB_CURRENT_CARD = "currentCard";
+    const GLB_COPIED_PLAYED_CARDS = "copiedPlayedCards";
     const GLBL_REMAINING_DESTROYS = "remainingDestroys";
 
     /**

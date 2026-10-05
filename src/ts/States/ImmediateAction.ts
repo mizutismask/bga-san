@@ -17,6 +17,31 @@ export class ImmediateAction {
 		isCurrentPlayerActive: boolean
 	) {
 		if (!isCurrentPlayerActive) return
+        const copyCards = args._private?.copyCards ?? []
+        if (copyCards.length) {
+            this.bga.statusBar.setTitle(_('${you} can copy a card you played this turn'))
+            this.game.playedCards.setSelectionMode('single')
+            this.game.playedCards.setSelectableCards(copyCards)
+            this.game.playedCards.onSelectionChange = (selection, lastChange) => {
+                for (let choice = 1; choice <= 3; choice++) {
+                    document.getElementById(`buttonCopyChoice${choice}`)?.remove()
+                }
+                if (!lastChange || !selection.some(card => card.id === lastChange.id)) return
+                const choiceCount = args._private?.copyChoices[lastChange.id] ?? 0
+                if (!choiceCount) {
+                    this.game.takeAction('actCopyPlayedCard', { cardId: lastChange.id, choice: 0 })
+                    return
+                }
+                for (let choice = 1; choice <= choiceCount; choice++) {
+                    this.bga.statusBar.addActionButton(_('Option') + ' ' + choice, () => {
+                        this.game.takeAction('actCopyPlayedCard', { cardId: lastChange.id, choice })
+                    }, { id: `buttonCopyChoice${choice}`, color: 'primary' })
+                }
+            }
+            this.bga.statusBar.addActionButton(_('Pass'), () => this.game.takeAction('actPass'), {
+                id: 'buttonPass', color: 'secondary'
+            })
+        }
 		const discardCards = args._private?.discardCards ?? []
 		if (discardCards.length) {
 			this.bga.statusBar.setTitle(_('${you} can play a card from your discard pile'))
@@ -102,6 +127,8 @@ export class ImmediateAction {
 		}
 	}
 	onLeavingState() {
+        this.game.playedCards.onSelectionChange = undefined
+        this.game.playedCards.setSelectionMode('none')
 		if (this.discardStock) {
 			this.discardStock.onSelectionChange = undefined
 			this.discardStock.setSelectionMode('none')
