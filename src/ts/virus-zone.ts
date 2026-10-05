@@ -51,30 +51,15 @@ export class VirusZone {
 			return deck.addCards([...(gamedatas.virusCards[playerId] ?? [])].sort((a, b) => a.location_arg - b.location_arg))
 		})
 
-		const counterElement = document.createElement('span')
-		counterElement.hidden = true
-		zone.appendChild(counterElement)
-		const counter = new ebg.counter()
-		counter.create(counterElement, {
-			tableCounter: 'virusTokenPosition',
-			value: Number(gamedatas.virusTokenPosition)
-		})
-		this.position = Number(counter.getValue())
-		for (const method of ['setValue', 'toValue'] as const) {
-			const updateCounter = counter[method].bind(counter)
-			counter[method] = (value: number) => {
-				updateCounter(value)
-				this.position = Number(value)
-				this.refreshToken()
-			}
-		}
+		this.position = Number(gamedatas.virusTokenPosition)
 		Promise.all(decksReady).then(() => {
 			this.ready = true
 			this.refreshToken()
 		})
 	}
 
-	public refreshToken() {
+	public refreshToken(position = this.position) {
+		this.position = position
 		if (!this.ready) return
 		let destination: HTMLElement
 		if (this.position === 0) {
@@ -92,7 +77,7 @@ export class VirusZone {
 		if (!this.token.isConnected || !this.game.animationManager.animationsActive()) {
 			destination.appendChild(this.token)
 		} else if (this.token.parentElement !== destination) {
-			this.game.animationManager.slideAndAttach(this.token, destination, {
+			return this.game.animationManager.slideAndAttach(this.token, destination, {
 				fromPlaceholder: 'off',
 				toPlaceholder: 'off',
 				preserveScale: true,

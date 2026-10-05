@@ -111,32 +111,48 @@ class PlayerDecisions extends GameState {
         $virusLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $opponentId);
         $completedCard = null;
 
-        $isDefending = $position * $direction < 0;
-        if ($isDefending) {
-            // Retreat towards the central port on our own Virus card.
-            $newPosition = $position + $direction;
-        } else {
+        $hacking = $this->game->hackingCounter->get($activePlayerId);
+        $defenses = 0;
+        $attacks = 0;
+        $card = null;
+        if ($hacking > max(0, -$position * $direction)) {
             $card = $this->game->cardManager->getTopOfLocation($virusLocation);
             if ($card === null) {
                 throw new UserException(clienttranslate('There is no opposing Virus card to advance on'));
             }
-
-            $newPosition = $position + $direction;
-            if (abs($newPosition) > $card->virusSpaces) {
-                $newPosition = 0;
-                $completedCard = $card;
-            }
         }
 
-        $this->game->hackingCounter->inc($activePlayerId, -1);
-        $this->game->virusTokenPositionCounter->set($newPosition);
-        $message = $isDefending
-            ? clienttranslate('${player_name} defends ${virusIcon}')
-            : clienttranslate('${player_name} attacks ${virusIcon}');
-        $this->game->notify->all('msg', $message, [
-            'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            'virusIcon' => 'virus',
-        ]);
+        while ($defenses + $attacks < $hacking && $completedCard === null) {
+            $isDefending = $position * $direction < 0;
+            $position += $direction;
+            if ($isDefending) {
+                $defenses++;
+            } else {
+                $attacks++;
+                if (abs($position) > $card->virusSpaces) {
+                    $position = 0;
+                    $completedCard = $card;
+                }
+            }
+
+            $this->game->virusTokenPositionCounter->set($position, null);
+            $this->game->notify->all('virusTokenMoved', '', ['position' => $position]);
+        }
+
+        $this->game->hackingCounter->inc($activePlayerId, -($defenses + $attacks));
+        foreach (['defenses' => $defenses, 'attacks' => $attacks] as $type => $count) {
+            if ($count === 0) {
+                continue;
+            }
+            $message = $type === 'defenses'
+                ? clienttranslate('${player_name} defends ${count} ${virusIcon}')
+                : clienttranslate('${player_name} attacks ${count} ${virusIcon}');
+            $this->game->notify->all('msg', $message, [
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                'count' => $count,
+                'virusIcon' => 'virus',
+            ]);
+        }
 
         if ($completedCard !== null) {
             $this->game->cardManager->insertCardOnExtremePosition(

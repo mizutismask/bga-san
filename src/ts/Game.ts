@@ -576,6 +576,10 @@ export class Game extends BaseGame {
 			logger: log,
 		})
 	}
+	notif_virusTokenMoved(args: { position: number }) {
+		return this.virusZone.refreshToken(args.position)
+	}
+
 	notif_riverDeckUpdated(args: { topCard: SanCard | null; count: number }) {
 		return this.riverDeck.setCardNumber(args.count, args.topCard ?? undefined)
 	}
