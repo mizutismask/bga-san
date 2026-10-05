@@ -191,13 +191,19 @@ class DeckManager {
     public function addCardsToHand(int $qty, int $playerId, bool $notify = false) {
         $deckLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId);
         $handLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId);
-        $cards = $this->deck->pickCardsForLocation($qty, $deckLocation, $handLocation, $playerId, false);
+        $available = min($qty, $this->deck->countCardInLocation($deckLocation));
+        $cards = $available > 0
+            ? ($this->deck->pickCardsForLocation($available, $deckLocation, $handLocation, $playerId, true) ?? [])
+            : [];
         $remaining = $qty - count($cards);
         if ($remaining > 0) {
             $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId);
             $this->deck->moveAllCardsInLocation($discardLocation, $deckLocation);
             $this->deck->shuffle($deckLocation);
-            $cards = array_merge($cards, $this->deck->pickCardsForLocation($remaining, $deckLocation, $handLocation, $playerId, false));
+            $available = min($remaining, $this->deck->countCardInLocation($deckLocation));
+            if ($available > 0) {
+                $cards = array_merge($cards, $this->deck->pickCardsForLocation($available, $deckLocation, $handLocation, $playerId, true) ?? []);
+            }
         }
         $this->game->notifyCounterChange();
         if ($notify) {
