@@ -16,6 +16,7 @@ export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
+	public affordableRiverCards: SanCard[] | null = null
 	public playedCards!: LineStock<SanCard>
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
@@ -615,7 +616,12 @@ export class Game extends BaseGame {
 					?.addCard(card)
 					.then(() => this.virusZone.refreshToken())
 			} else if (card.location === 'river') {
-				this.river.addCard(card)
+				this.river.addCard(card, { selectable: false }).then(() => {
+					// The shopping state may have refreshed while the refill was animating.
+					if (this.affordableRiverCards !== null) {
+						this.river.setSelectableCards(this.affordableRiverCards)
+					}
+				})
 			} else if (card.location === 'destroyed') {
 				this.cardsManager.removeCard(card, { fadeOut: true })
 			} else if (card.location?.startsWith('hand_')) {
