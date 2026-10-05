@@ -72,13 +72,11 @@ class Game extends \Bga\GameFramework\Table {
         $this->incomeCounter = $this->counterFactory->createPlayerCounter("income");
         $this->remainingCardsInDeckCounter = $this->counterFactory->createPlayerCounter("remainingCardsInDeck");
         $this->totalCardsForPlayerCounter = $this->counterFactory->createPlayerCounter("totalCardsForPlayer");
-        $handSize = $this->expansionManager->getBasicHandSize();
-        $this->handSizeCounter = $this->counterFactory->createPlayerCounter("handSize", $handSize, $handSize + 2);
+        $this->handSizeCounter = $this->counterFactory->createPlayerCounter("handSize", 6, 9);
         $this->virusTokenPositionCounter = $this->counterFactory->createTableCounter("virusTokenPosition", -7, 7);
 
         $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = false;
-        $this->expansionManager = new ExpansionManager($this);
         $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "SanCard", Constants::MATERIAL_TYPE_CARD, ["material" => Material::getCards()[Constants::EXPANSION]]);
         $this->contextManager = new ContextManager($this);
     }
