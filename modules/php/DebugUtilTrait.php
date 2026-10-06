@@ -2,7 +2,6 @@
 
 namespace Bga\Games\San;
 
-use Bga\GameFramework\Actions\Debug;
 use Bga\GameFramework\UserException;
 use Constants;
 

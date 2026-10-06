@@ -179,12 +179,9 @@ class ImmediateAction extends GameState {
         $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
         $copies[$card->id] = $card;
         $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARDS, $copies);
-        $nextState = $this->playCardAndResolve($card, $choice, $activePlayerId);
-        $this->game->globals->set(Constants::GLB_CURRENT_CARD, $original);
-        if ($nextState === PlayerTurn::class) {
-            $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
-        }
-        return $nextState;
+        $this->game->globals->set(Constants::GLB_CARD_TO_AUTO_PLAY, ['cardId' => $card->id, 'choice' => $choice]);
+        $this->game->globals->delete(Constants::GLB_CURRENT_CARD);
+        return PlayerTurn::class;
     }
 
     #[PossibleAction]

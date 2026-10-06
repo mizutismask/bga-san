@@ -49,6 +49,7 @@ class Constants {
 
     const GLB_CURRENT_CARD = "currentCard";
     const GLB_COPIED_PLAYED_CARDS = "copiedPlayedCards";
+    const GLB_CARD_TO_AUTO_PLAY = "cardToAutoPlay";
     const GLBL_REMAINING_DESTROYS = "remainingDestroys";
 
     /**

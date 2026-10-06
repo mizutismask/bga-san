@@ -96,7 +96,6 @@ class CardManager extends DeckManager {
                 'toArg' => $activePlayerId,
                 'material' => [$this->castSingle($this->deck->getCard($card->id))],
             ]);
-
         }
 
         if (!$choice) {
@@ -175,7 +174,7 @@ class CardManager extends DeckManager {
         }
         $this->game->incomeCounter->set($playerId, $income);
         //todo also recalculate remaining destroys, maybe
-         $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, 0);
+        $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, 0);
     }
 
     private function getChoiceActions(SanCard $card, int $choice) {
@@ -278,7 +277,7 @@ class CardManager extends DeckManager {
         foreach ($cards as $card) {
             $effectCard = $copies[$card->id] ?? $card;
             if ($effectCard->trashAfterUse) {
-                $this->destroyCard($card, false, $activePlayerId);
+                $this->destroyCard($card, true, $activePlayerId);
             } else {
                 $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
             }
@@ -287,7 +286,15 @@ class CardManager extends DeckManager {
     }
 
     public function destroyCard(SanCard $card, bool $notify, int $playerId) {
-        $this->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DESTROYED, 0, $notify, $playerId);
+        $this->moveCardToLocation(
+            $card,
+            Constants::MATERIAL_LOCATION_DESTROYED,
+            0,
+            $notify,
+            $playerId,
+            clienttranslate('A ${cardType} card is destroyed after use'),
+            ['cardType' => $this->getCardTypeName($card)]
+        );
         $this->game->notifyCounterChange();
     }
 

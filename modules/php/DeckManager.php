@@ -203,6 +203,8 @@ class DeckManager {
             $available = min($remaining, $this->deck->countCardInLocation($deckLocation));
             if ($available > 0) {
                 $cards = array_merge($cards, $this->deck->pickCardsForLocation($available, $deckLocation, $handLocation, $playerId, true) ?? []);
+            }else{
+                $this->game->notify->player($playerId, 'message', "All cards are in play");
             }
         }
         $this->game->notifyCounterChange();

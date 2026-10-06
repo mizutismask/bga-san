@@ -27,6 +27,18 @@ class PlayerTurn extends GameState {
     }
 
     function onEnteringState(int $activePlayerId, array $args) {
+        $pending = $this->game->globals->get(Constants::GLB_CARD_TO_AUTO_PLAY);
+        if ($pending === null) {
+            return;
+        }
+        $this->game->globals->delete(Constants::GLB_CARD_TO_AUTO_PLAY);
+        $nextState = $this->actPlayCard($pending['cardId'], $pending['choice'], $activePlayerId, [
+            'selectableHandCards' => $this->game->cardManager->getPlayedCards($activePlayerId, true),
+        ]);
+        if ($nextState === ImmediateAction::class) {
+            $this->game->globals->set(Constants::GLB_CURRENT_CARD, $this->game->cardManager->getCard($pending['cardId']));
+        }
+        return $nextState;
     }
 
     /**
