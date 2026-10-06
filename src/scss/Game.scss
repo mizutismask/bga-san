@@ -143,10 +143,6 @@ html {
 
 		.corruptionPanel {
 			grid-column: 2;
-			.corruption-panel-title {
-				margin-bottom: 6px;
-				font-weight: bold;
-			}
 			.corruption-pair {
 				grid-row: 1;
 				@for $position from 1 through 6 {

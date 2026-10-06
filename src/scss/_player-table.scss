@@ -25,7 +25,7 @@
 
 .player-table {
 	display: flex;
-	z-index: 25; // so new animations are over the map
+	margin-top: 15px;
 }
 
 #player-tables:has(.player-table.own) .player-table:not(.own) {

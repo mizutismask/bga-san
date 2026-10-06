@@ -131,16 +131,10 @@ export class Game extends BaseGame {
 		this.setupPropagandaTrack(gamedatas)
 		const playerOrder = gamedatas.playerOrderWorkingWithSpectators
 		playerOrder.forEach((playerId, index) => {
-			const player = gamedatas.players[playerId]
 			const panel = document.createElement('div')
 			panel.id = `corruption-panel-${playerId}`
 			panel.className = `corruptionPanel ${index === 0 ? 'below-river' : 'above-river'}`
 			panel.style.gridRow = index === 0 ? '3' : '1'
-			const title = document.createElement('div')
-			title.className = 'corruption-panel-title'
-			title.style.color = `#${player.color}`
-			title.textContent = `${player.name} — ${_('Corrupted cards')}`
-			panel.appendChild(title)
 			const slots = document.createElement('div')
 			slots.className = 'corruption-slots'
 			panel.appendChild(slots)
