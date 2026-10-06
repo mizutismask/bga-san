@@ -118,7 +118,7 @@ interface NotifPointsArgs {
 }
 
 interface ImmediateActionArgs {
-	_private?: { discardCards: SanCard[]; copyCards: SanCard[]; copyChoices: Record<number, number> }
+	_private?: { discardCards: SanCard[]; copyCards: SanCard[]; copyChoices: Record<number, number>; copyFromRiver: boolean }
 	corruptionSlots: number[]
 	remainingDestroysFromHand: number
 }

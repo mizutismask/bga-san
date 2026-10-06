@@ -19,22 +19,27 @@ export class ImmediateAction {
 		if (!isCurrentPlayerActive) return
         const copyCards = args._private?.copyCards ?? []
         if (copyCards.length) {
-            this.bga.statusBar.setTitle(_('${you} can copy a card you played this turn'))
-            this.game.playedCards.setSelectionMode('single')
-            this.game.playedCards.setSelectableCards(copyCards)
-            this.game.playedCards.onSelectionChange = (selection, lastChange) => {
+            const copyFromRiver = args._private?.copyFromRiver ?? false
+            const copyStock = copyFromRiver ? this.game.river : this.game.playedCards
+            const copyAction = copyFromRiver ? 'actCopyRiverCard' : 'actCopyPlayedCard'
+            this.bga.statusBar.setTitle(copyFromRiver
+                ? _('${you} can copy a card from the river')
+                : _('${you} can copy a card you played this turn'))
+            copyStock.setSelectionMode('single')
+            copyStock.setSelectableCards(copyCards)
+            copyStock.onSelectionChange = (selection, lastChange) => {
                 for (let choice = 1; choice <= 3; choice++) {
                     document.getElementById(`buttonCopyChoice${choice}`)?.remove()
                 }
                 if (!lastChange || !selection.some(card => card.id === lastChange.id)) return
                 const choiceCount = args._private?.copyChoices[lastChange.id] ?? 0
                 if (!choiceCount) {
-                    this.game.takeAction('actCopyPlayedCard', { cardId: lastChange.id, choice: 0 })
+                    this.game.takeAction(copyAction, { cardId: lastChange.id, choice: 0 })
                     return
                 }
                 for (let choice = 1; choice <= choiceCount; choice++) {
                     this.bga.statusBar.addActionButton(_('Option') + ' ' + choice, () => {
-                        this.game.takeAction('actCopyPlayedCard', { cardId: lastChange.id, choice })
+                        this.game.takeAction(copyAction, { cardId: lastChange.id, choice })
                     }, { id: `buttonCopyChoice${choice}`, color: 'primary' })
                 }
             }
@@ -129,6 +134,8 @@ export class ImmediateAction {
 	onLeavingState() {
         this.game.playedCards.onSelectionChange = undefined
         this.game.playedCards.setSelectionMode('none')
+        this.game.river.onSelectionChange = undefined
+        this.game.river.setSelectionMode('none')
 		if (this.discardStock) {
 			this.discardStock.onSelectionChange = undefined
 			this.discardStock.setSelectionMode('none')

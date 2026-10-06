@@ -146,7 +146,8 @@ class PlayerTurn extends GameState {
             Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
             Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
             Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
-        ];        $returnedIds = [];
+        ];
+        $returnedIds = [];
         $hand = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId);
 
         $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
@@ -172,9 +173,11 @@ class PlayerTurn extends GameState {
                 }
             }
             // Recorded actions identify reversible choices and per-card effects.
-            if ($effectCard->draw || $effectCard->destroyCards
+            if (
+                $effectCard->draw || $effectCard->destroyCards
                 || in_array($effectCard->specialEffect, [Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND, Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD], true)
-                || ($effectCard->specialEffect && $context === null && $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD)) {
+                || ($effectCard->specialEffect && $context === null && !in_array($effectCard->specialEffect, [Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD, Constants::SPECIAL_EFFECT_COPY_RIVER_CARD], true))
+            ) {
                 continue;
             }
 
@@ -220,7 +223,7 @@ class PlayerTurn extends GameState {
                 $this->game->contextManager->deleteContextLog((int) $context['id']);
             }
         }
- 
+
         $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARDS, $copies);
         $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARD_SOURCES, $sources);
         $this->game->cardManager->recalculateCounters($activePlayerId);
