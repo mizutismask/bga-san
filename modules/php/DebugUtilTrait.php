@@ -3,6 +3,7 @@
 namespace Bga\Games\San;
 
 use Bga\GameFramework\Actions\Debug;
+use Bga\GameFramework\UserException;
 use Constants;
 
 /** @mixin Game */
@@ -21,8 +22,24 @@ trait DebugUtilTrait {
         //$this->gamestate->changeActivePlayer(2343492);
     }
 
-    function debug_addTickets(int $amount = 1) {
-        $this->propagandaCounter->inc($this->getCurrentPlayerId(), $amount);
+    function debug_addCardToHand(int $cardType = 1) {
+        $playerId = (int) $this->getCurrentPlayerId();
+        $cards = $this->cardManager->getCardsOfType($cardType);
+        $card = reset($cards);
+        if ($card) {
+            if ($card->location === $this->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId))
+                throw new UserException(clienttranslate('This card is already in hand'));
+
+            $this->cardManager->moveCardToLocation(
+                $card,
+                $this->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId),
+                $playerId,
+                true,
+                $playerId
+            );
+        } else {
+            throw new UserException(clienttranslate('No card of the requested type exists'));
+        }
     }
 
     /*function debug_CompleteDestinations() {
