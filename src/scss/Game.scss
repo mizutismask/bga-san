@@ -44,6 +44,7 @@ html {
 		width: 24px;
 		height: 50px;
 		flex-shrink: 0;
+		box-shadow: 0 1px 3px #000;
 		@each $symbol in moon, star {
 			&.#{$symbol} {
 				@include punches.hand-size($symbol);
@@ -138,9 +139,6 @@ html {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border: 1px solid rgba(255, 255, 255, 0.6);
-			border-radius: 14px;
-			background: rgba(255, 255, 255, 0.25);
 		}
 
 		.corruptionPanel {
@@ -170,7 +168,8 @@ html {
 				align-items: center;
 				justify-content: center;
 				font-size: 18px;
-				color: #245b28;
+				color: #5FA4DB;
+				font-weight: bold;
 				&.selectable:empty {
 					cursor: pointer;
 					box-shadow: 0 0 3px 2px rgb(200, 255, 47);
