@@ -204,10 +204,20 @@ export class Game extends BaseGame {
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
-				document.getElementById(`propaganda-slot-${playerId}-${position}`)!.appendChild(marker)
+				const destination = document.getElementById(`propaganda-slot-${playerId}-${position}`)!
 				handSizeTokens.forEach(({ milestone, token }) => {
 					token.hidden = progress >= milestone
 				})
+				if (!marker.isConnected || !this.animationManager.animationsActive()) {
+					destination.appendChild(marker)
+				} else if (marker.parentElement !== destination) {
+					return this.animationManager.slideAndAttach(marker, destination, {
+						fromPlaceholder: 'off',
+						toPlaceholder: 'off',
+						preserveScale: true,
+						bump: 1
+					})
+				}
 			}
 			updatePosition(Number(player.propagandaProgress))
 			const counter = new ebg.counter()
