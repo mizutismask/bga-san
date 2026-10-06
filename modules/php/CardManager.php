@@ -242,6 +242,7 @@ class CardManager extends DeckManager {
             Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
             Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
             Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD,
+            Constants::SPECIAL_EFFECT_PLAY_ALL_CARD_TYPES,
         ], true);
     }
 

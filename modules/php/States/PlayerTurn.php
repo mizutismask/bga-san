@@ -316,7 +316,13 @@ class PlayerTurn extends GameState {
 
     function getPossibleCards(int $activePlayerId) {
         $hand = $this->game->cardManager->getPlayerHand($activePlayerId);
-        $playedTypes = array_column($this->game->cardManager->getPlayedCards($activePlayerId, true), 'type_arg');
+        $playedCards = $this->game->cardManager->getPlayedCards($activePlayerId, true);
+        foreach ($playedCards as $card) {
+            if ($card->specialEffect === Constants::SPECIAL_EFFECT_PLAY_ALL_CARD_TYPES) {
+                return $hand;
+            }
+        }
+        $playedTypes = array_column($playedCards, 'type_arg');
         //only one type is allowed from Hacking, Corruption or Propaganda. All other types are allowed
         $restrictedTypes = [
             Constants::CARD_TYPE_HACKING => true,
