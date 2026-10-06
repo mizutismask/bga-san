@@ -648,7 +648,29 @@ export class Game extends BaseGame {
 			if (card.location?.startsWith('play_area_')) {
 				await this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
 			} else if (card.location?.startsWith('corr_')) {
-				await this.cardsManager.removeCard(card)
+				const slot = this.corruptedCardPositions.get(card.id)
+				const cardElement = this.cardsManager.getCardElement(card)
+				let shrinkFinished: Promise<void> = Promise.resolve()
+				if (slot && cardElement && this.animationManager.animationsActive()) {
+					const shrinkAnimation = cardElement.animate([{ scale: '1' }, { scale: '0' }], {
+						duration: 1000,
+						easing: 'ease-in-out',
+						fill: 'forwards'
+					})
+					shrinkFinished = shrinkAnimation.finished.then(() => undefined, () => undefined)
+				}
+				await Promise.all([
+					this.cardsManager.removeCard(card, { slideTo: slot }),
+					shrinkFinished
+				])
+				if (slot && this.animationManager.animationsActive()) {
+					slot.classList.add('highlighted')
+					try {
+						await this.animationManager.base.wait(1000)
+					} finally {
+						slot.classList.remove('highlighted')
+					}
+				}
 			} else if (card.location?.startsWith('virus_')) {
 				await this.virusZone.decks[Number(card.location.substring(6))]
 					?.addCard(card)

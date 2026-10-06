@@ -170,6 +170,10 @@ html {
 				font-size: 18px;
 				color: #5FA4DB;
 				font-weight: bold;
+				&.highlighted {
+					background: #fff176;
+					box-shadow: 0 0 8px 3px #ffd54f;
+				}
 				&.selectable:empty {
 					cursor: pointer;
 					box-shadow: 0 0 3px 2px rgb(200, 255, 47);
