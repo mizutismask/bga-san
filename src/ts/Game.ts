@@ -258,6 +258,7 @@ export class Game extends BaseGame {
 		const previous = this.corruptedCardPositions.get(card.id)
 		if (previous) {
 			previous.textContent = ''
+			this.setTooltip(previous.id, _('Place a card here to corrupt it and modify the crossing cost'))
 			this.corruptedCardPositions.delete(card.id)
 		}
 		if (card.location?.startsWith('corr_')) {
@@ -267,16 +268,19 @@ export class Game extends BaseGame {
 				const perspectiveId =
 					this.getPlayerId() > 0 ? this.getPlayerId() : this.gamedatas.playerOrderWorkingWithSpectators[0]
 				marker.textContent = ownerId === perspectiveId ? '✓ −1' : '✓ +1'
+				this.setTooltip(marker.id, _('the card crossing cost is modified by this amount'))
 				this.corruptedCardPositions.set(card.id, marker)
 			}
 		}
 	}
 
 	private setupTooltips() {
-		//todo change counter names
-		this.setTooltipToClass('revealed-tokens-back-counter', _('counter1 tooltip'))
-
 		this.setTooltipToClass('player-turn-order', _('First player'))
+		document.querySelectorAll<HTMLElement>('.corruption-marker').forEach(marker => {
+			this.setTooltip(marker.id, marker.textContent
+				? _('Card crossing cost is modified by this amount')
+				: _('Place a card here to corrupt it and modify the crossing cost'))
+		})
 	}
 
 	private setupPlayer(player: SanPlayer) {

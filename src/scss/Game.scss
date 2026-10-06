@@ -159,17 +159,36 @@ html {
 				gap: 8px;
 			}
 			.corruption-marker {
+				position: relative;
+				box-sizing: border-box;
 				width: 54px;
 				height: 28px;
-				border: 1px solid rgba(0, 0, 0, 0.5);
+				padding: 0 3px;
+				border: 2px solid #e0bb4b;
 				border-radius: 4px;
 				background: rgba(255, 255, 255, 0.7);
+				//background: #e0bb4b;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				font-size: 18px;
 				color: #5FA4DB;
 				font-weight: bold;
+				&:empty::before {
+					content: '';
+					position: absolute;
+					left: 50%;
+					transform: translateX(-50%);
+					top: 2px;
+					width: 23px;
+					height: 23px;
+					background-color: #737373;
+					mask-image: url('img/icons.webp');
+					mask-size: 500% 300%;
+					mask-position: 50% 0%;
+					mask-repeat: no-repeat;
+					pointer-events: none;
+				}
 				&.highlighted {
 					background: #fff176;
 					box-shadow: 0 0 8px 3px #ffd54f;
