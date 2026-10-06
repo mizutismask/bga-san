@@ -40,6 +40,20 @@ html {
 		}
 	}
 
+	.hand-size-token {
+		width: 24px;
+		height: 50px;
+		flex-shrink: 0;
+		@each $symbol in moon, star {
+			&.#{$symbol} {
+				@include punches.hand-size($symbol);
+			}
+		}
+		&[hidden] {
+			display: none;
+		}
+	}
+
 	.player-board {
 		.propaganda-marker {
 			width: 22px;
@@ -127,20 +141,6 @@ html {
 			border: 1px solid rgba(255, 255, 255, 0.6);
 			border-radius: 14px;
 			background: rgba(255, 255, 255, 0.25);
-		}
-
-		.hand-size-token {
-			width: 24px;
-			height: 50px;
-			flex-shrink: 0;
-			@each $symbol in moon, star {
-				&.#{$symbol} {
-					@include punches.hand-size($symbol);
-				}
-			}
-			&[hidden] {
-				display: none;
-			}
 		}
 
 		.corruptionPanel {

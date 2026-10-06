@@ -201,13 +201,30 @@ export class Game extends BaseGame {
 			marker.style.color = `#${player.color}`
 			marker.title = `${player.name}: ${_('Propaganda')}`
 			marker.innerHTML = '<span class="propaganda-progress" hidden></span>'
+			let previousProgress = player.propagandaProgress
 			const updatePosition = (value: number) => {
 				const progress = Math.max(0, Math.min(6, Number(value)))
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
 				const destination = document.getElementById(`propaganda-slot-${playerId}-${position}`)!
 				handSizeTokens.forEach(({ milestone, token }) => {
+					if (previousProgress < milestone && progress >= milestone && this.animationManager.animationsActive()) {
+						const target = document.getElementById(`handSize-player-counter-${playerId}`)
+						if (target) {
+							const movingToken = token.cloneNode(true) as HTMLElement
+							movingToken.hidden = false
+							movingToken.setAttribute('aria-hidden', 'true')
+							token.parentElement!.appendChild(movingToken)
+							void this.animationManager.slideOutAndDestroy(movingToken, target, {
+								fromPlaceholder: 'off',
+								toPlaceholder: 'off',
+								preserveScale: true,
+								bump: 1
+							})
+						}
+					}
 					token.hidden = progress >= milestone
 				})
+				previousProgress = progress
 				if (!marker.isConnected || !this.animationManager.animationsActive()) {
 					destination.appendChild(marker)
 				} else if (marker.parentElement !== destination) {
