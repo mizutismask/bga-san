@@ -34,12 +34,12 @@ export class ImmediateAction {
                 if (!lastChange || !selection.some(card => card.id === lastChange.id)) return
                 const choiceCount = args._private?.copyChoices[lastChange.id] ?? 0
                 if (!choiceCount) {
-                    this.game.takeAction(copyAction, { cardId: lastChange.id, choice: 0 })
+                    this.game.playCardWithConfirmation(lastChange, copyAction, { cardId: lastChange.id, choice: 0 })
                     return
                 }
                 for (let choice = 1; choice <= choiceCount; choice++) {
                     this.bga.statusBar.addActionButton(_('Option') + ' ' + choice, () => {
-                        this.game.takeAction(copyAction, { cardId: lastChange.id, choice })
+                        this.game.playCardWithConfirmation(lastChange, copyAction, { cardId: lastChange.id, choice })
                     }, { id: `buttonCopyChoice${choice}`, color: 'primary' })
                 }
             }
@@ -61,7 +61,7 @@ export class ImmediateAction {
 			this.discardStock.setSelectionMode('single')
 			this.discardStock.onSelectionChange = (selection, lastChange) => {
 				if (lastChange && !lastChange.chooseOne && selection.some(card => card.id === lastChange.id)) {
-					this.game.takeAction('actPlayFromDiscard', { cardId: lastChange.id, choice: 0 })
+					this.game.playCardWithConfirmation(lastChange, 'actPlayFromDiscard', { cardId: lastChange.id, choice: 0 })
 				}
 			}
 			this.bga.statusBar.addActionButton(_('Pass'), () => this.game.takeAction('actPass'), {

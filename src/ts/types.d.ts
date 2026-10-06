@@ -31,6 +31,7 @@ interface SanPlayer extends Player {
 	symbol: 'moon' | 'star'
 	handSize: number
 	remainingCardsInDeck: number
+	cardsInDiscard: number
 	totalCardsForPlayer: number
 	tickets: number
 }
@@ -85,6 +86,7 @@ interface SanGame /*extends Game*/ {
 	addTooltipOnClickHelpButton(idButton: string, tooltipContent: string, delay?: number): void
 	handSelectionChange(selection: SanCard[], lastChange: SanCard): void
 	takeAction(action: string, data?: any, options?: { lock: boolean; checkAction: boolean }): Promise<void>
+	playCardWithConfirmation(card: SanCard, action: string, data: { cardId: number; choice: number }): Promise<void>
 }
 
 interface CardShoppingArgs {

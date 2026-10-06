@@ -123,6 +123,9 @@ class CardManager extends DeckManager {
         }
 
         $this->recalculateCounters($activePlayerId);
+        if (!$isCopy && $card->location === $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId)) {
+            $this->game->notifyCounterChange();
+        }
     }
 
     private function getPerCardCounter(SanCard $card): ?int {
@@ -285,6 +288,7 @@ class CardManager extends DeckManager {
         }
         $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARDS);
         $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARD_SOURCES);
+        $this->game->notifyCounterChange();
     }
 
     public function destroyCard(SanCard $card, bool $notify, int $playerId) {

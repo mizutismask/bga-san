@@ -84,7 +84,7 @@ export class PlayerTurn {
 				stock.setSelectionMode(selectableCards.length > 0 ? 'single' : 'none', selectableCards)
 				stock.onSelectionChange = (selection, lastChange) => {
 					if (lastChange && selection.some((card) => card.id === lastChange.id)) {
-						this.game.takeAction('actPlayCard', { cardId: lastChange.id, choice: 0 })
+						this.game.playCardWithConfirmation(lastChange, 'actPlayCard', { cardId: lastChange.id, choice: 0 })
 					}
 				}
 			}

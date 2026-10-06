@@ -12,6 +12,7 @@ import { PlayerTurn } from './States/PlayerTurn'
 import { PlayerDecisions } from './States/PlayerDecisions'
 import { CardShopping } from './States/CardShopping'
 import { ImmediateAction } from './States/ImmediateAction'
+import { SPECIAL_EFFECT_PLAY_FROM_DISCARD } from './constants'
 export class Game extends BaseGame {
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
@@ -20,6 +21,7 @@ export class Game extends BaseGame {
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
 	public propagandaCounters = new Map<number, Counter>()
+	private discardCounters = new Map<number, Counter>()
 
 	private displayedTooltip: any //dijit.Tooltip
 
@@ -31,6 +33,24 @@ export class Game extends BaseGame {
 		this.bga.states.register('CardShopping', new CardShopping(this, this.bga))
 		this.bga.states.register('ImmediateAction', new ImmediateAction(this, this.bga))
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
+	}
+
+	public async playCardWithConfirmation(card: SanCard, action: string, data: { cardId: number; choice: number }): Promise<void> {
+		if (card.specialEffect === SPECIAL_EFFECT_PLAY_FROM_DISCARD
+			&& this.discardCounters.get(this.getPlayerId())?.getValue() === 0) {
+			const confirmed = await this.bga.dialogs.confirmation(
+				_('Your discard pile is empty, so this card cannot play a card from it. Play it anyway?')
+			)
+			if (!confirmed) {
+				for (const stock of Object.values(this.playerTables[this.getPlayerId()]?.handStocks ?? {})) {
+					stock.unselectAll()
+				}
+				this.playedCards.unselectAll()
+				this.river.unselectAll()
+				return
+			}
+		}
+		return this.takeAction(action, data)
 	}
 
 	public setup(gamedatas: SanGamedatas) {
@@ -252,7 +272,8 @@ export class Game extends BaseGame {
 			{ name: 'corruption', icon: 2, label: _('Corruption') },
 			{ name: 'income', icon: 14, label: _('Income') },
 			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') },
-			{ name: 'remainingCardsInDeck', icon: 'fa-stack-overflow', label: _('Remaining cards in deck/owned cards') }
+			{ name: 'remainingCardsInDeck', icon: 'fa-stack-overflow', label: _('Remaining cards in deck/owned cards') },
+			{ name: 'cardsInDiscard', icon: 'fa6 fa-trash', label: _('Cards in discard pile') }
 		]
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
 			'afterbegin',
@@ -290,6 +311,7 @@ export class Game extends BaseGame {
 			})
 			this.setTooltipToClass(`${name}-counter`, label)
 			if (name === 'propaganda') this.propagandaCounters.set(playerId, counter)
+			if (name === 'cardsInDiscard') this.discardCounters.set(playerId, counter)
 		})
 
 		const totalCardsCounter = new ebg.counter()

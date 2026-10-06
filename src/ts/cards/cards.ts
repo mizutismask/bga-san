@@ -63,14 +63,14 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 			zone.addEventListener('click', event => {
 				event.stopPropagation()
 				if (document.getElementById('immediate-discard-cards')?.contains(zone)) {
-					game.takeAction('actPlayFromDiscard', { cardId: card.id, choice })
+					game.playCardWithConfirmation(card, 'actPlayFromDiscard', { cardId: card.id, choice })
 					return
 				}
 				const hand = document.getElementById(`hand-${game.getPlayerId()}`)
 				if (!hand?.contains(zone)) {
 					return
 				}
-				game.takeAction('actPlayCard', { cardId: card.id, choice:choice })
+				game.playCardWithConfirmation(card, 'actPlayCard', { cardId: card.id, choice })
 			})
 			container.appendChild(zone)
 		}

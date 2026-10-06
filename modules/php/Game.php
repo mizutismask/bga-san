@@ -44,6 +44,7 @@ class Game extends \Bga\GameFramework\Table {
     public PlayerCounter $propagandaCounter, $propagandaProgressCounter, $hackingCounter, $corruptionCounter, $incomeCounter, $handSizeCounter;
     public TableCounter $virusTokenPositionCounter;
     public PlayerCounter $remainingCardsInDeckCounter;
+    public PlayerCounter $cardsInDiscardCounter;
     public PlayerCounter $totalCardsForPlayerCounter;
     public ContextManager $contextManager;
     public ExpansionManager $expansionManager;
@@ -71,6 +72,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter = $this->counterFactory->createPlayerCounter("corruption");
         $this->incomeCounter = $this->counterFactory->createPlayerCounter("income");
         $this->remainingCardsInDeckCounter = $this->counterFactory->createPlayerCounter("remainingCardsInDeck");
+        $this->cardsInDiscardCounter = $this->counterFactory->createPlayerCounter("cardsInDiscard");
         $this->totalCardsForPlayerCounter = $this->counterFactory->createPlayerCounter("totalCardsForPlayer");
         $this->handSizeCounter = $this->counterFactory->createPlayerCounter("handSize", 6, 9);
         $this->virusTokenPositionCounter = $this->counterFactory->createTableCounter("virusTokenPosition", -7, 7);
@@ -164,6 +166,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter->initDb(array_keys($players));
         $this->incomeCounter->initDb(array_keys($players));
         $this->remainingCardsInDeckCounter->initDb(array_keys($players));
+        $this->cardsInDiscardCounter->initDb(array_keys($players));
         $this->totalCardsForPlayerCounter->initDb(array_keys($players));
         $this->handSizeCounter->initDb(array_keys($players), $this->expansionManager->getBasicHandSize());
         $this->virusTokenPositionCounter->initDb(0);
@@ -286,6 +289,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->corruptionCounter->fillResult($result);
         $this->incomeCounter->fillResult($result);
         $this->remainingCardsInDeckCounter->fillResult($result);
+        $this->cardsInDiscardCounter->fillResult($result);
         $this->handSizeCounter->fillResult($result);
         $this->virusTokenPositionCounter->fillResult($result);
 
@@ -319,6 +323,10 @@ class Game extends \Bga\GameFramework\Table {
             $deckCount = $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, (int) $playerId));
             if ($this->remainingCardsInDeckCounter->get((int) $playerId) !== $deckCount) {
                 $this->remainingCardsInDeckCounter->set((int) $playerId, $deckCount);
+            }
+            $discardCount = $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, (int) $playerId));
+            if ($this->cardsInDiscardCounter->get((int) $playerId) !== $discardCount) {
+                $this->cardsInDiscardCounter->set((int) $playerId, $discardCount);
             }
             $totalCards = $this->cardManager->getTotalCardsForPlayer((int) $playerId);
             if ($this->totalCardsForPlayerCounter->get((int) $playerId) !== $totalCards) {
