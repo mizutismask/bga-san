@@ -283,6 +283,7 @@ class CardManager extends DeckManager {
             }
         }
         $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARDS);
+        $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARD_SOURCES);
     }
 
     public function destroyCard(SanCard $card, bool $notify, int $playerId) {

@@ -150,10 +150,11 @@ class PlayerTurn extends GameState {
         $hand = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $activePlayerId);
 
         $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
-        foreach ($this->game->cardManager->getPlayedCards($activePlayerId) as $card) {
-            if (isset($copies[$card->id])) {
-                continue;
-            }
+        $sources = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARD_SOURCES, []);
+        $playedCards = $this->game->cardManager->getPlayedCards($activePlayerId);
+        $cancelable = [];
+        foreach ($playedCards as $card) {
+            $effectCard = isset($copies[$card->id]) ? (object) $copies[$card->id] : $card;
             $context = $contexts[$card->id] ?? null;
             $actions = $context !== null
                 ? json_decode($context['param3'], true, 512, JSON_THROW_ON_ERROR)
@@ -171,9 +172,34 @@ class PlayerTurn extends GameState {
                 }
             }
             // Recorded actions identify reversible choices and per-card effects.
-            if ($card->draw || $card->destroyCards || ($card->specialEffect && $context === null)) {
+            if ($effectCard->draw || $effectCard->destroyCards
+                || in_array($effectCard->specialEffect, [Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND, Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD], true)
+                || ($effectCard->specialEffect && $context === null && $effectCard->specialEffect !== Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD)) {
                 continue;
             }
+
+            $cancelable[$card->id] = true;
+        }
+
+        // An irreversible copy also locks its source, including chains of copies.
+        foreach ($playedCards as $card) {
+            if (isset($cancelable[$card->id])) {
+                continue;
+            }
+            $sourceId = $sources[$card->id] ?? null;
+            $visited = [];
+            while ($sourceId !== null && !isset($visited[$sourceId])) {
+                $visited[$sourceId] = true;
+                unset($cancelable[$sourceId]);
+                $sourceId = $sources[$sourceId] ?? null;
+            }
+        }
+
+        foreach ($playedCards as $card) {
+            if (!isset($cancelable[$card->id])) {
+                continue;
+            }
+            $context = $contexts[$card->id] ?? null;
 
             $this->game->cardManager->moveCardToLocation($card, $hand, $activePlayerId, false);
             $from = $card->location;
@@ -189,11 +215,14 @@ class PlayerTurn extends GameState {
                 'material' => [$card],
             ]);
             $returnedIds[] = $card->id;
+            unset($copies[$card->id], $sources[$card->id]);
             if ($context !== null) {
                 $this->game->contextManager->deleteContextLog((int) $context['id']);
             }
         }
  
+        $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARDS, $copies);
+        $this->game->globals->set(Constants::GLB_COPIED_PLAYED_CARD_SOURCES, $sources);
         $this->game->cardManager->recalculateCounters($activePlayerId);
         $revealed = $this->game->globals->get('revealedPlayedCards', []);
         $this->game->globals->set('revealedPlayedCards', array_values(array_diff($revealed, $returnedIds)));

@@ -21,7 +21,7 @@ trait DebugUtilTrait {
         //$this->gamestate->changeActivePlayer(2343492);
     }
 
-    function debug_addCardToHand(int $cardType = 1) {
+    function debug_addCardToHand(int $cardType) {
         $playerId = (int) $this->getCurrentPlayerId();
         $cards = $this->cardManager->getCardsOfType($cardType);
         $card = reset($cards);
