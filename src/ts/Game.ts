@@ -5,7 +5,7 @@ import { GameFeatureConfig } from './gamefeatureconfig'
 import { PlayerTable } from './player-table'
 import { VirusZone } from './virus-zone'
 import { CardStock, Deck, LineStock, SlotStock } from '../../bga-cards'
-import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove } from './types'
+import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove, NotifImportantMessageArgs } from './types'
 import { CardsManager } from './cards/cards'
 import { generateSlotsIds } from './stock-utils'
 import { PlayerTurn } from './States/PlayerTurn'
@@ -598,6 +598,14 @@ export class Game extends BaseGame {
 			logger: log,
 		})
 	}
+	notif_importantMessage(args: NotifImportantMessageArgs) {
+		return super.notif_importantMessage(args)
+	}
+
+	notif_lastTurn() {
+		super.notif_lastTurn()
+	}
+
 	notif_virusTokenMoved(args: { position: number }) {
 		return this.virusZone.refreshToken(args.position)
 	}

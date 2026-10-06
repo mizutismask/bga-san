@@ -281,7 +281,7 @@ class CardManager extends DeckManager {
         foreach ($cards as $card) {
             $effectCard = $copies[$card->id] ?? $card;
             if ($effectCard->trashAfterUse) {
-                $this->destroyCard($card, true, $activePlayerId);
+                $this->destroyCard($card, true, $activePlayerId, true);
             } else {
                 $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
             }
@@ -291,14 +291,14 @@ class CardManager extends DeckManager {
         $this->game->notifyCounterChange();
     }
 
-    public function destroyCard(SanCard $card, bool $notify, int $playerId) {
+    public function destroyCard(SanCard $card, bool $notify, int $playerId, bool $trashAfterUse = false) {
         $this->moveCardToLocation(
             $card,
             Constants::MATERIAL_LOCATION_DESTROYED,
             0,
             $notify,
             $playerId,
-            clienttranslate('A ${cardType} card is destroyed after use'),
+            $trashAfterUse ? clienttranslate('A ${cardType} card is destroyed after use') : clienttranslate('A ${cardType} card is destroyed'),
             ['cardType' => $this->getCardTypeName($card)]
         );
         $this->game->notifyCounterChange();
@@ -326,7 +326,7 @@ class CardManager extends DeckManager {
             'corruptedCount' => $corruptedCount,
         ]);
         if ($corruptedCount >= 12) {
-            $this->game->announceEndCondition(clienttranslate('${player_name} corrupts twelve cards.'), [
+            $this->game->announceEndCondition(clienttranslate('${player_name} has corrupted twelve cards and wins the game'), [
                 'player_name' => $this->game->getPlayerNameById($playerId),
             ]);
             $this->game->playerScore->set($playerId, 1);

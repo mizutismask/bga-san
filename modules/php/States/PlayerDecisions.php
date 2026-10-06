@@ -82,7 +82,7 @@ class PlayerDecisions extends GameState {
         }
 
         if ($newPosition >= CardManager::RIVER_SIZE) {
-            $this->game->announceEndCondition(clienttranslate('${player_name} reaches the end of the propaganda track.'), [
+            $this->game->announceEndCondition(clienttranslate('${player_name} reaches the end of the propaganda track and wins the game'), [
                 'player_name' => $this->game->getPlayerNameById($activePlayerId),
             ]);
             $this->game->playerScore->set($activePlayerId, 1);
@@ -170,7 +170,7 @@ class PlayerDecisions extends GameState {
             ]);
 
             if ($remainingVirusCards === 0) {
-                $this->game->announceEndCondition(clienttranslate('${player_name} gives their opponent all five Virus cards.'), [
+                $this->game->announceEndCondition(clienttranslate('${player_name} has given his opponent all five Virus cards and wins the game'), [
                     'player_name' => $this->game->getPlayerNameById($activePlayerId),
                 ]);
                 $this->game->playerScore->set($activePlayerId, 1);
