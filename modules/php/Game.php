@@ -312,6 +312,49 @@ class Game extends \Bga\GameFramework\Table {
         return $result;
     }
 
+    public function resolveRiverExhaustion(): void {
+        $players = array_map('intval', array_keys($this->getPlayers()));
+        $progress = [];
+        // Compare progress toward victory on at least 2 requirements
+        foreach ($players as $playerId) {
+            $opponentId = (int) $this->getOpponentId($playerId);
+            $progress[$playerId] = [
+                $this->propagandaProgressCounter->get($playerId),
+                $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId)),
+                5 - $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $opponentId)),
+            ];
+        }
+
+        $winnerId = null;
+        foreach ($players as $playerId) {
+            $opponentId = (int) $this->getOpponentId($playerId);
+            $leads = 0;
+            foreach ($progress[$playerId] as $requirement => $value) {
+                $comparison = $value <=> $progress[$opponentId][$requirement];
+                if ($comparison > 0) {
+                    // A tied requirement does not count as a lead for either player.
+                    $leads++;
+                }
+            }
+            if ($leads >= 2) {
+                $winnerId = $playerId;
+            }
+        }
+
+        // BGA ranks players by score: 1 for the majority winner, 0 otherwise.
+        // If neither player leads on two requirements, equal scores produce a draw.
+        foreach ($players as $playerId) {
+            $this->playerScore->set($playerId, $playerId === $winnerId ? 1 : 0);
+        }
+        if ($winnerId === null) {
+            $this->announceEndCondition(clienttranslate('The river can no longer be refilled. Neither player leads on two winning requirements, so the game is a draw.'));
+        } else {
+            $this->announceEndCondition(clienttranslate('The river can no longer be refilled. ${player_name} leads on at least two winning requirements and wins the game.'), [
+                'player_name' => $this->getPlayerNameById($winnerId),
+            ]);
+        }
+    }
+
     public function announceEndCondition(string $message, array $args = []): void {
         $endCondition = ['type' => 'WIN', 'message' => $message, 'args' => $args];
         $this->globals->set('endCondition', $endCondition);

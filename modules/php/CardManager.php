@@ -256,7 +256,8 @@ class CardManager extends DeckManager {
                 $emptySlot = $this->getFirstEmptySlotInLocation(CardManager::RIVER_SIZE, Constants::MATERIAL_LOCATION_RIVER);
                 $card = $this->castSingle($this->deck->pickCardForLocation(Constants::MATERIAL_LOCATION_DECK, Constants::MATERIAL_LOCATION_RIVER, $emptySlot), true);
                 if ($card === null) {
-                    $this->game->announceEndCondition(clienttranslate('The game ends because the river can no longer be refilled.'));
+                    // Deck exhaustion ends the game by comparing the three victory requirements.
+                    $this->game->resolveRiverExhaustion();
                     return false;
                 }
                 $this->game->notify->all('materialMove', '', [
@@ -311,9 +312,10 @@ class CardManager extends DeckManager {
             throw new \Bga\GameFramework\UserException(clienttranslate('You can only corrupt 2 cards per slot'));
         }
         $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId), $slot * 10 + $position, true, $playerId);
+        $riverRefilled = true;
         if (!$fromHand) {
             $this->game->corruptionCounter->inc($playerId, -3);
-            $this->refillRiver();
+            $riverRefilled = $this->refillRiver();
         }
         $corruptedCount = $this->countCardsInLocation(
             $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId)
@@ -333,7 +335,8 @@ class CardManager extends DeckManager {
             $this->game->playerScore->set((int) $this->game->getOpponentId($playerId), 0);
             return true;
         }
-        return false;
+        // River exhaustion must also end the turn when corruption triggered the refill.
+        return !$riverRefilled;
     }
 
     public function getCorruptedCardsOnSlot(int $slot, int $playerId): array {
