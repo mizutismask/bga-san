@@ -35,9 +35,15 @@ export class Game extends BaseGame {
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
 
-	public async playCardWithConfirmation(card: SanCard, action: string, data: { cardId: number; choice: number }): Promise<void> {
-		if (card.specialEffect === SPECIAL_EFFECT_PLAY_FROM_DISCARD
-			&& this.discardCounters.get(this.getPlayerId())?.getValue() === 0) {
+	public async playCardWithConfirmation(
+		card: SanCard,
+		action: string,
+		data: { cardId: number; choice: number }
+	): Promise<void> {
+		if (
+			card.specialEffect === SPECIAL_EFFECT_PLAY_FROM_DISCARD &&
+			this.discardCounters.get(this.getPlayerId())?.getValue() === 0
+		) {
 			const confirmed = await this.bga.dialogs.confirmation(
 				_('Your discard pile is empty, so this card cannot play a card from it. Play it anyway?')
 			)
@@ -117,7 +123,7 @@ export class Game extends BaseGame {
 		this.riverDeck = new BgaCards.Deck<SanCard>(this.cardsManager, document.getElementById('river-deck')!, {
 			topCard: gamedatas.riverDeckTopCard ?? undefined,
 			cardNumber: gamedatas.riverDeckCount,
-			counter: { show: true, position: 'left' }
+			counter: { show: true, position: 'bottom-right', size: 8 }
 		})
 
 		// river
@@ -201,7 +207,11 @@ export class Game extends BaseGame {
 				const position = Number(player.playerNo) === 1 ? progress : 6 - progress
 				const destination = document.getElementById(`propaganda-slot-${playerId}-${position}`)!
 				handSizeTokens.forEach(({ milestone, token }) => {
-					if (previousProgress < milestone && progress >= milestone && this.animationManager.animationsActive()) {
+					if (
+						previousProgress < milestone &&
+						progress >= milestone &&
+						this.animationManager.animationsActive()
+					) {
 						const target = document.getElementById(`handSize-player-counter-${playerId}`)
 						if (target) {
 							const movingToken = token.cloneNode(true) as HTMLElement
@@ -270,10 +280,13 @@ export class Game extends BaseGame {
 
 	private setupTooltips() {
 		this.setTooltipToClass('player-turn-order', _('First player'))
-		document.querySelectorAll<HTMLElement>('.corruption-marker').forEach(marker => {
-			this.setTooltip(marker.id, marker.textContent
-				? _('Card crossing cost is modified by this amount')
-				: _('Place a card here to corrupt it and modify the crossing cost'))
+		document.querySelectorAll<HTMLElement>('.corruption-marker').forEach((marker) => {
+			this.setTooltip(
+				marker.id,
+				marker.textContent
+					? _('Card crossing cost is modified by this amount')
+					: _('Place a card here to corrupt it and modify the crossing cost')
+			)
 		})
 	}
 
@@ -297,7 +310,11 @@ export class Game extends BaseGame {
 			{ name: 'corruption', icon: 2, label: _('Corruption') },
 			{ name: 'income', icon: 14, label: _('Income') },
 			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') },
-			{ name: 'remainingCardsInDeck', icon: 'fa-stack-overflow', label: _('Remaining cards in deck/owned cards') },
+			{
+				name: 'remainingCardsInDeck',
+				icon: 'fa-stack-overflow',
+				label: _('Remaining cards in deck/owned cards')
+			},
 			{ name: 'cardsInDiscard', icon: 'fa6 fa-trash', label: _('Cards in discard pile') }
 		]
 		this.bga.playerPanels.getElement(playerId).insertAdjacentHTML(
@@ -620,7 +637,7 @@ export class Game extends BaseGame {
 		this.bga.notifications.setupPromiseNotifications({
 			minDuration: 1,
 			minDurationNoText: 1,
-			logger: log,
+			logger: log
 		})
 	}
 	notif_importantMessage(args: NotifImportantMessageArgs) {
@@ -655,12 +672,12 @@ export class Game extends BaseGame {
 						easing: 'ease-in-out',
 						fill: 'forwards'
 					})
-					shrinkFinished = shrinkAnimation.finished.then(() => undefined, () => undefined)
+					shrinkFinished = shrinkAnimation.finished.then(
+						() => undefined,
+						() => undefined
+					)
 				}
-				await Promise.all([
-					this.cardsManager.removeCard(card, { slideTo: slot }),
-					shrinkFinished
-				])
+				await Promise.all([this.cardsManager.removeCard(card, { slideTo: slot }), shrinkFinished])
 				if (slot && this.animationManager.animationsActive()) {
 					slot.classList.add('highlighted')
 					try {
