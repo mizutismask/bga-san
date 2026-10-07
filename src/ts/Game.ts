@@ -546,7 +546,7 @@ export class Game extends BaseGame {
 	}
 
 	public addTooltipOnClickHelpButton(id, html, delay) {
-		/*let tooltip = new dijit.Tooltip({
+		let tooltip = new dijit.Tooltip({
 			label: html,
 			showDelay: delay
 		})
@@ -565,7 +565,7 @@ export class Game extends BaseGame {
 
 		dojo.connect($(id), 'mouseleave', () => {
 			tooltip.close()
-		})*/
+		})
 	}
 
 	public dontPreloadUselessAssets() {
