@@ -24,6 +24,7 @@ namespace Bga\Games\San;
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\SystemException;
 use Bga\GameFramework\Table;
 use Bga\Games\San\ExpansionManager;
 use Bga\Games\San\Material;
@@ -82,9 +83,9 @@ class Game extends \Bga\GameFramework\Table {
         $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "SanCard", Constants::MATERIAL_TYPE_CARD, ["material" => Material::getCards()[Constants::EXPANSION]]);
         $this->contextManager = new ContextManager($this);
     }
-    public function getPropagandaCost(int $playerId): int {
+    public function getPropagandaCost(int $playerId, ?int $nextPosition = null): int {
         $propPosition = $this->propagandaProgressCounter->get($playerId);
-        $nextPosition = $propPosition + 1;
+        $nextPosition ??= $propPosition + 1;
         $slot = $this->mirrorSlot($nextPosition, $playerId);
         $slotCards = $this->cardManager->getCardsInLocation(Constants::MATERIAL_LOCATION_RIVER, $slot);
         /** @var SanCard|null $nextCard */
@@ -93,7 +94,7 @@ class Game extends \Bga\GameFramework\Table {
 
 
         if ($nextCard === null) {
-            throw new \BgaSystemException('Missing river card in getPropagandaCost: ' . json_encode([
+            throw new SystemException('Missing river card in getPropagandaCost: ' . json_encode([
                 'playerId' => $playerId,
                 'opponentId' => $opponentId,
                 'propagandaPosition' => $propPosition,
@@ -174,11 +175,27 @@ class Game extends \Bga\GameFramework\Table {
         // TODO: setup the initial game situation here
         $this->globals->set(Constants::LAST_TURN, 0); // last turn is the id of the last player, 0 if it's not last turn
         $this->setupTable($players);
-
-        // does not activate player since it’s done within stNextPlayer
+        $playerToActivate = $this->findFirstPlayer();
+        // NextPlayer advances the turn, so activate the starting player's opponent first.
+        $this->gamestate->changeActivePlayer((int) $this->getOpponentId($playerToActivate));
         return NextPlayer::class;
 
         /************ End of the game initialization *****/
+    }
+
+    function findFirstPlayer() {
+        $firstPlayerId = (int) $this->getPlayerIdFromPosition(1);
+        $opponentId = (int) $this->getOpponentId($firstPlayerId);
+
+        for ($position = 1; $position <= CardManager::RIVER_SIZE / 2; $position++) {
+            $firstPlayerCost = $this->getPropagandaCost($firstPlayerId, $position);
+            $opponentCost = $this->getPropagandaCost($opponentId, $position);
+            if ($firstPlayerCost !== $opponentCost) {
+                return $firstPlayerCost > $opponentCost ? $firstPlayerId : $opponentId;
+            }
+        }
+
+        return $firstPlayerId;
     }
 
     function setupTable(array $players) {

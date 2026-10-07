@@ -37,9 +37,9 @@ class NextPlayer extends \Bga\GameFramework\States\GameState {
         $this->game->hackingCounter->set($previousPlayerId, 0);
         $this->game->corruptionCounter->set($previousPlayerId, 0);
         $this->game->incomeCounter->set($previousPlayerId, 0);
+        
         $this->game->globals->set(Constants::GLBL_REMAINING_DESTROYS, 0);
 
-        //$this->game->globals->set(Constants::GLBL_REMAINING_OSHAX_MOVES, 2);
         //$this->game->setPlayerGlobal($activePlayerId, Constants::GLBL_DISCOVERY_TAKEN, false);
 
         $this->game->contextManager->reset();
