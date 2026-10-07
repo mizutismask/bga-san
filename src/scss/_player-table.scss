@@ -36,7 +36,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 12px;
+	gap: 0;
 	margin-right: 24px;
 	flex-shrink: 0;
 	align-self: flex-start;
@@ -59,8 +59,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 140px;
-		height: 45.24px;
+		// Match the printed wire bundles to the virus cards and hide the transparent edge gaps.
+		width: 187px;
+		aspect-ratio: 978 / 316;
+		margin-block: -3px;
+		flex-shrink: 0;
 		@include punches.virus-center;
 	}
 }
