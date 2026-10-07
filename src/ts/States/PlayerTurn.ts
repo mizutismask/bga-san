@@ -19,7 +19,7 @@ import {
 export class PlayerTurn {
 	constructor(
 		private game: Game,
-		private bga: Bga<SanPlayer, SanGamedatas>
+		private bga: Bga<SanPlayer, Gamedatas<SanPlayer>>
 	) {}
 
 	/**

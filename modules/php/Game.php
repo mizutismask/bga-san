@@ -414,7 +414,7 @@ class Game extends \Bga\GameFramework\Table {
     }
 
     function getGameVersion(): int {
-        return $this->bga->tableOptions->get(300);
+        return $this->bga->tableOptions->getGameVersion();
     }
 
     //////////////////////////////////////////////////////////////////////////////

@@ -9,7 +9,7 @@ export class ImmediateAction {
 
 	constructor(
 		private game: Game,
-		private bga: Bga<SanPlayer, SanGamedatas>
+		private bga: Bga<SanPlayer, Gamedatas<SanPlayer>>
 	) {}
 
 	onEnteringState(args: ImmediateActionArgs, isCurrentPlayerActive: boolean) {

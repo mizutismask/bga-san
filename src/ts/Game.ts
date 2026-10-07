@@ -25,7 +25,7 @@ export class Game extends BaseGame {
 
 	private displayedTooltip: any //dijit.Tooltip
 
-	constructor(bga: Bga<SanPlayer, SanGamedatas>) {
+	constructor(bga: Bga<SanPlayer, Gamedatas<SanPlayer>>) {
 		super()
 		this.bga = bga
 		this.bga.states.register('PlayerTurn', new PlayerTurn(this, this.bga))

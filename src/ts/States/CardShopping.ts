@@ -4,7 +4,7 @@ import { CardShoppingArgs, SanGamedatas, SanPlayer } from '../types'
 export class CardShopping {
 	constructor(
 		private game: Game,
-		private bga: Bga<SanPlayer, SanGamedatas>
+		private bga: Bga<SanPlayer, Gamedatas<SanPlayer>>
 	) {}
 
 	onEnteringState(args: CardShoppingArgs, isCurrentPlayerActive: boolean) {

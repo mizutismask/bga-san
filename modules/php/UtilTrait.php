@@ -192,12 +192,8 @@ trait UtilTrait {
         }
     }
 
-    function getColoredGameStateValue($gameStateValue, $color) {
-        return $this->getGameStateValue($gameStateValue . "_" . strtoupper($this->getColorName($color)));
-    }
-
     public function checkVersion(int $clientVersion): void {
-        if ($clientVersion != $this->bga->tableOptions->get(300)) {
+        if ($clientVersion != $this->bga->tableOptions->getGameVersion()) {
             throw new UserException(clienttranslate("A new version of this game is now available. Please reload the page (F5)."));
         }
     }

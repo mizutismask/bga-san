@@ -17,7 +17,7 @@ export abstract class BaseGame {
 	protected playerNumber!: number
 	public animationManager: InstanceType<typeof BgaAnimations.Manager>
 
-	public bga!: Bga<SanPlayer, SanGamedatas>
+	public bga!: Bga<SanPlayer, Gamedatas<SanPlayer>>
 	public gamedatas!: SanGamedatas
 
 	public actionTimerId: number | undefined = undefined

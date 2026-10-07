@@ -89,14 +89,13 @@ interface Gamestate {
 interface Gamedatas<P extends Player = Player> {
   gamestate: Gamestate;
   gamestates: { [gamestateId: number]: Gamestate };
-  playerorder: (string | number)[];
+  playerorder: number[];
   players: { [playerId: number]: P };
 }
 
 interface Player {
   beginner: boolean;
   color: string;
-  color_back: any | null;
   eliminated: number;
   id: string;
   is_ai: string;
@@ -275,6 +274,12 @@ declare class Players<P extends Player = Player> {
   getCurrentPlayerId(): number;
 
   /**
+   * Return the no of the player who is looking at the game. The player may not be part of the game (i.e. spectator)
+   * @returns {number | null} the current player no
+   */
+  getCurrentPlayerNo(): number | null;
+
+  /**
    * Return the current player data stored in gamedatas.players.
    * Can be undefined, if the player isn't at this table (spectator).
    * 
@@ -311,6 +316,12 @@ declare class Players<P extends Player = Player> {
   getActivePlayerId(): number | null;
 
   /**
+   * Return the no of the active player, or null if we are not in an ACTIVE_PLAYER type state.
+   * @returns {number | null} the active player no
+   */
+  getActivePlayerNo(): number | null;
+
+  /**
    * Return the active player, or null if we are not in an ACTIVE_PLAYER type state.
    * 
    * @returns {P | null} the active player
@@ -318,12 +329,25 @@ declare class Players<P extends Player = Player> {
   getActivePlayer(): P | null;
 
   /**
+   * @deprecated use getPlayerById.
+   */
+  getPlayer(playerId: number) : P | undefined;
+
+  /**
    * Return the player data stored in gamedatas.players.
    * Can be undefined, if the player isn't at this table (spectator).
    * 
-   * @returns {P | undefined} the player
+   * @returns {Object | undefined} the player
    */
-  getPlayer(playerId: number) : P | undefined;
+  getPlayerById(playerId: number) : P | undefined;
+
+  /**
+   * Return the player data stored in gamedatas.players.
+   * Can be undefined, if the player isn't at this table (spectator).
+   * 
+   * @returns {Object | undefined} the player
+   */
+  getPlayerByNo(playerNo: number) : P | undefined;
 
   /**
    * Return the HTML code for a player name, colored and with optional background.
@@ -351,6 +375,18 @@ declare class Players<P extends Player = Player> {
    * @returns the avatar url
    */
   getPlayerAvatarUrl(playerId: number, size?: number): string;
+
+  /**
+   * Return the no of the player, by id
+   * @returns {number | null} the player no, or null if the player id is not a player on this table
+   */
+  getPlayerNoById(playerId: number): number | null;
+
+  /**
+   * Return the id of the player, by no
+   * @returns {number} the player id
+   */
+  getPlayerIdByNo(playerNo: number): number;
 }
 
 declare class Actions {
@@ -419,6 +455,212 @@ declare class Notifications {
     }): void;
 }
 
+interface Display3DViewSettings {
+  minXAxis?: number;
+  maxXAxis?: number;
+  minZAxis?: number;
+  maxZAxis?: number;
+  minXPos?: number;
+  maxXPos?: number;
+  minYPos?: number;
+  maxYPos?: number;
+  minZoom?: number;
+  maxZoom?: number;
+  xAxis?: number;
+  zAxis?: number;
+  xPos?: number;
+  yPos?: number;
+  zoom?: number;
+}
+
+interface Display3DDraggableSettings {
+  enabled?: boolean;
+  multiplier?: number;
+  rotationMultiplier?: number;
+  slideMultiplier?: number;
+}
+
+interface Display3DZoomByWheelSettings {
+  enabled?: boolean;
+  multiplier?: number;
+  zoomMultiplier?: number;
+}
+
+interface Display3DInitSettings {
+  elements?: HTMLElement[];
+  showControls?: boolean;
+  view?: Display3DViewSettings;
+  draggable?: boolean | number | Display3DDraggableSettings;
+  zoomByWheel?: boolean | number | Display3DZoomByWheelSettings;
+}
+
+declare class Display3D {
+        /**
+         * Initializes the 3D display mode.
+         *
+         * @param {Object} [settings]
+         * @param {HTMLElement[]} [settings.elements] Elements transformed by the 3D view.
+         * @param {boolean} [settings.showControls=true] Whether to show the legacy 3D controls.
+         * @param {Object} [settings.view] Initial view values and optional min/max bounds.
+         * @param {boolean|number|Object} [settings.draggable] Enables drag controls, optionally with multipliers.
+         * @param {boolean|number|Object} [settings.zoomByWheel] Enables wheel zoom, optionally with a multiplier.
+         */
+        init3d(settings?: Display3DInitSettings): void;
+
+        /**
+         * Replaces the elements transformed by this 3D view.
+         *
+         * @param {HTMLElement[]} elements
+         */
+        setElements(elements: HTMLElement[]): void;
+
+        /**
+         * Add new elements transformed by this 3D view.
+         *
+         * @param {HTMLElement[]} elements
+         */
+        addElements(elements: HTMLElement[]): void;
+
+        /**
+         * Applies relative changes to the current 3D view.
+         *
+         * @param {number} xaxis Relative X-axis rotation delta.
+         * @param {number} xpos Relative X-position delta.
+         * @param {number} ypos Relative Y-position delta.
+         * @param {number} zaxis Relative Z-axis rotation delta.
+         * @param {number} scale Relative zoom delta.
+         */
+        change3d(xaxis: number, xpos: number, ypos: number, zaxis: number, scale: number): void;
+
+        /**
+         * Resets the 3D view to the neutral position, respecting configured bounds.
+         */
+        resetView(): void;
+
+        /**
+         * Applies a relative rotation to the 3D view.
+         *
+         * @param {number} x Relative X-axis rotation delta.
+         * @param {number} y Relative Z-axis rotation delta.
+         */
+        rotate(x: number, y: number): void;
+
+        /**
+         * Applies a relative translation to the 3D view.
+         *
+         * @param {number} x Relative X-position delta.
+         * @param {number} y Relative Y-position delta.
+         */
+        slide(x: number, y: number): void;
+
+        /**
+         * Applies a relative zoom change to the 3D view.
+         *
+         * @param {number} inc Relative zoom delta.
+         */
+        zoom(inc: number): void;
+
+        /**
+         * Sets the zoom to an absolute value.
+         *
+         * @param {number} value
+         */
+        setZoom(value: number): void;
+
+        /**
+         * Enables or disables right-button rotation and middle-button slide dragging.
+         *
+         * @param {boolean|number|Object} [enabled=true] Enable flag, shared multiplier, or settings object.
+         * @param {Object|number} [settings] Drag multipliers, or a shared multiplier.
+         * @param {boolean} [settings.enabled=true] Enable flag when using object form.
+         * @param {number} [settings.multiplier] Shared rotation and slide multiplier.
+         * @param {number} [settings.rotationMultiplier=0.1] Right-button rotation multiplier.
+         * @param {number} [settings.slideMultiplier=1] Middle-button slide multiplier.
+         */
+        setDraggable(enabled?: boolean | number | Display3DDraggableSettings, settings?: number | Display3DDraggableSettings): void;
+
+        /**
+         * Enables or disables mouse wheel zoom.
+         *
+         * @param {boolean|number|Object} [enabled=true] Enable flag, zoom multiplier, or settings object.
+         * @param {Object|number} [settings] Wheel zoom settings, or a zoom multiplier.
+         * @param {boolean} [settings.enabled=true] Enable flag when using object form.
+         * @param {number} [settings.multiplier=0.1] Wheel zoom multiplier.
+         * @param {number} [settings.zoomMultiplier=0.1] Wheel zoom multiplier alias.
+         */
+        setZoomByWheel(enabled?: boolean | number | Display3DZoomByWheelSettings, settings?: number | Display3DZoomByWheelSettings): void;
+
+        /**
+         * Sets the minimum X-axis rotation, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMinXAxis(value?: number | null): void;
+
+        /**
+         * Sets the maximum X-axis rotation, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMaxXAxis(value?: number | null): void;
+
+        /**
+         * Sets the minimum Z-axis rotation, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMinZAxis(value?: number | null): void;
+
+        /**
+         * Sets the maximum Z-axis rotation, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMaxZAxis(value?: number | null): void;
+
+        /**
+         * Sets the minimum X-position, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMinXPos(value?: number | null): void;
+
+        /**
+         * Sets the maximum X-position, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMaxXPos(value?: number | null): void;
+
+        /**
+         * Sets the minimum Y-position, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMinYPos(value?: number | null): void;
+
+        /**
+         * Sets the maximum Y-position, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMaxYPos(value?: number | null): void;
+
+        /**
+         * Sets the minimum zoom, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMinZoom(value?: number | null): void;
+
+        /**
+         * Sets the maximum zoom, or clears it with null.
+         *
+         * @param {?number} [value=null]
+         */
+        setMaxZoom(value?: number | null): void;
+    }
+
 declare class GameArea {
   /**
    * Return the Game Area div (for all displayed game components).
@@ -459,12 +701,28 @@ declare class PlayerPanels {
   getElement(playerId: number): HTMLDivElement;
 
   /**
+   * Return the div on the player board where the dev can add counters and other game specific indicators.
+   *
+   * @param {number} playerNo the player no
+   * @returns the div element for game specific content on player panels
+   */
+  getElementByNo(playerNo: number): HTMLDivElement;
+
+  /**
    * Return the score counter of a player.
    *
    * @param {number} playerId the player id
    * @returns the score counter
    */
   getScoreCounter(playerId: number): Counter;
+
+  /**
+   * Return the score counter of a player.
+   *
+   * @param {number} playerNo the player no
+   * @returns the score counter
+   */
+  getScoreCounterByNo(playerNo: number): Counter;
 
   /**
    * Add a player panel for an automata.
@@ -594,6 +852,7 @@ declare class States {
 
 interface Bga<P extends Player = Player, G extends Gamedatas<P> = Gamedatas<P>> {
   gameui: GameGui<P, G>;
+  display3D: Display3D;
   statusBar: StatusBar;
   images: Images;
   sounds: Sounds;
@@ -1182,7 +1441,7 @@ declare interface Notif<T = any> {
   type: string; // type of the notification (as passed by php function)
   log: string; // the log string passed from php notification
   args: T; // This is the arguments that you passed on your notification method on php
-  bIsTableMsg: boolean; // is true when you use [[Main_game_logic:_san.game.php#NotifyAllPlayers|NotifyAllPlayers]] method (false otherwise)
+  bIsTableMsg: boolean; // is true when you use [[Main_game_logic:_yourgamename.game.php#NotifyAllPlayers|NotifyAllPlayers]] method (false otherwise)
   move_id: number; // ID of the move associated with the notification
   time: number; // UNIX GMT timestamp
   uid: number; // unique identifier of the notification

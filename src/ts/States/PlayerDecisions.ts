@@ -6,7 +6,7 @@ export class PlayerDecisions {
 
 	constructor(
 		private game: Game,
-		private bga: Bga<SanPlayer, SanGamedatas>
+		private bga: Bga<SanPlayer, Gamedatas<SanPlayer>>
 	) {}
 
 	onEnteringState(args: PlayerDecisionArgs, isCurrentPlayerActive: boolean) {
