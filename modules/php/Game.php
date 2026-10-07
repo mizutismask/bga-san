@@ -402,15 +402,24 @@ class Game extends \Bga\GameFramework\Table {
     */
     function getGameProgression() {
         $stateName = $this->getStateName();
-        if ($stateName === 'EndScore' || $stateName === 'GameEnd' || $stateName === 'DebugGameEnd') {
+        if ($stateName === 'EndScore' || $stateName === 'gameEnd' || $stateName === 'DebugGameEnd') {
             // game is over
             return 100;
         }
-        /*$roundProgression = 100 * count($this->cardManager->getGridCards()) / 12;
-        
-        $round = intval($this->globals->get(GLB_ROUND));
-        return (100 * $this->getMaxScore() / 2) + $roundProgression / ($round == 3 ? 3 : 2);*/
-        return 0;
+        $progression = (int) $this->globals->get('gameProgression', 0);
+        foreach (array_keys($this->getPlayers()) as $playerId) {
+            $playerId = (int) $playerId;
+            $corruptedCards = $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId));
+            $remainingVirusCards = $this->cardManager->countCardsInLocation($this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, $playerId));
+            $progression = max(
+                $progression,
+                (int) (100 * $this->propagandaProgressCounter->get($playerId) / CardManager::RIVER_SIZE),
+                (int) (100 * $corruptedCards / 12),
+                (int) (100 * (5 - $remainingVirusCards) / 5)
+            );
+        }
+        $progression = min(100, $progression);
+        return $progression;
     }
 
     function getGameVersion(): int {
