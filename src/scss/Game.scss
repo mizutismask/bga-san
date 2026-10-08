@@ -268,6 +268,17 @@ svg {
 	@include card-border;
 }
 
+.card-stock .bga-cards_selectable-card {
+	--bga-cards_selectable-card_outline-color: #{vars.$selectable-color-light};
+	--bga-cards_selectable-card_outline-size: 3px;
+	outline-style: solid !important;
+}
+
+.card-stock .bga-cards_selected-card {
+	--bga-cards_selected-card_outline-color: #{vars.$selected-color};
+	--bga-cards_selected-card_outline-size: 3px;
+}
+
 .san-card {
 	.virus-slot {
 		position: absolute;

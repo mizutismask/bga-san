@@ -1,5 +1,7 @@
 $main-color: #4d4a47;
-$selected-color:rgb(200, 255, 47);
+$selectable-color:rgb(200, 255, 47);
+$selectable-color-light:rgba(200, 255, 47, 0.673);
+$selected-color:rgb(138, 155, 229);
 
 //(classic BGA colors) :
 $player-colors: (
@@ -15,5 +17,5 @@ $player-colors: (
 	box-shadow: 0 0 5px 5px #573c09;
 }
 @mixin selectable-element {
-	box-shadow: 0 0 2px 2px rgb(200, 255, 47);
+	box-shadow: 0 0 2px 2px $selectable-color;
 }
