@@ -316,6 +316,9 @@ class ImmediateAction extends GameState {
         }
         $remainingDestroys = $this->game->globals->get(Constants::GLBL_REMAINING_DESTROYS, 0);
         if ($remainingDestroys > 0) {
+            if ($this->game->cardManager->getTotalCardsForPlayer($playerId) < 2 * $this->game->cardManager->getPlayerHandSize($playerId)) {
+                return $this->actPass($playerId);
+            }
             $handCards = $this->getZombieHandCards($playerId);
             $cardIds = array_slice(array_merge($handCards['virusCardIds'], $handCards['beginningCardIds']), 0, $remainingDestroys);
             if (empty($cardIds) && $handCards['cheapestCard'] !== null) {
