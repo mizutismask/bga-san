@@ -455,6 +455,9 @@ export class Game extends BaseGame {
 		try {
 			if (log && args && !args.processed) {
 				args.processed = true
+				const isCounterSummary = ['propaganda', 'hacking', 'corruption', 'income'].every(
+					name => log.includes('${' + name + 'Icon}') && log.includes('${' + name + '}')
+				)
 
 				const resourceIcons = [
 					{ name: 'propaganda', icon: 4, label: _('Propaganda') },
@@ -474,7 +477,7 @@ export class Game extends BaseGame {
 						args[key] = element.outerHTML
 						if (typeof args[name] === 'number') {
 							const value = document.createElement('span')
-							value.className = 'log-resource-value'
+							value.className = `log-resource-value${isCounterSummary ? ' log-counter-summary-value' : ''}`
 							value.textContent = String(args[name])
 							args[name] = value.outerHTML
 						}
