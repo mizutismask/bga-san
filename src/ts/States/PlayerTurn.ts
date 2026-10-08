@@ -31,7 +31,9 @@ export class PlayerTurn {
 		)) {
 			if (Number(typeArg) === CARD_TYPE_PROPAGANDA) {
 				button.textContent = isCurrentPlayerActive
-					? this.bga.gameui.format_string(_('Play all (next: ${cost})'), { cost: String(args.propagandaCost) })
+					? this.bga.gameui.format_string(_('Play all (next: ${cost})'), {
+							cost: String(args.propagandaCost)
+						})
 					: _('Play all')
 			}
 			button.disabled =
@@ -50,11 +52,11 @@ export class PlayerTurn {
 						].includes(card.specialEffect)
 				)
 		}
-		/*this.bga.statusBar.setTitle(
-			isCurrentPlayerActive ? _('${You} must play cards from your hand') : _('${actplayer} must play cards from his hand')
-		)*/
 		if (isCurrentPlayerActive) {
 			log('selectableHandCards', args.selectableHandCards)
+			if (args.selectableHandCards.length === 0) {
+				this.bga.statusBar.setTitle(_('${you} don’t have any card to play'))
+			}
 			//this.game.playerTables[this.game.getPlayerId()].setHandSelectionMode('single', args.selectableHandCards)
 
 			/*const handStocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
@@ -84,7 +86,10 @@ export class PlayerTurn {
 				stock.setSelectionMode(selectableCards.length > 0 ? 'single' : 'none', selectableCards)
 				stock.onSelectionChange = (selection, lastChange) => {
 					if (lastChange && selection.some((card) => card.id === lastChange.id)) {
-						this.game.playCardWithConfirmation(lastChange, 'actPlayCard', { cardId: lastChange.id, choice: 0 })
+						this.game.playCardWithConfirmation(lastChange, 'actPlayCard', {
+							cardId: lastChange.id,
+							choice: 0
+						})
 					}
 				}
 			}
@@ -104,7 +109,9 @@ export class PlayerTurn {
 						if (args.selectableHandCards.some((card) => Number(card.type_arg) === CARD_TYPE_VIRUS)) {
 							warnings.push(_('You still have Virus cards in your hand.'))
 						}
-						return warnings.length > 0 ? [...warnings, _('Validate your choices anyway?')].join(' ') : undefined
+						return warnings.length > 0
+							? [...warnings, _('Validate your choices anyway?')].join(' ')
+							: undefined
 					}
 				})
 			}
