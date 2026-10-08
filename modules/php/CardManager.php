@@ -114,7 +114,10 @@ class CardManager extends DeckManager {
         }
         foreach ($actions as [$action, $amount]) {
             if ($amount && $action === Constants::ACTION_DRAW) {
-                $this->addCardsToHand($amount, $activePlayerId, true);
+                $drawn = $this->addCardsToHand($amount, $activePlayerId, true);
+                if ($drawn > 0) {
+                    $this->game->playerStats->inc('game_drawn_cards', $drawn, $activePlayerId);
+                }
                 $this->game->notify->all('msg', clienttranslate('${player_name} draws ${qty} card(s)'), [
                     'player_name' => $this->game->getPlayerNameById($activePlayerId),
                     'qty' => $amount,
@@ -302,6 +305,7 @@ class CardManager extends DeckManager {
             $trashAfterUse ? clienttranslate('A ${cardType} card is destroyed after use') : clienttranslate('A ${cardType} card is destroyed'),
             ['cardType' => $this->getCardTypeName($card)]
         );
+        $this->game->playerStats->inc('game_destroyed_cards', 1, $playerId);
         $this->game->notifyCounterChange();
     }
 
@@ -328,7 +332,7 @@ class CardManager extends DeckManager {
             'corruptedCount' => $corruptedCount,
         ]);
         if ($corruptedCount >= 12) {
-            $this->game->announceEndCondition(clienttranslate('${player_name} has corrupted twelve cards and wins the game'), [
+            $this->game->announceEndCondition(Constants::WINNING_TYPE_CORRUPTION, clienttranslate('${player_name} has corrupted twelve cards and wins the game'), [
                 'player_name' => $this->game->getPlayerNameById($playerId),
             ]);
             $this->game->playerScore->set($playerId, 1);

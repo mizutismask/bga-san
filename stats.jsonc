@@ -1,21 +1,64 @@
 {
-    "table": {
-      "turns_number": {
-        "id": 10,
-        "name": "Number of turns",
-        "type": "int"
-      }
-    },
-    "player": {
-      "turns_number": {
-        "id": 10,
-        "name": "Number of turns",
-        "type": "int"
-      },
-      "game_toto": {
-        "id": 11,
-        "name": "toto",
-        "type": "int"
-      }
-    }
-  }
+	"table": {
+		"winning_type": {
+			"id": 100,
+			"name": "Winning type",
+			"type": "int"
+		}
+	},
+	"value_labels": {
+		"100": ["Corruption", "Propaganda", "Hacking", "River exhaustion"]
+	},
+	"player": {
+		"game_corrupted_cards": {
+			"id": 10,
+			"name": "Corrupted cards",
+			"type": "int"
+		},
+		"game_propaganda_progression": {
+			"id": 11,
+			"name": "Propaganda progression",
+			"type": "int"
+		},
+		"game_virus_cards_given": {
+			"id": 12,
+			"name": "Virus cards finished",
+			"type": "int"
+		},
+		"game_drawn_cards": {
+			"id": 13,
+			"name": "Drawn cards",
+			"type": "int"
+		},
+		"game_destroyed_cards": {
+			"id": 14,
+			"name": "Destroyed cards",
+			"type": "int"
+		},
+		"game_owned_cards": {
+			"id": 15,
+			"name": "Owned cards",
+			"type": "int"
+		},
+		"game_propaganda_owned_cards": {
+			"id": 16,
+			"name": "Propaganda owned cards",
+			"type": "int"
+		},
+		"game_corruption_owned_cards": {
+			"id": 17,
+			"name": "Corruption owned cards",
+			"type": "int"
+		},
+		"game_hacking_owned_cards": {
+			"id": 18,
+			"name": "Hacking owned cards",
+			"type": "int"
+		},
+		"game_material_owned_cards": {
+			"id": 19,
+			"name": "Material owned cards",
+			"type": "int"
+		}
+	}
+}

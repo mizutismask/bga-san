@@ -250,10 +250,7 @@ class Game extends \Bga\GameFramework\Table {
     function activateNextPlayerCustom() {
         $player_id = $this->activeNextPlayer();
         $this->giveExtraTime($player_id);
-        $this->playerStats->inc('turns_number', 1, $player_id);
-        $this->tableStats->inc('turns_number', 1);
         $this->notify->all('msg', clienttranslate('&#10148; Start of ${player_name}\'s turn'), ['player_name' => $this->getPlayerNameById($player_id)]);
-        //$this->makeSavepoint();
         return $player_id;
     }
 
@@ -364,15 +361,16 @@ class Game extends \Bga\GameFramework\Table {
             $this->playerScore->set($playerId, $playerId === $winnerId ? 1 : 0);
         }
         if ($winnerId === null) {
-            $this->announceEndCondition(clienttranslate('The river can no longer be refilled. Neither player leads on two winning requirements, so the game is a draw.'));
+            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. Neither player leads on two winning requirements, so the game is a draw.'));
         } else {
-            $this->announceEndCondition(clienttranslate('The river can no longer be refilled. ${player_name} leads on at least two winning requirements and wins the game.'), [
+            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. ${player_name} leads on at least two winning requirements and wins the game.'), [
                 'player_name' => $this->getPlayerNameById($winnerId),
             ]);
         }
     }
 
-    public function announceEndCondition(string $message, array $args = []): void {
+    public function announceEndCondition(int $winningType, string $message, array $args = []): void {
+        $this->globals->set('winningType', $winningType);
         $endCondition = ['type' => 'WIN', 'message' => $message, 'args' => $args];
         $this->globals->set('endCondition', $endCondition);
         $this->notify->all('importantMessage', '', $endCondition);

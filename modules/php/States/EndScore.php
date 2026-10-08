@@ -35,9 +35,7 @@ class EndScore extends \Bga\GameFramework\States\GameState {
      * The onEnteringState method of state `EndScore` is called just before the end of the game.
      */
     public function onEnteringState() {
-        // Here, we would compute scores if they are not updated live, and compute average statistics
-        $this->scorePoints();
-        $this->scoreTieBreaker();
+        $this->recordStatistics();
 
         if ($this->game->isStudio()) {
             $this->game->stMakeEveryoneActive();
@@ -46,20 +44,50 @@ class EndScore extends \Bga\GameFramework\States\GameState {
             return ST_END_GAME;
         }
     }
-    public function scorePoints() {
-        foreach ($this->game->getPlayers() as $playerId => $player) {
-            $points = $this->getPoints($playerId);
-            $this->game->playerScore->inc($playerId, $points, new NotificationMessage(clienttranslate('${player_name} gains ${points} points'), ['points' => $points]));
-        }
-    }
 
-    private function scoreTieBreaker() {
-        foreach ($this->game->loadPlayersBasicInfos() as $playerId => $playerInfo) {
-            //$this->game->playerScoreAux->set($playerId, $this->game->playerFishCounter->get($playerId), new NotificationMessage(""));
+    private function recordStatistics(): void {
+        $locations = [
+            Constants::MATERIAL_LOCATION_PLAYER_DECK,
+            Constants::MATERIAL_LOCATION_HAND,
+            Constants::MATERIAL_LOCATION_PLAYER_DISCARD,
+            Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA,
+        ];
+        $categoryStats = [
+            Constants::CARD_TYPE_PROPAGANDA => 'game_propaganda_owned_cards',
+            Constants::CARD_TYPE_CORRUPTION => 'game_corruption_owned_cards',
+            Constants::CARD_TYPE_HACKING => 'game_hacking_owned_cards',
+            Constants::CARD_TYPE_HARDWARE => 'game_material_owned_cards',
+        ];
+        foreach ($this->game->getPlayersIds() as $playerId) {
+            $playerId = (int) $playerId;
+            $corrupted = $this->game->cardManager->countCardsInLocation(
+                $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_CORRUPTION, $playerId)
+            );
+            $propaganda = $this->game->propagandaProgressCounter->get($playerId);
+            $givenViruses = 5 - $this->game->cardManager->countCardsInLocation(
+                $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_VIRUS, (int) $this->game->getOpponentId($playerId))
+            );
+            $categories = [];
+            foreach ($locations as $location) {
+                $cards = $this->game->cardManager->getCardsInLocation($this->game->getPlayerLocation($location, $playerId));
+                foreach ($cards as $card) {
+                    $categories[] = $card->cardCategory;
+                }
+            }
+            $categoryCounts = array_count_values($categories);
+            $values = [
+                'game_corrupted_cards' => $corrupted,
+                'game_propaganda_progression' => $propaganda,
+                'game_virus_cards_given' => $givenViruses,
+                'game_owned_cards' => count($categories),
+            ];
+            foreach ($categoryStats as $category => $name) {
+                $values[$name] = $categoryCounts[$category] ?? 0;
+            }
+            foreach ($values as $name => $value) {
+                $this->game->playerStats->set($name, $value, $playerId);
+            }
         }
-    }
-
-    private function getPoints($playerId) {
-        return 0;
+        $this->game->tableStats->set('winning_type', (int) $this->game->globals->get('winningType'));
     }
 }

@@ -186,9 +186,9 @@ class DeckManager {
      * @param int $qty 
      * @param int $playerId 
      * @param bool $notify 
-     * @return void 
+     * @return int Number of cards actually drawn.
      */
-    public function addCardsToHand(int $qty, int $playerId, bool $notify = false) {
+    public function addCardsToHand(int $qty, int $playerId, bool $notify = false): int {
         $deckLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DECK, $playerId);
         $handLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_HAND, $playerId);
         $available = min($qty, $this->deck->countCardInLocation($deckLocation));
@@ -219,6 +219,7 @@ class DeckManager {
                 'material' => $this->cast($cards),
             ]);
         }
+        return count($cards);
     }
 
     public function swapHands(int $playerFrom, int $playerTo) {

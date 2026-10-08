@@ -28,6 +28,11 @@ class Constants {
     const LAST_TURN = 'LAST_TURN';
     const CAN_RESET_TURN = "CAN_RESET_TURN";
 
+    const WINNING_TYPE_CORRUPTION = 0;
+    const WINNING_TYPE_PROPAGANDA = 1;
+    const WINNING_TYPE_HACKING = 2;
+    const WINNING_TYPE_RIVER_EXHAUSTION = 3;
+
     const CARD_TYPE_CORRUPTION = 1;
     const CARD_TYPE_PROPAGANDA = 2;
     const CARD_TYPE_HACKING = 3;

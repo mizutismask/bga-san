@@ -122,19 +122,19 @@ trait UtilTrait {
         // we need a prefix because there is some other system stuff
         foreach ($player_stats as $key => $value) {
             if (str_starts_with($key, 'game_')) {
-                $this->initStat('player', $key, 0);
+                $this->playerStats->init($key, 0);
             }
             if ($key === 'turns_number') {
-                $this->initStat('player', $key, 0);
+                $this->playerStats->init($key, 0);
             }
         }
         $table_stats = $all_stats['table'];
         foreach ($table_stats as $key => $value) {
             if (str_starts_with($key, 'game_')) {
-                $this->initStat('table', $key, 0);
+                $this->tableStats->init($key, 0);
             }
             if ($key === 'turns_number') {
-                $this->initStat('table', $key, 0);
+                $this->tableStats->init($key, 0);
             }
         }
     }

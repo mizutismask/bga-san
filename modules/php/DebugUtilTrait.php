@@ -43,7 +43,7 @@ trait DebugUtilTrait {
     /**
      * To easily test zombie code.
      */
-    /*public function debug_playAutomatically(int $moves = 50) {
+    public function debug_playAutomatically(int $moves = 50) {
         $count = 0;
         while (intval($this->gamestate->getCurrentMainStateId()) < 90 && $count < $moves) {
             $count++;
@@ -52,7 +52,7 @@ trait DebugUtilTrait {
                 $this->gamestate->runStateClassZombie($this->gamestate->getCurrentState($playerId), $playerId);
             }
         }
-    }*/
+    }
 
     function debug_endGame() {
         $this->gamestate->jumpToState(Constants::STATE_ID_GAME_END);
