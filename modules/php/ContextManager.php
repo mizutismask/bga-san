@@ -38,7 +38,7 @@ class ContextManager {
             }
         }
 
-        $this->game->dump('******************nextState*', $nextState);
+        //$this->game->dump('******************nextState*', $nextState);
         $this->game->gamestate->nextState($nextState);
     }
 
