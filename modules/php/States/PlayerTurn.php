@@ -70,6 +70,7 @@ class PlayerTurn extends GameState {
         if (empty($cards)) {
             throw new UserException(clienttranslate('You cannot play this card'));
         }
+        $cards = array_reverse($cards);//in the same order as the UI to make the animation smooth
         foreach ($cards as $card) {
             $this->actPlayCard($card->id, 0, $activePlayerId, $this->getArgs($activePlayerId));
         }
