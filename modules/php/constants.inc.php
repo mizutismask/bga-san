@@ -14,7 +14,7 @@ class Constants {
     const MATERIAL_LOCATION_DECK = "deck";
     const MATERIAL_LOCATION_STOCK = "stock";
     const MATERIAL_LOCATION_DISCARD = "discard";
-    const MATERIAL_LOCATION_PLAYER_DISCARD = "plyr_discard";
+    const MATERIAL_LOCATION_PLAYER_DISCARD = "plyr_discrd"; //not more than 11 + 8 chars for player id
     const MATERIAL_LOCATION_RIVER = "river";
     const MATERIAL_LOCATION_DESTROYED = "destroyed";
     const MATERIAL_LOCATION_PLAYER_DECK = "player_deck";

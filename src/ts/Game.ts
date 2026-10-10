@@ -701,8 +701,8 @@ export class Game extends BaseGame {
 				await this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
 					fromElement: this.bga.playerPanels.getElement(playerId)
 				})
-			} else if (card.location?.startsWith('plyr_discard_')) {
-				const playerId = Number(args.to.substring('plyr_discard_'.length))
+			} else if (card.location?.startsWith('plyr_discrd')) {
+				const playerId = Number(args.to.substring('plyr_discrd'.length))
 				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
 				const playerId = Number(args.to.substring('player_deck_'.length))
