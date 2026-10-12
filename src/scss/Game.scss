@@ -292,6 +292,10 @@ svg {
 		pointer-events: none;
 	}
 
+	.cstm-player-hand.destroying-cards &.has-choices {
+		pointer-events: auto;
+	}
+
 	.card-choices {
 		position: absolute;
 		top: 12px;
@@ -304,6 +308,10 @@ svg {
 
 	.cstm-player-hand & .card-choices {
 		display: flex;
+	}
+
+	.cstm-player-hand.destroying-cards & .card-choices {
+		display: none;
 	}
 
 	.card-choice {

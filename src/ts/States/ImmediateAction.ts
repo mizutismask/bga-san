@@ -113,6 +113,7 @@ export class ImmediateAction {
 			}
 		}
 		if (args.remainingDestroysFromHand) {
+			document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.add('destroying-cards')
 			this.bga.statusBar.setTitle(
 				_('${you} can select up to ${remainingDestroysFromHand} card(s) from your hand to destroy'),
 				args
@@ -154,6 +155,7 @@ export class ImmediateAction {
 		}
 	}
 	onLeavingState() {
+		document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.remove('destroying-cards')
 		this.game.playedCards.onSelectionChange = undefined
 		this.game.playedCards.setSelectionMode('none')
 		this.game.river.onSelectionChange = undefined
