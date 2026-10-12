@@ -664,6 +664,7 @@ export class Game extends BaseGame {
 			this.updateCorruptionMarker(card)
 			if (card.location?.startsWith('play_area_')) {
 				await this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
+				this.cardsManager.updateCardInformations(card)
 			} else if (card.location?.startsWith('corr_')) {
 				const slot = this.corruptedCardPositions.get(card.id)
 				const cardElement = this.cardsManager.getCardElement(card)

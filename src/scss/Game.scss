@@ -334,6 +334,22 @@ svg {
 		width: 42px;
 	}
 
+	.card-choices.has-selected-choice {
+		display: flex;
+		pointer-events: none;
+
+		.card-choice {
+			pointer-events: none;
+		}
+
+		.selected-choice {
+			border: 2px solid #fff;
+			border-radius: 3px;
+			outline: 2px solid #111;
+			background: rgba(255, 255, 255, .25);
+		}
+	}
+
 	.card-side {
 		@include card-border;
 	}

@@ -15,6 +15,7 @@ class SanCard extends SanCardInfo implements \JsonSerializable {
     public int $location_arg;
     public int $type;
     public int $type_arg;
+    public int $choice = 0;
 
     //to force the order of attributes and make debugging easier
     public function jsonSerialize(): array {

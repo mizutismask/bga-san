@@ -22,6 +22,7 @@ interface SanCard extends Card {
 	income: number
 	trashAfterUse: number
 	chooseOne: boolean
+	choice?: number
 	draw: number
 	destroyCards: number
 	specialEffect: number

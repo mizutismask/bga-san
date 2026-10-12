@@ -77,6 +77,17 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 		div.appendChild(container)
 	}
 
+	const choices = div.querySelector<HTMLElement>('.card-choices')
+	if (choices) {
+		const selectedChoice = card.location?.startsWith('play_area_') ? Number(card.choice ?? 0) : 0
+		choices.classList.toggle('has-selected-choice', selectedChoice > 0)
+		choices.querySelectorAll<HTMLButtonElement>('.card-choice').forEach((zone, index) => {
+			const selected = selectedChoice === index + 1
+			zone.classList.toggle('selected-choice', selected)
+			zone.setAttribute('aria-pressed', String(selected))
+		})
+	}
+
 	if (!$(textId)) {
 		const container: HTMLDivElement = document.createElement('div')
 		container.id = textId

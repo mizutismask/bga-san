@@ -64,6 +64,17 @@ class CardManager extends DeckManager {
 
     public function getPlayedCards(int $playerId, bool $withCopiedEffects = false) {
         $cards = $this->cast($this->deck->getCardsInLocation($this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId)));
+        $choices = [];
+        foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
+            if ((int) $context['player'] === $playerId && !$context['resolved']) {
+                $choices[(int) $context['param1']] ??= (int) $context['param2'];
+            }
+        }
+        foreach ($cards as $card) {
+            if ($card->chooseOne) {
+                $card->choice = $choices[$card->id] ?? 0;
+            }
+        }
         if (!$withCopiedEffects) {
             return $cards;
         }
