@@ -115,13 +115,68 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 	}
 
 	public getTooltipContent(): TooltipElement<SanCard>[] {
-		return [{ title:"", contentProvider: (c: SanCard) => this.getDesc(c) }]
+		return [
+			{ title: '', contentProvider: (card: SanCard) => this.getDesc(card) },
+			{
+				title: '',
+				contentProvider: (card: SanCard) => card.income > 0
+					? this.game.bga.gameui.format_string_recursive(_('+${amount} Income'), { amount: card.income })
+					: ''
+			}
+		]
 	}
 
 	public getDesc(card: SanCard) {
-		return card.text
-	}
+		if (card.virusSpaces > 0) {
+			return _("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+		}
 
+		const effects: string[] = []
+		const amount = (text: string, value: number) => this.game.bga.gameui.format_string_recursive(text, { amount: value })
+		switch (Number(card.specialEffect)) {
+			case 3:
+				effects.push(_('Gain 1 Propaganda for each Propaganda card you played this turn (including this one)'))
+				break
+			case 5:
+				effects.push(_('Move 1 space on the Virus track for each Virus card you played this turn (including this one)'))
+				break
+			case 7:
+				effects.push(_('Gain 1 Corruption for each Corruption card you played this turn (including this one)'))
+				break
+			default:
+				if (card.propaganda > 0) effects.push(amount(_('Gain ${amount} Propaganda'), card.propaganda))
+				if (card.hacking > 0) effects.push(amount(_('Move ${amount} space(s) on the Virus track'), card.hacking))
+				if (card.corruption > 0) effects.push(amount(_('Gain ${amount} Corruption'), card.corruption))
+		}
+		if (card.draw > 0) effects.push(amount(_('Draw ${amount} card(s) from your deck'), card.draw))
+
+		const parts: string[] = []
+		if (effects.length) {
+			parts.push(card.chooseOne
+				? `<div>${_('Choose one:')}</div><ul>${effects.map(effect => `<li>${effect}</li>`).join('')}</ul>`
+				: effects.map(effect => `<div>${effect}</div>`).join(''))
+		}
+		switch (Number(card.specialEffect)) {
+			case 8:
+				parts.push(_('Play a card from your discard'))
+				break
+			case 9:
+				parts.push(_('Copy the type and effect of a card you played this turn (including the trash after use effect if any)'))
+				break
+			case 10:
+				parts.push(_('Put 1 card from your hand into a corruption slot'))
+				break
+			case 11:
+				parts.push(_('You can play all types of cards this turn'))
+				break
+			case 12:
+				parts.push(_('Copy the type and effect of a card in the river (including the trash after use effect if any)'))
+				break
+		}
+		if (card.destroyCards > 0) parts.push(amount(_('Destroy up to ${amount} card(s) from your hand'), card.destroyCards))
+		if (card.trashAfterUse) parts.push(_('Trash after use'))
+		return parts.map(part => `<div>${part}</div>`).join('')
+	}
 	public setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
 		const imageUrl = this.game.bga.images.getImgUrl('cards.webp')
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`

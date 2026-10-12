@@ -9,7 +9,8 @@ class Material {
   /**
    * 
    * @return array<SanCardInfo> 
-   */  public static function getCards(): array {
+   */  
+  public static function getCards(): array {
     $cards = [
       1 => [
         "cardId"        => 1,
@@ -25,8 +26,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       2 => [
         "cardId"        => 2,
@@ -42,8 +42,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       3 => [
         "cardId"        => 3,
@@ -59,8 +58,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       4 => [
         "cardId"        => 4,
@@ -76,8 +74,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       5 => [
         "cardId"        => 5,
@@ -93,8 +90,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       6 => [
         "cardId"        => 6,
@@ -110,8 +106,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       7 => [
         "cardId"        => 7,
@@ -127,8 +122,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +1 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       8 => [
         "cardId"        => 8,
@@ -144,8 +138,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +1 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       9 => [
         "cardId"        => 9,
@@ -161,8 +154,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +2 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       10 => [
         "cardId"        => 10,
@@ -178,8 +170,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       11 => [
         "cardId"        => 11,
@@ -195,8 +186,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       12 => [
         "cardId"        => 12,
@@ -212,8 +202,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       13 => [
         "cardId"        => 13,
@@ -229,8 +218,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       14 => [
         "cardId"        => 14,
@@ -246,8 +234,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       15 => [
         "cardId"        => 15,
@@ -263,8 +250,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       16 => [
         "cardId"        => 16,
@@ -280,8 +266,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       17 => [
         "cardId"        => 17,
@@ -297,8 +282,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       18 => [
         "cardId"        => 18,
@@ -314,8 +298,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       19 => [
         "cardId"        => 19,
@@ -331,8 +314,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       20 => [
         "cardId"        => 20,
@@ -348,8 +330,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       21 => [
         "cardId"        => 21,
@@ -365,8 +346,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       22 => [
         "cardId"        => 22,
@@ -382,8 +362,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       23 => [
         "cardId"        => 23,
@@ -399,8 +378,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       24 => [
         "cardId"        => 24,
@@ -416,8 +394,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +1 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       25 => [
         "cardId"        => 25,
@@ -433,8 +410,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +1 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       26 => [
         "cardId"        => 26,
@@ -450,8 +426,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption; +2 income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       27 => [
         "cardId"        => 27,
@@ -467,8 +442,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       28 => [
         "cardId"        => 28,
@@ -484,8 +458,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       29 => [
         "cardId"        => 29,
@@ -501,8 +474,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda, or move 1 space on the Virus track, or gain 1 Corruption; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       30 => [
         "cardId"        => 30,
@@ -518,8 +490,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       31 => [
         "cardId"        => 31,
@@ -535,8 +506,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       32 => [
         "cardId"        => 32,
@@ -552,8 +522,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       33 => [
         "cardId"        => 33,
@@ -569,8 +538,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       34 => [
         "cardId"        => 34,
@@ -586,8 +554,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("When the Virus token leaves the last space of this card, this card goes on top of its owner's deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       35 => [
         "cardId"        => 35,
@@ -603,8 +570,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda and draw 1 card from your deck; +4 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       36 => [
         "cardId"        => 36,
@@ -620,8 +586,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Propaganda and draw 1 card from your deck; +4 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       37 => [
         "cardId"        => 37,
@@ -637,8 +602,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Propaganda or draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       38 => [
         "cardId"        => 38,
@@ -654,8 +618,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Propaganda or draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       39 => [
         "cardId"        => 39,
@@ -671,8 +634,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Propaganda; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       40 => [
         "cardId"        => 40,
@@ -688,8 +650,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Propaganda; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       41 => [
         "cardId"        => 41,
@@ -705,8 +666,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
-        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (including this one); +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD
       ],
       42 => [
         "cardId"        => 42,
@@ -722,8 +682,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
-        "text"          => clienttranslate("Gain 1 Propaganda for each Propaganda card you played this turn (including this one); +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD
       ],
       43 => [
         "cardId"        => 43,
@@ -739,8 +698,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Propaganda and draw 2 cards from your deck; +3 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       44 => [
         "cardId"        => 44,
@@ -756,8 +714,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Propaganda and draw 2 cards from your deck; +3 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       45 => [
         "cardId"        => 45,
@@ -773,8 +730,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track and draw 1 card from your deck; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       46 => [
         "cardId"        => 46,
@@ -790,8 +746,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 1 space on the Virus track and draw 1 card from your deck; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       47 => [
         "cardId"        => 47,
@@ -807,8 +762,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 2 spaces on the Virus track or draw 2 cards from your deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       48 => [
         "cardId"        => 48,
@@ -824,8 +778,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 2 spaces on the Virus track or draw 2 cards from your deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       49 => [
         "cardId"        => 49,
@@ -841,8 +794,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 3 spaces on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       50 => [
         "cardId"        => 50,
@@ -858,8 +810,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 3 spaces on the Virus track; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       51 => [
         "cardId"        => 51,
@@ -875,8 +826,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
-        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (including this one)")
+        "specialEffect" => Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD
       ],
       52 => [
         "cardId"        => 52,
@@ -892,8 +842,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD,
-        "text"          => clienttranslate("Move 1 space on the Virus track for each Virus card you played this turn (including this one)")
+        "specialEffect" => Constants::SPECIAL_EFFECT_HACKING_PER_VIRUS_CARD
       ],
       53 => [
         "cardId"        => 53,
@@ -909,8 +858,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 2 spaces on the Virus track and draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       54 => [
         "cardId"        => 54,
@@ -926,8 +874,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 2 spaces on the Virus track and draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       55 => [
         "cardId"        => 55,
@@ -943,8 +890,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption and draw 1 card from your deck; +3 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       56 => [
         "cardId"        => 56,
@@ -960,8 +906,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 1 Corruption and draw 1 card from your deck; +3 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       57 => [
         "cardId"        => 57,
@@ -977,8 +922,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Corruption or draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       58 => [
         "cardId"        => 58,
@@ -994,8 +938,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 1,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Corruption or draw 2 cards from your deck; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       59 => [
         "cardId"        => 59,
@@ -1011,8 +954,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       60 => [
         "cardId"        => 60,
@@ -1028,8 +970,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Corruption; +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       61 => [
         "cardId"        => 61,
@@ -1045,8 +986,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD,
-        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (including this one); +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD
       ],
       62 => [
         "cardId"        => 62,
@@ -1062,8 +1002,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD,
-        "text"          => clienttranslate("Gain 1 Corruption for each Corruption card you played this turn (including this one); +1 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPTION_PER_CORRUPTION_CARD
       ],
       63 => [
         "cardId"        => 63,
@@ -1079,8 +1018,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Corruption and draw 2 cards from your deck; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       64 => [
         "cardId"        => 64,
@@ -1096,8 +1034,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 2 Corruption and draw 2 cards from your deck; +2 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       65 => [
         "cardId"        => 65,
@@ -1113,8 +1050,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Draw 1 card from your deck; +5 Income")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       66 => [
         "cardId"        => 66,
@@ -1130,8 +1066,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Draw 3 cards from your deck")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       67 => [
         "cardId"        => 67,
@@ -1147,8 +1082,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD,
-        "text"          => clienttranslate("Play a card from your discard")
+        "specialEffect" => Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD
       ],
       68 => [
         "cardId"        => 68,
@@ -1164,8 +1098,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD,
-        "text"          => clienttranslate("Copy the type and effect of a card you played this turn (including the trash after use effect if any)")
+        "specialEffect" => Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD
       ],
       69 => [
         "cardId"        => 69,
@@ -1181,8 +1114,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Propaganda")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       70 => [
         "cardId"        => 70,
@@ -1198,8 +1130,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 3 spaces on the Virus track")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       71 => [
         "cardId"        => 71,
@@ -1215,8 +1146,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Corruption")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       72 => [
         "cardId"        => 72,
@@ -1232,8 +1162,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND,
-        "text"          => clienttranslate("Put 1 card from your hand into a corruption slot")
+        "specialEffect" => Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND
       ],
       73 => [
         "cardId"        => 73,
@@ -1249,8 +1178,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_PLAY_ALL_CARD_TYPES,
-        "text"          => clienttranslate("Draw 1 card from your deck; you can play all type of cards this turn")
+        "specialEffect" => Constants::SPECIAL_EFFECT_PLAY_ALL_CARD_TYPES
       ],
       74 => [
         "cardId"        => 74,
@@ -1266,8 +1194,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Draw 5 cards form your deck; trash after use")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       75 => [
         "cardId"        => 75,
@@ -1283,8 +1210,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 1,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Draw 1 card from your deck; destroy 1 card from your hand")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       76 => [
         "cardId"        => 76,
@@ -1300,8 +1226,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 2,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Destroy up to 2 cards from your hand")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       77 => [
         "cardId"        => 77,
@@ -1317,8 +1242,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 6,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Destroy up to 6 cards from your hand; trash after use")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       78 => [
         "cardId"        => 78,
@@ -1334,8 +1258,7 @@ class Material {
         "trashAfterUse" => 0,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_COPY_RIVER_CARD,
-        "text"          => clienttranslate("Copy the type and effect of a card in the river (including the trash after use effect if any)")
+        "specialEffect" => Constants::SPECIAL_EFFECT_COPY_RIVER_CARD
       ],
       79 => [
         "cardId"        => 79,
@@ -1351,8 +1274,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 3 Propaganda, move 3 spaces on the Virus track, and gain 3 Corruption")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       80 => [
         "cardId"        => 80,
@@ -1368,8 +1290,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 6 Corruption; trash after use")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       81 => [
         "cardId"        => 81,
@@ -1385,8 +1306,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Gain 6 Propaganda; trash after use")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
       82 => [
         "cardId"        => 82,
@@ -1402,8 +1322,7 @@ class Material {
         "trashAfterUse" => 1,
         "chooseOne"     => 0,
         "destroyCards"  => 0,
-        "specialEffect" => Constants::SPECIAL_EFFECT_NONE,
-        "text"          => clienttranslate("Move 6 spaces on the Virus track; trash after use")
+        "specialEffect" => Constants::SPECIAL_EFFECT_NONE
       ],
     ];
     return [
@@ -1422,7 +1341,6 @@ class Material {
           (bool) $card['chooseOne'],
           $card['destroyCards'],
           $card['specialEffect'],
-          $card['text'],
         ),
         $cards,
       ),

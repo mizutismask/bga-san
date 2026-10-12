@@ -16,7 +16,11 @@ interface Card {
 }
 interface SanCard extends Card {
 	name: string //translated
-	text: string
+	propaganda: number
+	hacking: number
+	corruption: number
+	income: number
+	trashAfterUse: number
 	chooseOne: boolean
 	draw: number
 	destroyCards: number

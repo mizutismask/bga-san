@@ -8,7 +8,9 @@ export abstract class CardsManagerBase<T> extends BgaCards.Manager<T> implements
 		this.getTooltipContent().forEach((attr) => {
 			const attrContent = attr.contentProvider(card)
 			if (attrContent) {
-				wrapper.appendChild(dojo.create('h3', { class: attr.classes, innerHTML: attr.title }))
+				if (attr.title) {
+					wrapper.appendChild(dojo.create('h3', { class: attr.classes, innerHTML: attr.title }))
+				}
 				wrapper.appendChild(dojo.create('span', { innerHTML: attrContent }))
 			}
 		})

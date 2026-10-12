@@ -48,6 +48,5 @@ class SanCard extends SanCardInfo implements \JsonSerializable {
         $this->chooseOne = $cardInfo->chooseOne;
         $this->destroyCards = $cardInfo->destroyCards;
         $this->specialEffect = $cardInfo->specialEffect;
-        $this->text = $cardInfo->text;
     }
 }

@@ -20,7 +20,6 @@ class SanCardInfo {
         public bool $chooseOne,
         public int $destroyCards,
         public int $specialEffect,
-        public string $text,
     ) {
     }
 }
