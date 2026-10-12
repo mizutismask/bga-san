@@ -23,6 +23,7 @@ interface SanCard extends Card {
 	trashAfterUse: number
 	chooseOne: boolean
 	choice?: number
+	copiedCard?: SanCard | null
 	draw: number
 	destroyCards: number
 	specialEffect: number

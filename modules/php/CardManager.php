@@ -76,6 +76,13 @@ class CardManager extends DeckManager {
             }
         }
         if (!$withCopiedEffects) {
+            $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+            foreach ($cards as $card) {
+                if (isset($copies[$card->id])) {
+                    $card->copiedCard = (object) (array) $copies[$card->id];
+                    $card->copiedCard->choice = $choices[$card->id] ?? 0;
+                }
+            }
             return $cards;
         }
         $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);

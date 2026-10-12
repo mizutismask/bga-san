@@ -350,6 +350,15 @@ svg {
 		}
 	}
 
+	.copied-card-preview {
+		position: absolute;
+		inset: 0;
+		transform: scale(.75);
+		border-radius: 3px;
+		box-shadow: 0 0 4px 2px #111;
+		pointer-events: none;
+	}
+
 	.card-side {
 		@include card-border;
 	}

@@ -36,6 +36,7 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 
 	//add help
 	const helpId = `${game.cardsManager.getId(card)}-front-info`
+	div.querySelector('.card-info')?.remove()
 	if (!$(helpId)) {
 		const info: HTMLDivElement = document.createElement('div')
 		info.id = helpId
@@ -77,7 +78,28 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 		div.appendChild(container)
 	}
 
-	const choices = div.querySelector<HTMLElement>('.card-choices')
+	div.querySelector('.copied-card-preview')?.remove()
+	if (card.copiedCard && card.location?.startsWith('play_area_')) {
+		const preview = document.createElement('div')
+		preview.className = 'copied-card-preview'
+		game.cardsManager.setFrontBackground(preview, card.copiedCard.type)
+		if (card.copiedCard.chooseOne && card.copiedCard.choice) {
+			const choices = document.createElement('div')
+			choices.className = 'card-choices has-selected-choice'
+			const choiceCount = Number(card.copiedCard.type_arg) === 4 ? 3 : 2
+			choices.classList.toggle('wide-choices', choiceCount === 2)
+			for (let choice = 1; choice <= choiceCount; choice++) {
+				const zone = document.createElement('div')
+				zone.className = 'card-choice'
+				zone.classList.toggle('selected-choice', choice === Number(card.copiedCard.choice))
+				choices.appendChild(zone)
+			}
+			preview.appendChild(choices)
+		}
+		div.appendChild(preview)
+	}
+
+	const choices = div.querySelector<HTMLElement>(':scope > .card-choices')
 	if (choices) {
 		const selectedChoice = card.location?.startsWith('play_area_') ? Number(card.choice ?? 0) : 0
 		choices.classList.toggle('has-selected-choice', selectedChoice > 0)
@@ -128,6 +150,10 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 	public getTooltipContent(): TooltipElement<SanCard>[] {
 		return [
 			{ title: '', contentProvider: (card: SanCard) => this.getDesc(card) },
+			{
+				title: _('Copied card'),
+				contentProvider: (card: SanCard) => card.copiedCard ? this.getDesc(card.copiedCard) : ''
+			},
 			{
 				title: '',
 				contentProvider: (card: SanCard) => card.income > 0

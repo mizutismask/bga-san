@@ -2,6 +2,7 @@
 
 namespace Bga\Games\San;
 
+use Bga\GameFramework\Actions\Debug;
 use Bga\GameFramework\UserException;
 use Constants;
 
@@ -37,6 +38,34 @@ trait DebugUtilTrait {
             );
         } else {
             throw new UserException(clienttranslate('No card of the requested type exists'));
+        }
+    }
+
+    #[Debug(reload: true)]
+    function debug_addCopyingCardsToRiver() {
+        $copyEffects = [Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD, Constants::SPECIAL_EFFECT_COPY_RIVER_CARD];
+        $copyingCards = array_values(array_filter(
+            $this->cardManager->getDeckCards(),
+            fn($card) => in_array($card->specialEffect, $copyEffects, true)
+        ));
+        if (!$copyingCards) {
+            return;
+        }
+
+        $riverCards = $this->cardManager->getRiverCards();
+        usort($riverCards, fn($a, $b) => $a->location_arg <=> $b->location_arg);
+        $playerId = (int) $this->getCurrentPlayerId();
+        $index = 0;
+        foreach ($riverCards as $card) {
+            if (in_array($card->specialEffect, $copyEffects, true)) {
+                continue;
+            }
+            $copyingCard = $copyingCards[$index++];
+            $this->cardManager->moveCardToLocation($card, Constants::MATERIAL_LOCATION_DECK, $copyingCard->location_arg, true, $playerId);
+            $this->cardManager->moveCardToLocation($copyingCard, Constants::MATERIAL_LOCATION_RIVER, $card->location_arg, true, $playerId);
+            if ($index === count($copyingCards)) {
+                break;
+            }
         }
     }
 
