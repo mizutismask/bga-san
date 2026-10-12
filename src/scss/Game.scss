@@ -292,7 +292,7 @@ svg {
 		pointer-events: none;
 	}
 
-	.cstm-player-hand.destroying-cards &.has-choices {
+	.cstm-player-hand.selecting-hand-cards &.has-choices {
 		pointer-events: auto;
 	}
 
@@ -310,7 +310,7 @@ svg {
 		display: flex;
 	}
 
-	.cstm-player-hand.destroying-cards & .card-choices {
+	.cstm-player-hand.selecting-hand-cards & .card-choices {
 		display: none;
 	}
 

@@ -81,6 +81,7 @@ export class ImmediateAction {
 			})
 		}
 		if (args.corruptionSlots.length) {
+			document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.add('selecting-hand-cards')
 			this.bga.statusBar.setTitle(_('${you} must select a card from your hand and choose where to corrupt it'))
 			const stocks = Object.values(this.game.playerTables[this.game.getPlayerId()].handStocks)
 			for (const stock of stocks) {
@@ -113,7 +114,7 @@ export class ImmediateAction {
 			}
 		}
 		if (args.remainingDestroysFromHand) {
-			document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.add('destroying-cards')
+			document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.add('selecting-hand-cards')
 			this.bga.statusBar.setTitle(
 				_('${you} can select up to ${remainingDestroysFromHand} card(s) from your hand to destroy'),
 				args
@@ -155,7 +156,7 @@ export class ImmediateAction {
 		}
 	}
 	onLeavingState() {
-		document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.remove('destroying-cards')
+		document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.remove('selecting-hand-cards')
 		this.game.playedCards.onSelectionChange = undefined
 		this.game.playedCards.setSelectionMode('none')
 		this.game.river.onSelectionChange = undefined
