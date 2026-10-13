@@ -71,7 +71,7 @@ class QueryBuilder {
       foreach ($row as $val) {
         $rowValues[] = $val === null
           ? 'NULL'
-          : "'" . mysql_escape_string($val) . "'";
+          : "'" . Table::escapeStringForDB($val) . "'";
       }
 
       $vals[] = '(' . implode(',', $rowValues) . ')';
