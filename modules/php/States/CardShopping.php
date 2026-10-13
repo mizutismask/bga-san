@@ -20,7 +20,7 @@ class CardShopping extends GameState {
             $game,
             id: Constants::STATE_ID_SHOPPING,
             type: StateType::ACTIVE_PLAYER,
-            description: clienttranslate(_('${actplayer} can buy cards')),
+            description: clienttranslate('${actplayer} can buy cards'),
             descriptionMyTurn: clienttranslate('${you} can spend ${income} to buy cards from the river'),
         );
     }
