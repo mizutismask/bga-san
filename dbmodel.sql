@@ -27,7 +27,7 @@
 --   `card_location` varchar(16) NOT NULL,
 --   `card_location_arg` int(11) NOT NULL,
 --   PRIMARY KEY (`card_id`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 
 -- Example 2: add a custom field to the standard "player" table
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `card` (
     `card_location` varchar(20) NOT NULL COMMENT 'Card location',
     `card_location_arg` int(11) NOT NULL COMMENT 'Hand player or deck order',
     PRIMARY KEY (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 --Action log to resolve things in correct order
 CREATE TABLE IF NOT EXISTS `context_log` (
@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS `context_log` (
  `param3` varchar(56),
  `resolved` INT(1) UNSIGNED NOT NULL DEFAULT '0',
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
