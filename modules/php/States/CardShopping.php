@@ -59,6 +59,9 @@ class CardShopping extends GameState {
         }
         $riverRefilled = $this->game->cardManager->buyCard($card, $activePlayerId);
         if ($riverRefilled) {
+            if (empty($this->getPossibleCards($activePlayerId))) {
+                return $this->actPass($activePlayerId);
+            }
             return CardShopping::class;
         }
         return EndScore::class;
