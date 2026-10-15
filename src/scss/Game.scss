@@ -89,7 +89,8 @@ html {
 	gap: 10px;
 	padding: 5px;
 
-	#playing-zone {
+	#playing-zone,
+	#river-deck-zone {
 		background: rgba(255, 255, 255, 0.25);
 
 		.zone-title {
@@ -106,13 +107,14 @@ html {
 
 	#central-line {
 		display: grid;
-		grid-template-columns: $CARD_WIDTH auto;
+		grid-template-columns: max-content auto;
 		gap: 15px;
 		align-items: center;
 
-		#river-deck {
+		#river-deck-zone {
 			grid-column: 1;
 			grid-row: 2;
+			width: max-content;
 		}
 		#river {
 			grid-column: 2;
