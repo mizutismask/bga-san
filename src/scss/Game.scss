@@ -14,18 +14,21 @@ $CARD_WIDTH: calc(#{$BASE_CARD_WIDTH}px * $cardSizeModifier); //also change in s
 $CARD_HEIGHT: calc(#{$BASE_CARD_HEIGHT}px * $cardSizeModifier);
 $CARD_RATIO: list.slash($BASE_CARD_WIDTH, $BASE_CARD_HEIGHT);
 
-@media (max-width: 600px) {
-	html .cstm-player-hand {
+html #custom-game-area .cstm-player-hand {
 		.hand-pile.player-draw-pile,
 		.hand-pile.player-discard-pile {
-			width: calc($CARD_WIDTH * 0.65);
+			width: calc($CARD_WIDTH * 0.5);
 		}
 
 		.player-draw-deck,
 		.player-discard {
-			zoom: 0.65;
+			zoom: 0.5;
+
+			[id^='player-draw-deck-counter-'],
+			[id^='player-discard-counter-'] {
+				zoom: 2;
+			}
 		}
-	}
 }
 
 @mixin card-border {
@@ -90,8 +93,10 @@ html {
 	padding: 5px;
 
 	#playing-zone,
-	#river-deck-zone {
-		background: rgba(255, 255, 255, 0.25);
+	#river-deck-zone,
+	.player-deck-zone,
+	.player-discard-zone {
+		//background: rgba(255, 255, 255, 0.25);
 
 		.zone-title {
 			padding: 0 0 4px;

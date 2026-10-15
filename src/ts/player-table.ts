@@ -41,7 +41,10 @@ export class PlayerTable {
 		container.insertAdjacentHTML('beforeend', `
 			<div class="hand-pile player-draw-pile">
 				<span class="bgabutton bgabutton_blue play-all" style="visibility: hidden" aria-hidden="true"></span>
-				<div id="player-draw-deck-${player.id}" class="player-draw-deck"></div>
+				<div class="player-deck-zone cst-block">
+					<div class="zone-title">${_('Deck')}</div>
+					<div id="player-draw-deck-${player.id}" class="player-draw-deck"></div>
+				</div>
 			</div>
 		`)
 		this.playerDeckElement = document.getElementById(`player-draw-deck-${player.id}`) as HTMLDivElement
@@ -110,7 +113,10 @@ export class PlayerTable {
 		container.insertAdjacentHTML('beforeend', `
 			<div class="hand-pile player-discard-pile">
 				<span class="bgabutton bgabutton_blue play-all" style="visibility: hidden" aria-hidden="true"></span>
-				<div id="player-discard-${player.id}" class="player-discard"></div>
+				<div class="player-discard-zone cst-block">
+					<div class="zone-title">${_('Discard')}</div>
+					<div id="player-discard-${player.id}" class="player-discard"></div>
+				</div>
 			</div>
 		`)
 		this.playerDiscardElement = document.getElementById(`player-discard-${player.id}`) as HTMLDivElement
