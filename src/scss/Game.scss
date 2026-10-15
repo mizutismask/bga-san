@@ -318,7 +318,8 @@ svg {
 		pointer-events: none;
 	}
 
-	.cstm-player-hand &.has-choices {
+	.cstm-player-hand &.has-choices,
+	#immediate-discard-cards &.has-choices {
 		pointer-events: none;
 	}
 
@@ -336,7 +337,8 @@ svg {
 		gap: 9px;
 	}
 
-	.cstm-player-hand & .card-choices {
+	.cstm-player-hand & .card-choices,
+	#immediate-discard-cards & .card-choices {
 		display: flex;
 	}
 
