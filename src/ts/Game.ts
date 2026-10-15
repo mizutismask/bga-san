@@ -128,7 +128,7 @@ export class Game extends BaseGame {
 		this.riverDeck = new BgaCards.Deck<SanCard>(this.cardsManager, document.getElementById('river-deck')!, {
 			topCard: gamedatas.riverDeckTopCard ?? undefined,
 			cardNumber: gamedatas.riverDeckCount,
-			counter: { show: true, position: 'bottom-right', size: 6 }
+			counter: { show: true, position: 'bottom-right', size: 6, counterId: 'river-deck-counter' }
 		})
 
 		// river
