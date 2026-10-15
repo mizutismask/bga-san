@@ -38,6 +38,7 @@ interface SanPlayer extends Player {
 	handSize: number
 	remainingCardsInDeck: number
 	cardsInDiscard: number
+	discardCards?: SanCard[]
 	totalCardsForPlayer: number
 	tickets: number
 }

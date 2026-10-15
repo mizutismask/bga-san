@@ -36,7 +36,8 @@
 		}
 	}
 
-	.player-draw-deck {
+	.player-draw-deck,
+	.player-discard {
 		flex-shrink: 0;
 	}
 
@@ -85,7 +86,6 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 0;
-	margin-right: 24px;
 	flex-shrink: 0;
 	align-self: flex-start;
 

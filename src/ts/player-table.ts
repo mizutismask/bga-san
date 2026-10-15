@@ -11,6 +11,8 @@ export class PlayerTable {
 	public readonly playAllButtons: Record<number, HTMLButtonElement> = {}
 	public playerDeckElement?: HTMLDivElement
 	public playerDeck?: Deck<SanCard>
+	public playerDiscardElement?: HTMLDivElement
+	public playerDiscard?: Deck<SanCard>
 
 	constructor(
 		private game: SanGame,
@@ -104,5 +106,36 @@ export class PlayerTable {
 				}
 			}
 		}
+
+		container.insertAdjacentHTML('beforeend', `
+			<div class="hand-pile player-discard-pile">
+				<span class="bgabutton bgabutton_blue play-all" style="visibility: hidden" aria-hidden="true"></span>
+				<div id="player-discard-${player.id}" class="player-discard"></div>
+			</div>
+		`)
+		this.playerDiscardElement = document.getElementById(`player-discard-${player.id}`) as HTMLDivElement
+		const discardCounterId = `player-discard-counter-${player.id}`
+		this.playerDiscard = new BgaCards.Deck<SanCard>(this.game.cardsManager, this.playerDiscardElement, {
+			cardNumber: Number(player.cardsInDiscard),
+			autoUpdateCardNumber: false,
+			counter: { show: true, position: 'bottom-right', size: 6, counterId: discardCounterId }
+		})
+		this.playerDiscard.addCards(player.discardCards ?? [], { initialSide: 'front', finalSide: 'front' })
+		const discardCounter = new ebg.counter()
+		for (const method of ['setValue', 'toValue'] as const) {
+			const updateCounter = discardCounter[method].bind(discardCounter)
+			discardCounter[method] = (value: number) => {
+				if (this.playerDiscard!.getCardNumber() !== value) {
+					void this.playerDiscard!.setCardNumber(value)
+				}
+				updateCounter(value)
+			}
+		}
+		discardCounter.create(discardCounterId, {
+			value: Number(player.cardsInDiscard),
+			playerCounter: 'cardsInDiscard',
+			playerId: Number(player.id)
+		})
+		this.game.setTooltip(this.playerDiscardElement.id, _('Cards in discard pile'))
 	}
 }

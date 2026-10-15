@@ -14,6 +14,20 @@ $CARD_WIDTH: calc(#{$BASE_CARD_WIDTH}px * $cardSizeModifier); //also change in s
 $CARD_HEIGHT: calc(#{$BASE_CARD_HEIGHT}px * $cardSizeModifier);
 $CARD_RATIO: list.slash($BASE_CARD_WIDTH, $BASE_CARD_HEIGHT);
 
+@media (max-width: 600px) {
+	html .cstm-player-hand {
+		.hand-pile.player-draw-pile,
+		.hand-pile.player-discard-pile {
+			width: calc($CARD_WIDTH * 0.65);
+		}
+
+		.player-draw-deck,
+		.player-discard {
+			zoom: 0.65;
+		}
+	}
+}
+
 @mixin card-border {
 	border-radius: 3%;
 }
@@ -203,7 +217,7 @@ html {
 			flex-shrink: 0;
 		}
 
-		.hand-pile:not(.player-draw-pile) .san-card {
+		.hand-pile:not(.player-draw-pile):not(.player-discard-pile) .san-card {
 			margin-top: -150px;
 			&:first-child {
 				margin-top: unset;

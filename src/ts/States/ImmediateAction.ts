@@ -165,7 +165,13 @@ export class ImmediateAction {
 			this.discardStock.onSelectionChange = undefined
 			this.discardStock.setSelectionMode('none')
 			document.getElementById('immediate-discard-cards')!.style.display = 'none'
-			this.discardStock.removeAll()
+			const remainingCards = this.discardStock.getCards().filter(card => card.location?.startsWith('plyr_discrd_'))
+			const discard = this.game.playerTables[this.game.getPlayerId()]?.playerDiscard
+			if (discard) {
+				void discard.addCards(remainingCards, { initialSide: 'front', finalSide: 'front' })
+			} else {
+				this.discardStock.removeAll()
+			}
 		}
 		for (const marker of this.selectableMarkers) {
 			marker.onclick = null

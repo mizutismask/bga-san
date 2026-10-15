@@ -304,13 +304,28 @@ class CardManager extends DeckManager {
     public function discardPlayedCards(int $activePlayerId): void {
         $cards = $this->getPlayedCards($activePlayerId);
         $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+        $discardedCardIds = [];
         foreach ($cards as $card) {
             $effectCard = $copies[$card->id] ?? $card;
             if ($effectCard->trashAfterUse) {
                 $this->destroyCard($card, true, $activePlayerId, true);
             } else {
-                $this->moveCardToLocation($card, $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId), $activePlayerId, false);
+                $discardedCardIds[] = $card->id;
             }
+        }
+        if ($discardedCardIds) {
+            $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $activePlayerId);
+            $this->deck->moveCards($discardedCardIds, $discardLocation, $activePlayerId);
+            $this->game->notify->all('materialMove', '', [
+                'playerId' => $activePlayerId,
+                'player_name' => $this->game->getPlayerNameById($activePlayerId),
+                'type' => $this->materialType,
+                'from' => $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $activePlayerId),
+                'fromArg' => $activePlayerId,
+                'to' => $discardLocation,
+                'toArg' => $activePlayerId,
+                'material' => $this->cast($this->deck->getCards($discardedCardIds)),
+            ]);
         }
         $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARDS);
         $this->game->globals->delete(Constants::GLB_COPIED_PLAYED_CARD_SOURCES);

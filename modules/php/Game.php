@@ -287,6 +287,11 @@ class Game extends \Bga\GameFramework\Table {
         $result['playedCards'] = [];
         $revealedPlayedCards = $this->globals->get('revealedPlayedCards', []);
         foreach (array_keys($result['players']) as $playerId) {
+            if ((int) $playerId === (int) $currentPlayerId) {
+                $result['players'][$playerId]['discardCards'] = $this->cardManager->getCardsInLocation(
+                    $this->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId), null, 'location_arg'
+                );
+            }
             foreach ($this->cardManager->getPlayedCards($playerId) as $card) {
                 if ((int) $playerId === (int) $currentPlayerId || in_array($card->id, $revealedPlayedCards, true)) {
                     $result['playedCards'][] = $card;

@@ -661,14 +661,23 @@ export class Game extends BaseGame {
 	async notif_playerDeckShuffled(args: { playerId: number; count: number }) {
 		const deck = this.playerTables[args.playerId]?.playerDeck
 		if (!deck || !args.count) return
+		await this.playerTables[args.playerId]?.playerDiscard?.removeAll()
 		await deck.setCardNumber(args.count)
 		await deck.shuffle()
 	}
 
 	async notif_materialMove(args: NotifMaterialMove) {
 		log('notif_materialMove', args)
+		const discardCards = new Map<string, SanCard[]>()
 		for (const card of args.material as SanCard[]) {
 			this.updateCorruptionMarker(card)
+			if (card.location?.startsWith('plyr_discrd')) {
+				const cards = discardCards.get(card.location) ?? []
+				cards.push(card)
+				discardCards.set(card.location, cards)
+			}
+		}
+		for (const card of args.material as SanCard[]) {
 			if (card.location?.startsWith('play_area_')) {
 				await this.playedCards.addCard(card, { initialSide: 'front', finalSide: 'front' })
 				this.cardsManager.updateCardInformations(card)
@@ -708,15 +717,28 @@ export class Game extends BaseGame {
 				const playerId = Number(card.location.substring(5))
 				const fromPlayerDeck = args.from === 'DECK' || String(args.from) === 'deck' ||
 					String(args.from).startsWith('player_deck_')
+				const fromDiscard = String(args.from).startsWith('plyr_discrd')
 				await this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
 					fromElement: fromPlayerDeck
 						? this.playerTables[playerId]?.playerDeckElement ?? this.bga.playerPanels.getElement(playerId)
-						: this.bga.playerPanels.getElement(playerId),
+						: fromDiscard
+							? this.playerTables[playerId]?.playerDiscardElement ?? this.bga.playerPanels.getElement(playerId)
+							: this.bga.playerPanels.getElement(playerId),
 					...(fromPlayerDeck ? { initialSide: 'back' as const, finalSide: 'front' as const } : {})
 				})
 			} else if (card.location?.startsWith('plyr_discrd')) {
-				const playerId = Number(args.to.substring('plyr_discrd'.length))
-				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
+				const cards = discardCards.get(card.location)
+				if (!cards) continue
+				discardCards.delete(card.location)
+				const playerId = Number(card.location.substring('plyr_discrd_'.length))
+				const discard = this.playerTables[playerId]?.playerDiscard
+				if (discard) {
+					await discard.addCards(cards, { initialSide: 'front', finalSide: 'front' }, false)
+				} else {
+					await Promise.all(cards.map((discardCard) =>
+						this.cardsManager.removeCard(discardCard, { slideTo: this.bga.playerPanels.getElement(playerId) })
+					))
+				}
 			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
 				const playerId = Number(args.to.substring('player_deck_'.length))
 				await this.cardsManager.removeCard(card, {
