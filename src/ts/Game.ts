@@ -7,6 +7,7 @@ import { VirusZone } from './virus-zone'
 import { CardStock, Deck, LineStock, SlotStock } from '../../bga-cards'
 import { SanCard, SanGamedatas, SanPlayer, NotifMaterialMove, NotifImportantMessageArgs } from './types'
 import { CardsManager } from './cards/cards'
+import { ChoicePanel } from './cards/choice-panel'
 import { generateSlotsIds } from './stock-utils'
 import { PlayerTurn } from './States/PlayerTurn'
 import { PlayerDecisions } from './States/PlayerDecisions'
@@ -14,6 +15,7 @@ import { CardShopping } from './States/CardShopping'
 import { ImmediateAction } from './States/ImmediateAction'
 import { SPECIAL_EFFECT_PLAY_FROM_DISCARD } from './constants'
 export class Game extends BaseGame {
+	public choicePanel = new ChoicePanel()
 	public cardsManager!: CardsManager
 	public riverDeck!: Deck<SanCard>
 	public river!: SlotStock<SanCard>
@@ -40,6 +42,14 @@ export class Game extends BaseGame {
 		action: string,
 		data: { cardId: number; choice: number }
 	): Promise<void> {
+		if (card.chooseOne && data.choice === 0) {
+			const anchor = this.cardsManager.getCardElement(card)
+			if (anchor) this.choicePanel.open(card, anchor, choice => {
+				void this.playCardWithConfirmation(card, action, { ...data, choice })
+			})
+			return
+		}
+		this.choicePanel.close()
 		if (
 			card.specialEffect === SPECIAL_EFFECT_PLAY_FROM_DISCARD &&
 			this.discardCounters.get(this.getPlayerId())?.getValue() === 0

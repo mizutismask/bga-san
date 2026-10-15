@@ -68,11 +68,12 @@ export class ImmediateAction {
 			this.discardStock.addCards(discardCards, { initialSide: 'front', finalSide: 'front' })
 			this.discardStock.setSelectionMode('single')
 			this.discardStock.onSelectionChange = (selection, lastChange) => {
-				if (lastChange && !lastChange.chooseOne && selection.some((card) => card.id === lastChange.id)) {
+				if (lastChange && selection.some((card) => card.id === lastChange.id)) {
 					this.game.playCardWithConfirmation(lastChange, 'actPlayFromDiscard', {
 						cardId: lastChange.id,
 						choice: 0
 					})
+					if (lastChange.chooseOne) this.discardStock!.unselectCard(lastChange)
 				}
 			}
 			this.bga.statusBar.addActionButton(_('Pass'), () => this.game.takeAction('actPass'), {
@@ -156,6 +157,7 @@ export class ImmediateAction {
 		}
 	}
 	onLeavingState() {
+		this.game.choicePanel.close()
 		document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.remove('selecting-hand-cards')
 		this.game.playedCards.onSelectionChange = undefined
 		this.game.playedCards.setSelectionMode('none')

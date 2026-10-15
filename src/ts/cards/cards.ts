@@ -57,22 +57,9 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 		const choiceCount = Number(card.type_arg) === 4 ? 3 : 2
 		container.classList.toggle('wide-choices', choiceCount === 2)
 		for (let choice = 1; choice <= choiceCount; choice++) {
-			const zone = document.createElement('button')
-			zone.type = 'button'
+			const zone = document.createElement('div')
 			zone.classList.add('card-choice')
 			zone.setAttribute('aria-label', `${_('Choice')} ${choice}`)
-			zone.addEventListener('click', event => {
-				event.stopPropagation()
-				if (document.getElementById('immediate-discard-cards')?.contains(zone)) {
-					game.playCardWithConfirmation(card, 'actPlayFromDiscard', { cardId: card.id, choice })
-					return
-				}
-				const hand = document.getElementById(`hand-${game.getPlayerId()}`)
-				if (!hand?.contains(zone)) {
-					return
-				}
-				game.playCardWithConfirmation(card, 'actPlayCard', { cardId: card.id, choice })
-			})
 			container.appendChild(zone)
 		}
 		div.appendChild(container)
@@ -103,7 +90,7 @@ const setupFrontDiv = (game: SanGame) => (card: SanCard, div: HTMLElement) => {
 	if (choices) {
 		const selectedChoice = card.location?.startsWith('play_area_') ? Number(card.choice ?? 0) : 0
 		choices.classList.toggle('has-selected-choice', selectedChoice > 0)
-		choices.querySelectorAll<HTMLButtonElement>('.card-choice').forEach((zone, index) => {
+		choices.querySelectorAll<HTMLElement>('.card-choice').forEach((zone, index) => {
 			const selected = selectedChoice === index + 1
 			zone.classList.toggle('selected-choice', selected)
 			zone.setAttribute('aria-pressed', String(selected))

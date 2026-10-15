@@ -99,6 +99,7 @@ export class PlayerTurn {
 							cardId: lastChange.id,
 							choice: 0
 						})
+						if (lastChange.chooseOne) stock.unselectCard(lastChange)
 					}
 				}
 			}
@@ -157,6 +158,7 @@ export class PlayerTurn {
 	 * This method is called each time we are leaving the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onLeavingState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
+		this.game.choicePanel.close()
 		for (const button of Object.values(this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {})) {
 			button.disabled = true
 		}
