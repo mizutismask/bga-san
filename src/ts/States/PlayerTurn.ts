@@ -30,11 +30,20 @@ export class PlayerTurn {
 			this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {}
 		)) {
 			if (Number(typeArg) === CARD_TYPE_PROPAGANDA) {
-				button.textContent = isCurrentPlayerActive
-					? this.bga.gameui.format_string(_('Play all (next: ${cost})'), {
-							cost: String(args.propagandaCost)
-						})
-					: _('Play all')
+				button.replaceChildren()
+				if (isCurrentPlayerActive) {
+					const icon = document.createElement('span')
+					icon.className = 'play-all-crossing-cost'
+					icon.title = _('Next crossing cost')
+					icon.setAttribute('aria-label', this.bga.gameui.format_string(_('Crossing cost: ${cost}'), {
+						cost: String(args.propagandaCost)
+					}))
+					const value = document.createElement('span')
+					value.textContent = String(args.propagandaCost)
+					value.setAttribute('aria-hidden', 'true')
+					icon.appendChild(value)
+					button.appendChild(icon)
+				}
 			}
 			button.disabled =
 				!isCurrentPlayerActive ||

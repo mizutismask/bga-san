@@ -42,7 +42,6 @@ export class PlayerTable {
 				const button = document.createElement('button')
 				button.type = 'button'
 				button.className = 'bgabutton bgabutton_blue play-all'
-				button.textContent = _('Play all')
 				button.title = _('Play all simple cards, others will be ignored')
 				button.disabled = true
 				button.addEventListener('click', () => this.game.takeAction('actPlayAll', { typeArg }))
@@ -51,7 +50,6 @@ export class PlayerTable {
 			} else {
 				const spacer = document.createElement('span')
 				spacer.className = 'bgabutton bgabutton_blue play-all'
-				spacer.textContent = _('Play all')
 				spacer.style.visibility = 'hidden'
 				spacer.setAttribute('aria-hidden', 'true')
 				pile.appendChild(spacer)
