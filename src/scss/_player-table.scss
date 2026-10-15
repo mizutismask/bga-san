@@ -36,6 +36,10 @@
 		}
 	}
 
+	.player-draw-deck {
+		flex-shrink: 0;
+	}
+
 	.play-all-crossing-cost {
 		display: inline-block;
 		position: relative;

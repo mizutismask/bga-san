@@ -132,10 +132,7 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 				div.dataset.cardType = '' + card.type
 			},
 			setupBackDiv: (card: SanCard, div: HTMLElement) => {
-				div.style.backgroundImage = `url('${g_gamethemeurl}img/san-card-background.jpg')`
-				//	const url = this.game.bga.images.getImgUrl("treasures.webp")
-				//	div.style.backgroundImage = `url('${url}')`
-				//	div.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
+				this.setFrontBackground(div as HTMLDivElement, 0)
 			},
 			cardHeight: CARD_HEIGHT,
 			cardWidth: CARD_WIDTH,

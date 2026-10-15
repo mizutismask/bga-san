@@ -658,6 +658,13 @@ export class Game extends BaseGame {
 		return this.riverDeck.setCardNumber(args.count, args.topCard ?? undefined)
 	}
 
+	async notif_playerDeckShuffled(args: { playerId: number; count: number }) {
+		const deck = this.playerTables[args.playerId]?.playerDeck
+		if (!deck || !args.count) return
+		await deck.setCardNumber(args.count)
+		await deck.shuffle()
+	}
+
 	async notif_materialMove(args: NotifMaterialMove) {
 		log('notif_materialMove', args)
 		for (const card of args.material as SanCard[]) {
@@ -699,15 +706,22 @@ export class Game extends BaseGame {
 				await this.cardsManager.removeCard(card, { fadeOut: true })
 			} else if (card.location?.startsWith('hand_')) {
 				const playerId = Number(card.location.substring(5))
+				const fromPlayerDeck = args.from === 'DECK' || String(args.from) === 'deck' ||
+					String(args.from).startsWith('player_deck_')
 				await this.playerTables[playerId]?.handStocks[card.type_arg]?.addCard(card, {
-					fromElement: this.bga.playerPanels.getElement(playerId)
+					fromElement: fromPlayerDeck
+						? this.playerTables[playerId]?.playerDeckElement ?? this.bga.playerPanels.getElement(playerId)
+						: this.bga.playerPanels.getElement(playerId),
+					...(fromPlayerDeck ? { initialSide: 'back' as const, finalSide: 'front' as const } : {})
 				})
 			} else if (card.location?.startsWith('plyr_discrd')) {
 				const playerId = Number(args.to.substring('plyr_discrd'.length))
 				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
 			} else if (Object.values(this.virusZone.decks).some((deck) => deck.contains(card))) {
 				const playerId = Number(args.to.substring('player_deck_'.length))
-				await this.cardsManager.removeCard(card, { slideTo: this.bga.playerPanels.getElement(playerId) })
+				await this.cardsManager.removeCard(card, {
+					slideTo: this.playerTables[playerId]?.playerDeckElement ?? this.bga.playerPanels.getElement(playerId)
+				})
 			} else if (this.playedCards.contains(card)) {
 				await this.playedCards.removeCard(card)
 			}

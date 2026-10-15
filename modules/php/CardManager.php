@@ -57,6 +57,10 @@ class CardManager extends DeckManager {
                 $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId);
                 $this->deck->moveAllCardsInLocation($discardLocation, $deckLocation);
                 $this->deck->shuffle($deckLocation);
+                $this->game->notify->player($playerId, 'playerDeckShuffled', '', [
+                    'playerId' => $playerId,
+                    'count' => $this->countCardsInLocation($deckLocation),
+                ]);
             }
             $this->addCardsToHand($cardsNeeded, $playerId, true);
         }

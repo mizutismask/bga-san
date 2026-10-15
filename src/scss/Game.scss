@@ -203,7 +203,7 @@ html {
 			flex-shrink: 0;
 		}
 
-		.san-card {
+		.hand-pile:not(.player-draw-pile) .san-card {
 			margin-top: -150px;
 			&:first-child {
 				margin-top: unset;

@@ -200,6 +200,10 @@ class DeckManager {
             $discardLocation = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_DISCARD, $playerId);
             $this->deck->moveAllCardsInLocation($discardLocation, $deckLocation);
             $this->deck->shuffle($deckLocation);
+            $this->game->notify->player($playerId, 'playerDeckShuffled', '', [
+                'playerId' => $playerId,
+                'count' => $this->countCardsInLocation($deckLocation),
+            ]);
             $available = min($remaining, $this->deck->countCardInLocation($deckLocation));
             if ($available > 0) {
                 $cards = array_merge($cards, $this->deck->pickCardsForLocation($available, $deckLocation, $handLocation, $playerId, true) ?? []);
