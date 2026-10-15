@@ -112,7 +112,8 @@ html {
 
 	#central-line {
 		display: grid;
-		grid-template-columns: max-content auto;
+		grid-template-columns: max-content max-content;
+		justify-content: center;
 		gap: 15px;
 		align-items: center;
 
