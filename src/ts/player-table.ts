@@ -122,17 +122,20 @@ export class PlayerTable {
 		this.playerDiscardElement = document.getElementById(`player-discard-${player.id}`) as HTMLDivElement
 		const discardCounterId = `player-discard-counter-${player.id}`
 		this.playerDiscard = new BgaCards.Deck<SanCard>(this.game.cardsManager, this.playerDiscardElement, {
-			cardNumber: Number(player.cardsInDiscard),
+			// Start empty so the constructor never generates a fake top card.
+			cardNumber: 0,
 			autoUpdateCardNumber: false,
 			counter: { show: true, position: 'bottom-right', size: 6, counterId: discardCounterId }
 		})
+		void this.playerDiscard.setCardNumber(Number(player.cardsInDiscard), null)
 		this.playerDiscard.addCards(player.discardCards ?? [], { initialSide: 'front', finalSide: 'front' })
 		const discardCounter = new ebg.counter()
 		for (const method of ['setValue', 'toValue'] as const) {
 			const updateCounter = discardCounter[method].bind(discardCounter)
 			discardCounter[method] = (value: number) => {
 				if (this.playerDiscard!.getCardNumber() !== value) {
-					void this.playerDiscard!.setCardNumber(value)
+					// Material moves supply the visible card; counter updates must not create a fake top card.
+					void this.playerDiscard!.setCardNumber(value, null)
 				}
 				updateCounter(value)
 			}
