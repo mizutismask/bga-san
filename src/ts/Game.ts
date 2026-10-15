@@ -99,6 +99,31 @@ export class Game extends BaseGame {
 		)
 
 		this.setupPlaymat(this.gamedatas)
+		const riverDeckElement = document.getElementById('river-deck')!
+		const riverDeckHome = document.createComment('River deck position')
+		riverDeckElement.before(riverDeckHome)
+		const riverDeckZone = document.createElement('div')
+		riverDeckZone.id = 'mobile-river-deck-zone'
+		riverDeckZone.className = 'cst-block'
+		const riverDeckTitle = document.createElement('div')
+		riverDeckTitle.className = 'zone-title'
+		riverDeckTitle.textContent = _('River deck')
+		riverDeckZone.appendChild(riverDeckTitle)
+		const playingZone = document.getElementById('playing-zone')!
+		const playmatRow = document.createElement('div')
+		playmatRow.id = 'playmat-top-row'
+		playingZone.before(playmatRow)
+		playmatRow.append(riverDeckZone, playingZone)
+		const portrait = window.matchMedia('(max-width: 600px) and (orientation: portrait)')
+		const updateRiverDeckLayout = () => {
+			if (portrait.matches) {
+				riverDeckZone.appendChild(riverDeckElement)
+			} else {
+				riverDeckHome.after(riverDeckElement)
+			}
+		}
+		portrait.addEventListener('change', updateRiverDeckLayout)
+		updateRiverDeckLayout()
 		this.setupTooltips()
 		this.setupHelpPopin()
 

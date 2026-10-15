@@ -27,7 +27,66 @@ $CARD_RATIO: list.slash($BASE_CARD_WIDTH, $BASE_CARD_HEIGHT);
 		}
 	}
 }
+#mobile-river-deck-zone {
+	display: none;
+}
 
+#playmat-top-row {
+	display: contents;
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+	html #custom-game-area {
+		#playmat-top-row {
+			display: flex;
+			align-items: stretch;
+			gap: 10px;
+			min-width: 0;
+		}
+
+		#playing-zone {
+			flex: 1;
+			min-width: 0;
+			overflow-x: auto;
+		}
+
+		#mobile-river-deck-zone {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			flex: 0 0 auto;
+			width: max-content;
+			background: rgba(255, 255, 255, 0.25);
+		}
+
+		#central-line {
+			grid-template-columns: 0 auto;
+			column-gap: 0;
+		}
+
+		.cstm-player-hand {
+			display: grid;
+			grid-template-columns: repeat(5, $CARD_WIDTH);
+			width: max-content;
+
+			.player-draw-pile,
+			.player-discard-pile {
+				grid-row: 2;
+				width: $CARD_WIDTH;
+
+				> .play-all { display: none; }
+			}
+
+			.player-draw-pile { grid-column: 1; }
+			.player-discard-pile { grid-column: 5; }
+
+			.player-draw-deck,
+			.player-discard {
+				zoom: 1;
+			}
+		}
+	}
+}
 @mixin card-border {
 	border-radius: 3%;
 }
@@ -89,7 +148,8 @@ html {
 	gap: 10px;
 	padding: 5px;
 
-	#playing-zone {
+	#playing-zone,
+	#mobile-river-deck-zone {
 		background: rgba(255, 255, 255, 0.25);
 
 		.zone-title {
