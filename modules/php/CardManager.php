@@ -446,9 +446,7 @@ class CardManager extends DeckManager {
         if ($corruptedCount >= 12) {
             $this->game->announceEndCondition(Constants::WINNING_TYPE_CORRUPTION, clienttranslate('${player_name} has corrupted twelve cards and wins the game'), [
                 'player_name' => $this->game->getPlayerNameById($playerId),
-            ]);
-            $this->game->playerScore->set($playerId, 1);
-            $this->game->playerScore->set((int) $this->game->getOpponentId($playerId), 0);
+            ], immediateWinnerId: $playerId);
             return true;
         }
         // River exhaustion must also end the turn when corruption triggered the refill.

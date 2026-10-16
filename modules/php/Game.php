@@ -332,10 +332,10 @@ class Game extends \Bga\GameFramework\Table {
         return $result;
     }
 
-    public function resolveRiverExhaustion(): void {
+    public function getVictoryTrackScores(): array {
         $players = array_map('intval', array_keys($this->getPlayers()));
         $progress = [];
-        // Compare progress toward victory on at least 2 requirements
+        // Each strictly led victory track is worth one point.
         foreach ($players as $playerId) {
             $opponentId = (int) $this->getOpponentId($playerId);
             $progress[$playerId] = [
@@ -345,7 +345,7 @@ class Game extends \Bga\GameFramework\Table {
             ];
         }
 
-        $winnerId = null;
+        $scores = [];
         foreach ($players as $playerId) {
             $opponentId = (int) $this->getOpponentId($playerId);
             $leads = 0;
@@ -356,27 +356,31 @@ class Game extends \Bga\GameFramework\Table {
                     $leads++;
                 }
             }
-            if ($leads >= 2) {
+            $scores[$playerId] = $leads;
+        }
+        return $scores;
+    }
+
+    public function resolveRiverExhaustion(): void {
+        $scores = $this->getVictoryTrackScores();
+        $winnerId = null;
+        foreach ($scores as $playerId => $score) {
+            if ($score > $scores[(int) $this->getOpponentId($playerId)]) {
                 $winnerId = $playerId;
             }
         }
-
-        // BGA ranks players by score: 1 for the majority winner, 0 otherwise.
-        // If neither player leads on two requirements, equal scores produce a draw.
-        foreach ($players as $playerId) {
-            $this->playerScore->set($playerId, $playerId === $winnerId ? 1 : 0);
-        }
         if ($winnerId === null) {
-            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. Neither player leads on two winning requirements, so the game is a draw.'));
+            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. Both players lead on the same number of victory tracks, so the game is a draw.'));
         } else {
-            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. ${player_name} leads on at least two winning requirements and wins the game.'), [
+            $this->announceEndCondition(Constants::WINNING_TYPE_RIVER_EXHAUSTION, clienttranslate('The river can no longer be refilled. ${player_name} leads on more victory tracks and wins the game.'), [
                 'player_name' => $this->getPlayerNameById($winnerId),
             ]);
         }
     }
 
-    public function announceEndCondition(int $winningType, string $message, array $args = []): void {
+    public function announceEndCondition(int $winningType, string $message, array $args = [], ?int $immediateWinnerId = null): void {
         $this->globals->set('winningType', $winningType);
+        $this->globals->set('immediateWinnerId', $immediateWinnerId);
         $endCondition = ['type' => 'WIN', 'message' => $message, 'args' => $args];
         $this->globals->set('endCondition', $endCondition);
         $this->notify->all('importantMessage', '', $endCondition);

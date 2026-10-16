@@ -35,6 +35,10 @@ class EndScore extends \Bga\GameFramework\States\GameState {
      * The onEnteringState method of state `EndScore` is called just before the end of the game.
      */
     public function onEnteringState() {
+        $immediateWinnerId = $this->game->globals->get('immediateWinnerId');
+        foreach ($this->game->getVictoryTrackScores() as $playerId => $score) {
+            $this->game->playerScore->set($playerId, $immediateWinnerId !== null && $playerId === (int) $immediateWinnerId ? 10 + $score : $score);
+        }
         $this->recordStatistics();
 
         if ($this->game->isStudio()) {

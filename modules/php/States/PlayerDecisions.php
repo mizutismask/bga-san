@@ -84,9 +84,7 @@ class PlayerDecisions extends GameState {
         if ($newPosition >= CardManager::RIVER_SIZE) {
             $this->game->announceEndCondition(Constants::WINNING_TYPE_PROPAGANDA, clienttranslate('${player_name} reaches the end of the propaganda track and wins the game'), [
                 'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            ]);
-            $this->game->playerScore->set($activePlayerId, 1);
-            $this->game->playerScore->set((int) $this->game->getOpponentId($activePlayerId), 0);
+            ], immediateWinnerId: $activePlayerId);
             return EndScore::class;
         }
 
@@ -172,9 +170,7 @@ class PlayerDecisions extends GameState {
             if ($remainingVirusCards === 0) {
                 $this->game->announceEndCondition(Constants::WINNING_TYPE_HACKING, clienttranslate('${player_name} has given his opponent all five Virus cards and wins the game'), [
                     'player_name' => $this->game->getPlayerNameById($activePlayerId),
-                ]);
-                $this->game->playerScore->set($activePlayerId, 1);
-                $this->game->playerScore->set($opponentId, 0);
+                ], immediateWinnerId: $activePlayerId);
                 return EndScore::class;
             }
         }
