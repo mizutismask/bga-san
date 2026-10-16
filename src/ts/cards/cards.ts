@@ -121,6 +121,11 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 			},
 			setupBackDiv: (card: SanCard, div: HTMLElement) => {
 				this.setFrontBackground(div as HTMLDivElement, 0)
+				if (card.location?.startsWith('corr_')) {
+					div.style.backgroundImage = `url('${game.bga.images.getImgUrl('corrupted-card-back.svg')}')`
+					div.style.backgroundPosition = '0 0'
+					div.style.backgroundSize = '100% 100%'
+				}
 			},
 			cardHeight: CARD_HEIGHT,
 			cardWidth: CARD_WIDTH,

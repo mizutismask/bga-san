@@ -758,6 +758,9 @@ export class Game extends BaseGame {
 			} else if (card.location?.startsWith('corr_')) {
 				const slot = this.corruptedCardPositions.get(card.id)
 				if (slot) {
+					if (this.cardsManager.getCardElement(card)) {
+						this.cardsManager.setCardVisible(card, false, { updateBack: true })
+					}
 					await this.corruptionStocks.get(slot.id)!.addCard(card, {
 						initialSide: 'back',
 						finalSide: 'back',
