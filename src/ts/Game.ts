@@ -37,6 +37,20 @@ export class Game extends BaseGame {
 		this.bga.userPreferences.onChange = (pref_id, pref_value) => this.customPreferenceChanged(pref_id, pref_value)
 	}
 
+	public updateProgressionCost(cost: number | null) {
+		const marker = document.getElementById(`propaganda-marker-${this.getPlayerId()}`)
+		if (!marker) return
+		if (cost === null) {
+			delete marker.dataset.crossingCost
+			marker.removeAttribute('aria-label')
+		} else {
+			marker.dataset.crossingCost = String(cost)
+			marker.setAttribute('aria-label', `${marker.title}: ${this.bga.gameui.format_string(_('Crossing cost: ${cost}'), {
+				cost: String(cost)
+			})}`)
+		}
+	}
+
 	public async playCardWithConfirmation(
 		card: SanCard,
 		action: string,

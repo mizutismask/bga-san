@@ -3,7 +3,6 @@ import { log } from '../base-game'
 import { SanGamedatas, SanPlayer, PlayerTurnArgs } from '../types'
 import { Utils } from '../utils'
 import {
-	CARD_TYPE_PROPAGANDA,
 	CARD_TYPE_VIRUS,
 	SPECIAL_EFFECT_NONE,
 	SPECIAL_EFFECT_PROPAGANDA_PER_PROPAGANDA_CARD,
@@ -26,25 +25,10 @@ export class PlayerTurn {
 	 * This method is called each time we are entering the game state. You can use this method to perform some user interface changes at this moment.
 	 */
 	onEnteringState(args: PlayerTurnArgs, isCurrentPlayerActive: boolean) {
+		this.game.updateProgressionCost(isCurrentPlayerActive ? args.propagandaCost : null)
 		for (const [typeArg, button] of Object.entries(
 			this.game.playerTables[this.game.getPlayerId()]?.playAllButtons ?? {}
 		)) {
-			if (Number(typeArg) === CARD_TYPE_PROPAGANDA) {
-				button.replaceChildren()
-				if (isCurrentPlayerActive) {
-					const icon = document.createElement('span')
-					icon.className = 'play-all-crossing-cost'
-					icon.title = _('Next crossing cost')
-					icon.setAttribute('aria-label', this.bga.gameui.format_string(_('Crossing cost: ${cost}'), {
-						cost: String(args.propagandaCost)
-					}))
-					const value = document.createElement('span')
-					value.textContent = String(args.propagandaCost)
-					value.setAttribute('aria-hidden', 'true')
-					icon.appendChild(value)
-					button.appendChild(icon)
-				}
-			}
 			button.disabled =
 				!isCurrentPlayerActive ||
 				!args.selectableHandCards.some(

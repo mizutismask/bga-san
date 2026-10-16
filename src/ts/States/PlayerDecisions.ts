@@ -10,6 +10,7 @@ export class PlayerDecisions {
 	) {}
 
 	onEnteringState(args: PlayerDecisionArgs, isCurrentPlayerActive: boolean) {
+		this.game.updateProgressionCost(isCurrentPlayerActive ? args.propagandaCost : null)
 		if (isCurrentPlayerActive) {
 			if (args.canCorrupt) {
 				this.bga.statusBar.setTitle(_('${you} can corrupt a card from the river and choose where to place it'))

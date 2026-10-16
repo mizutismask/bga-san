@@ -57,6 +57,31 @@ html {
 		}
 	}
 
+	.propaganda-marker[data-crossing-cost] {
+		position: relative;
+
+		&::after {
+			content: attr(data-crossing-cost);
+			position: absolute;
+			left: 50%;
+			top: 100%;
+			transform: translateX(-45%);
+			width: 25px;
+			height: 24px;
+			box-sizing: border-box;
+			padding-right: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 3Q0 0 2.6 1.5L21.4 12.5Q24 14 21.4 15.5L2.6 26.5Q0 28 0 25Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+			color: #559dcc;
+			font-size: 13px;
+			font-weight: bold;
+			text-shadow: none;
+			pointer-events: none;
+		}
+	}
+
 	.hand-size-token {
 		width: 24px;
 		height: 50px;

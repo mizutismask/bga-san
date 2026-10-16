@@ -41,35 +41,6 @@
 		flex-shrink: 0;
 	}
 
-	.play-all-crossing-cost {
-		display: inline-block;
-		position: relative;
-		width: 25px;
-		height: 24px;
-		vertical-align: middle;
-
-		&::before {
-			content: '';
-			position: absolute;
-			inset: 0;
-			background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 3Q0 0 2.6 1.5L21.4 12.5Q24 14 21.4 15.5L2.6 26.5Q0 28 0 25Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-		}
-
-		> span {
-			position: absolute;
-			left: -1px;
-			top: 1px;
-			width: 70%;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: #559dcc;
-			font-size: 13px;
-			font-weight: bold;
-			text-shadow: none;
-		}
-	}
 }
 
 .player-table {
