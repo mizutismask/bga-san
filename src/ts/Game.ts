@@ -138,13 +138,17 @@ export class Game extends BaseGame {
 
 	private setupPlaymat(gamedatas: SanGamedatas) {
 		//played cards zone
-		this.playedCards = new BgaCards.LineStock<SanCard>(this.cardsManager, document.getElementById('played-cards')!)
+		this.playedCards = new BgaCards.LineStock<SanCard>(this.cardsManager, document.getElementById('played-cards')!, {
+			direction: 'column',
+			wrap: 'nowrap',
+			center: false
+		})
 		this.playedCards.addCards(gamedatas.playedCards ?? [], { initialSide: 'front', finalSide: 'front' })
 
 		const centralLine = document.getElementById('central-line')!
 		centralLine.classList.toggle('reversed', Number(gamedatas.players[this.getPlayerId()]?.playerNo) === 2)
 		//deck
-		centralLine.insertAdjacentHTML('beforeend', `
+		document.getElementById('playing-zone')!.insertAdjacentHTML('beforebegin', `
 			<div id="river-deck-zone" class="cst-block">
 				<div class="zone-title">${_('River deck')}</div>
 				<div id="river-deck"></div>

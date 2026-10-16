@@ -110,12 +110,37 @@ html {
 }
 
 #custom-game-area {
-	display: flex;
-	flex-direction: column;
-	align-content: center;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	align-items: start;
 	gap: 10px;
 	padding: 5px;
+
+	#left-zones {
+		grid-column: 1;
+		grid-row: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+	}
+
+	#main-zones {
+		grid-column: 2;
+		grid-row: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	#playing-zone {
+		box-sizing: border-box;
+		width: calc($CARD_WIDTH + 56px);
+		min-height: 1200px;
+		display: flex;
+		flex-direction: column;
+	}
 
 	#playing-zone,
 	#river-deck-zone,
@@ -130,24 +155,30 @@ html {
 	}
 
 	#played-cards {
-		min-height: $CARD_HEIGHT;
+		width: 100%;
+		min-height: 0;
+		flex: 1;
+
+		> .card {
+			flex-shrink: 0;
+			margin: 0;
+
+			& ~ .card {
+				margin-top: -150px;
+			}
+		}
 	}
 
 	#central-line {
 		display: grid;
-		grid-template-columns: max-content max-content;
+		grid-template-columns: max-content;
 		justify-content: center;
 		gap: 0 15px;
 		align-items: center;
 		isolation: isolate;
 
-		#river-deck-zone {
-			grid-column: 1;
-			grid-row: 1 / 4;
-			width: max-content;
-		}
 		#river {
-			grid-column: 2;
+			grid-column: 1;
 			grid-row: 2;
 			position: relative;
 			z-index: 3;
@@ -191,7 +222,7 @@ html {
 
 		.corruptionPanel {
 			--corruption-card-offset: 35px;
-			grid-column: 2;
+			grid-column: 1;
 			align-self: stretch;
 
 			.corruption-pair {
@@ -301,7 +332,8 @@ svg {
 
 #river-deck-zone,
 .player-deck-zone,
-.player-discard-zone {
+.player-discard-zone,
+#playing-zone {
 	background: none;
 }
 

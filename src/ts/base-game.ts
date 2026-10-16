@@ -44,12 +44,16 @@ export abstract class BaseGame {
 			'beforeend',
 			`
 		<div id="custom-game-area">
-			<div id="playing-zone" class="cst-block">
-				<div class="zone-title">${_('Playing zone')}</div>
-				<div id="played-cards"></div>
+			<div id="left-zones">
+				<div id="playing-zone" class="cst-block">
+					<div class="zone-title">${_('Playing zone')}</div>
+					<div id="played-cards"></div>
+				</div>
 			</div>
-			<div id="central-line"></div>
-			<div id="player-tables"></div>
+			<div id="main-zones">
+				<div id="central-line"></div>
+				<div id="player-tables"></div>
+			</div>
 		</div>`
 		)
 	}
