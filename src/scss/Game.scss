@@ -802,6 +802,50 @@ html:not([data-theme='dark']) :is(.propaganda-marker, .virus-token) .game-symbol
 	}
 }
 
+@media (max-width: 1600px) {
+	#custom-game-area {
+		grid-template-columns: minmax(0, 1fr);
+
+		#left-zones {
+			grid-column: 1;
+			grid-row: 1;
+			flex-direction: row;
+			align-items: flex-start;
+			justify-content: flex-start;
+			zoom: .7;
+		}
+
+		#main-zones {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		#river-deck-zone {
+			flex-shrink: 0;
+		}
+
+		#playing-zone {
+			flex: 1;
+			width: auto;
+			min-width: 0;
+			min-height: 0;
+		}
+
+		#played-cards {
+			display: flex;
+			flex-direction: row !important;
+			flex-wrap: wrap !important;
+			align-content: flex-start;
+			justify-content: flex-start;
+			gap: 4px;
+
+			> .card ~ .card {
+				margin-top: 0;
+			}
+		}
+	}
+}
+
 //for a lonely expandable help button that looks like a normal help button
 .button-help-expandable {
 	display: flex;
