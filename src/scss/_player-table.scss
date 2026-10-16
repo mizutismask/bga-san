@@ -36,6 +36,25 @@
 		}
 	}
 
+	.player-resources {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px 27px;
+		align-self: stretch;
+		padding: 8px;
+
+		.counter > span {
+			padding: 0;
+			margin-left: -3px;
+		}
+
+		.game-symbol {
+			width: 30px;
+			height: 29.53125px;
+			flex-basis: 30px;
+		}
+	}
+
 	.player-draw-deck,
 	.player-discard {
 		flex-shrink: 0;
@@ -95,7 +114,7 @@
 	height: 24px;
 	box-sizing: border-box;
 	@include punches.round(virus);
-	scale: 1.8;
+	scale: 1.4;
 	box-shadow: 0 1px 4px #000;
 	pointer-events: none;
 

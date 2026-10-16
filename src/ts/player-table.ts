@@ -45,6 +45,7 @@ export class PlayerTable {
 					<div class="zone-title">${_('Deck')}</div>
 					<div id="player-draw-deck-${player.id}" class="player-draw-deck"></div>
 				</div>
+				<div id="player-resources-${player.id}" class="player-resources cst-block"></div>
 			</div>
 		`)
 		this.playerDeckElement = document.getElementById(`player-draw-deck-${player.id}`) as HTMLDivElement

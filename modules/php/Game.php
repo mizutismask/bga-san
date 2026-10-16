@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Bga\Games\San;
 
+use Bga\GameFramework\Components\Counters\CounterVisibility;
 use Bga\GameFramework\Components\Counters\PlayerCounter;
 use Bga\GameFramework\Components\Counters\TableCounter;
 use Bga\GameFramework\Components\Deck;
@@ -67,11 +68,11 @@ class Game extends \Bga\GameFramework\Table {
 
         $this->expansionManager = new ExpansionManager($this);
 
-        $this->propagandaCounter = $this->counterFactory->createPlayerCounter("propaganda");
+        $this->propagandaCounter = $this->counterFactory->createPlayerCounter("propaganda", visibility: CounterVisibility::SELF);
         $this->propagandaProgressCounter = $this->counterFactory->createPlayerCounter("propagandaProgress");
-        $this->hackingCounter = $this->counterFactory->createPlayerCounter("hacking");
-        $this->corruptionCounter = $this->counterFactory->createPlayerCounter("corruption");
-        $this->incomeCounter = $this->counterFactory->createPlayerCounter("income");
+        $this->hackingCounter = $this->counterFactory->createPlayerCounter("hacking", visibility: CounterVisibility::SELF);
+        $this->corruptionCounter = $this->counterFactory->createPlayerCounter("corruption", visibility: CounterVisibility::SELF);
+        $this->incomeCounter = $this->counterFactory->createPlayerCounter("income", visibility: CounterVisibility::SELF);
         $this->remainingCardsInDeckCounter = $this->counterFactory->createPlayerCounter("remainingCardsInDeck");
         $this->cardsInDiscardCounter = $this->counterFactory->createPlayerCounter("cardsInDiscard");
         $this->totalCardsForPlayerCounter = $this->counterFactory->createPlayerCounter("totalCardsForPlayer");
@@ -303,11 +304,11 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         //counters
-        $this->propagandaCounter->fillResult($result);
+        $this->propagandaCounter->fillResult($result, currentPlayerId: (int) $currentPlayerId);
         $this->propagandaProgressCounter->fillResult($result);
-        $this->hackingCounter->fillResult($result);
-        $this->corruptionCounter->fillResult($result);
-        $this->incomeCounter->fillResult($result);
+        $this->hackingCounter->fillResult($result, currentPlayerId: (int) $currentPlayerId);
+        $this->corruptionCounter->fillResult($result, currentPlayerId: (int) $currentPlayerId);
+        $this->incomeCounter->fillResult($result, currentPlayerId: (int) $currentPlayerId);
         $this->remainingCardsInDeckCounter->fillResult($result);
         $this->cardsInDiscardCounter->fillResult($result);
         $this->handSizeCounter->fillResult($result);

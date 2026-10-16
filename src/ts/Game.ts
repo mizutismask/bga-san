@@ -326,6 +326,34 @@ export class Game extends BaseGame {
 			player,
 			Number(player.id) === this.getPlayerId() ? this.gamedatas.hand : []
 		)
+		if (Number(player.id) === this.getPlayerId()) this.setupPrivateCounters(player)
+	}
+
+	private setupPrivateCounters(player: SanPlayer) {
+		const playerId = Number(player.id)
+		const counters = [
+			{ name: 'propaganda', icon: 4, label: _('Propaganda') },
+			{ name: 'hacking', icon: 3, label: _('Hacking') },
+			{ name: 'corruption', icon: 2, label: _('Corruption') },
+			{ name: 'income', icon: 14, label: _('Income') },
+		]
+		const zone = document.getElementById(`player-resources-${player.id}`)!
+		zone.innerHTML = counters.map(({ name, icon }) => `
+			<div id="${name}-counter-${player.id}-wrapper" class="counter ${name}-counter">
+				<div class="game-symbol game-symbol-${icon}" aria-hidden="true"></div>
+				<span id="${name}-player-counter-${player.id}"></span>
+			</div>
+		`).join('')
+		counters.forEach(({ name, label }) => {
+			const counter = new ebg.counter()
+			counter.create(`${name}-player-counter-${player.id}`, {
+				value: Number(player[name]),
+				playerCounter: name,
+				playerId
+			})
+			this.setTooltip(`${name}-counter-${player.id}-wrapper`, label)
+			if (name === 'propaganda') this.propagandaCounters.set(playerId, counter)
+		})
 	}
 
 	private setupMiniPlayerBoard(player: SanPlayer) {
@@ -333,10 +361,6 @@ export class Game extends BaseGame {
 		const sideLabel = player.symbol === 'moon' ? _('Moon') : _('Star')
 		const sideIcon = player.symbol === 'moon' ? 'moon' : 'star'
 		const additionalCounters = [
-			{ name: 'propaganda', icon: 4, label: _('Propaganda') },
-			{ name: 'hacking', icon: 3, label: _('Hacking') },
-			{ name: 'corruption', icon: 2, label: _('Corruption') },
-			{ name: 'income', icon: 14, label: _('Income') },
 			{ name: 'handSize', icon: 'fa-hand-paper-o', label: _('Hand size') },
 			{
 				name: 'remainingCardsInDeck',
@@ -380,7 +404,6 @@ export class Game extends BaseGame {
 				playerId
 			})
 			this.setTooltipToClass(`${name}-counter`, label)
-			if (name === 'propaganda') this.propagandaCounters.set(playerId, counter)
 			if (name === 'cardsInDiscard') this.discardCounters.set(playerId, counter)
 		})
 

@@ -656,7 +656,7 @@ svg {
 .log-resource-icon {
 	width: 30px;
 	height: 29.53125px;
-	margin-right: -3px;
+	margin-right: -5px;
 }
 
 .log-resource-value {
@@ -665,16 +665,17 @@ svg {
 }
 
 .log-counter-summary-value {
-	margin-right: 10px;
+	margin-right: 16px;
 }
 
 html:not([data-theme='dark'])
-	.game-symbol:not(.game-symbol-14):not(.log-resource-icon):not(.player-board .counter .game-symbol):not(.card-choice-panel .game-symbol) {
+	.game-symbol:not(.game-symbol-14):not(.log-resource-icon):not(.player-board .counter .game-symbol):not(.player-resources .game-symbol):not(.card-choice-panel .game-symbol) {
 	filter: brightness(0.2);
 }
 
 @each $icon, $color in (2: #e3b632, 3: #bd4147, 4: #65a5d2) {
 	.player-board .counter .game-symbol-#{$icon},
+	.player-resources .game-symbol-#{$icon},
 	.card-choice-panel .game-symbol-#{$icon},
 	.log-resource-icon.game-symbol-#{$icon} {
 		background-image: none;
