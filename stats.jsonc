@@ -10,6 +10,11 @@
 		"100": ["Corruption", "Propaganda", "Hacking", "River exhaustion"]
 	},
 	"player": {
+		"turns_number": {
+			"id": 20,
+			"name": "Number of turns",
+			"type": "int"
+		},
 		"game_corrupted_cards": {
 			"id": 10,
 			"name": "Corrupted cards",

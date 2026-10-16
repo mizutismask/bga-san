@@ -250,6 +250,7 @@ class Game extends \Bga\GameFramework\Table {
     function activateNextPlayerCustom() {
         $player_id = $this->activeNextPlayer();
         $this->giveExtraTime($player_id);
+        $this->playerStats->inc('turns_number', 1, $player_id);
         $this->notify->all('msg', clienttranslate('&#10148; Start of ${player_name}\'s turn'), ['player_name' => $this->getPlayerNameById($player_id)]);
         return $player_id;
     }
