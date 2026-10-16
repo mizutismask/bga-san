@@ -113,17 +113,15 @@ class PlayerTurn extends GameState {
     #[PossibleAction]
     public function actPass(int $activePlayerId) {
         $this->game->cardManager->revealPlayedCards($activePlayerId);
-        $this->game->notify->all('msg', clienttranslate('${propagandaIcon}${propaganda}${hackingIcon}${hacking}${corruptionIcon}${corruption}${incomeIcon}${income}'), [
+        $notificationArgs = [
             'player_name' => $this->game->getPlayerNameById($activePlayerId),
-            'propagandaIcon' => 'propaganda',
-            'hackingIcon' => 'hacking',
-            'corruptionIcon' => 'corruption',
-            'incomeIcon' => 'income',
-            'propaganda' => $this->game->propagandaCounter->get($activePlayerId),
-            'hacking' => $this->game->hackingCounter->get($activePlayerId),
-            'corruption' => $this->game->corruptionCounter->get($activePlayerId),
-            'income' => $this->game->incomeCounter->get($activePlayerId),
-        ]);
+        ];
+        foreach (['propaganda', 'hacking', 'corruption', 'income'] as $counter) {
+            $value = $this->game->{$counter . 'Counter'}->get($activePlayerId);
+            $notificationArgs[$counter . 'Icon'] = $value === 0 ? '' : $counter;
+            $notificationArgs[$counter] = $value === 0 ? '' : $value;
+        }
+        $this->game->notify->all('msg', clienttranslate('Summary of the turn: ${propagandaIcon}${propaganda}${hackingIcon}${hacking}${corruptionIcon}${corruption}${incomeIcon}${income}'), $notificationArgs);
         return PlayerDecisions::class;
 
         /*  $end = $this->game->hasReachedEndOfGameRequirements();
