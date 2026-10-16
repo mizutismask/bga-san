@@ -134,6 +134,16 @@ class CardManager extends DeckManager {
         if ($isCopy || $choice || $this->getPerCardCounter($card) !== null) {
             $this->game->contextManager->insertContextLog('playCard', $card->id, $choice, json_encode($actions));
         }
+        $cancelable = $this->getCancelablePlayedCards($activePlayerId);
+        $revealed = $this->game->globals->get('revealedPlayedCards', []);
+        $toReveal = array_values(array_filter(
+            $this->getPlayedCards($activePlayerId),
+            fn($played) => !isset($cancelable[$played->id]) && !in_array($played->id, $revealed, true)
+        ));
+        if ($toReveal) {
+            $this->revealPlayedCards($activePlayerId, $toReveal);
+        }
+
         foreach ($actions as [$action, $amount]) {
             if ($amount && $action === Constants::ACTION_DRAW) {
                 $drawn = $this->addCardsToHand($amount, $activePlayerId, true);
@@ -226,8 +236,73 @@ class CardManager extends DeckManager {
         }
     }
 
-    public function revealPlayedCards(int $playerId): void {
-        $cards = $this->getPlayedCards($playerId);
+    public function getCancelablePlayedCards(int $playerId): array {
+        $contexts = [];
+        foreach ($this->game->contextManager->getAllContextLogs('playCard') as $context) {
+            if ((int) $context['player'] === $playerId && !$context['resolved']) {
+                $contexts[(int) $context['param1']] ??= $context;
+            }
+        }
+
+        $counters = [
+            Constants::CARD_TYPE_PROPAGANDA => $this->game->propagandaCounter,
+            Constants::CARD_TYPE_HACKING => $this->game->hackingCounter,
+            Constants::CARD_TYPE_CORRUPTION => $this->game->corruptionCounter,
+        ];
+
+        $copies = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARDS, []);
+        $sources = $this->game->globals->get(Constants::GLB_COPIED_PLAYED_CARD_SOURCES, []);
+        $playedCards = $this->game->cardManager->getPlayedCards($playerId);
+        $cancelable = [];
+        foreach ($playedCards as $card) {
+            $effectCard = isset($copies[$card->id]) ? (object) $copies[$card->id] : $card;
+            $context = $contexts[$card->id] ?? null;
+            $actions = $context !== null
+                ? json_decode($context['param3'], true, 512, JSON_THROW_ON_ERROR)
+                : [
+                    [Constants::CARD_TYPE_PROPAGANDA, $card->propaganda],
+                    [Constants::CARD_TYPE_HACKING, $card->hacking],
+                    [Constants::CARD_TYPE_CORRUPTION, $card->corruption],
+                    [Constants::ACTION_DRAW, $card->draw],
+                ];
+
+            // Keep irreversible plays in place so their effects cannot be repeated.
+            foreach ($actions as [$action, $amount]) {
+                if ($amount && !isset($counters[$action])) {
+                    continue 2;
+                }
+            }
+            // Recorded actions identify reversible choices and per-card effects.
+            if (
+                $effectCard->draw || $effectCard->destroyCards
+                || in_array($effectCard->specialEffect, [Constants::SPECIAL_EFFECT_CORRUPT_FROM_HAND, Constants::SPECIAL_EFFECT_PLAY_FROM_DISCARD], true)
+                || ($effectCard->specialEffect && $context === null && !in_array($effectCard->specialEffect, [Constants::SPECIAL_EFFECT_COPY_PLAYED_CARD, Constants::SPECIAL_EFFECT_COPY_RIVER_CARD], true))
+            ) {
+                continue;
+            }
+
+            $cancelable[$card->id] = true;
+        }
+
+        // An irreversible copy also locks its source, including chains of copies.
+        foreach ($playedCards as $card) {
+            if (isset($cancelable[$card->id])) {
+                continue;
+            }
+            $sourceId = $sources[$card->id] ?? null;
+            $visited = [];
+            while ($sourceId !== null && !isset($visited[$sourceId])) {
+                $visited[$sourceId] = true;
+                unset($cancelable[$sourceId]);
+                $sourceId = $sources[$sourceId] ?? null;
+            }
+        }
+
+        return $cancelable;
+    }
+
+    public function revealPlayedCards(int $playerId, ?array $cards = null): void {
+        $cards ??= $this->getPlayedCards($playerId);
         $revealed = $this->game->globals->get('revealedPlayedCards', []);
         $this->game->globals->set('revealedPlayedCards', array_values(array_unique(array_merge($revealed, array_map(fn($card) => $card->id, $cards)))));
         $location = $this->game->getPlayerLocation(Constants::MATERIAL_LOCATION_PLAYER_PLAY_AREA, $playerId);
