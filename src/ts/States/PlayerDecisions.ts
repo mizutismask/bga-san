@@ -10,6 +10,10 @@ export class PlayerDecisions {
 	) {}
 
 	onEnteringState(args: PlayerDecisionArgs, isCurrentPlayerActive: boolean) {
+		for (const stock of Object.values(this.game.playerTables[this.game.getPlayerId()]?.handStocks ?? {})) {
+			stock.onSelectionChange = undefined
+			stock.setSelectionMode('none')
+		}
 		this.game.updateProgressionCost(isCurrentPlayerActive ? args.propagandaCost : null)
 		if (isCurrentPlayerActive) {
 			if (args.canCorrupt) {
