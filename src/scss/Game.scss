@@ -423,11 +423,11 @@ svg {
 .card-choice-panel {
 	position: fixed;
 	z-index: 1000;
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 6px;
 	box-sizing: border-box;
-	width: 170px;
+	width: 240px;
 	max-width: calc(100vw - 16px);
 	max-height: calc(100dvh - 16px);
 	overflow-y: auto;
@@ -438,6 +438,15 @@ svg {
 	color: #f5f3f0;
 	box-shadow: 0 4px 14px #0006;
 	text-align: center;
+
+	&:has(.card-choice-option:nth-of-type(3)) {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	> strong,
+	.card-choice-cancel {
+		grid-column: 1 / -1;
+	}
 
 	button {
 		display: flex;
