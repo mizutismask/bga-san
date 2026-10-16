@@ -40,7 +40,7 @@ export class PlayerTable {
 
 		container.insertAdjacentHTML('beforeend', `
 			<div class="hand-pile player-draw-pile">
-				<span class="bgabutton bgabutton_blue play-all" style="visibility: hidden" aria-hidden="true"></span>
+				<span class="play-all" style="visibility: hidden" aria-hidden="true"></span>
 				<div class="player-deck-zone cst-block">
 					<div class="zone-title">${_('Deck')}</div>
 					<div id="player-draw-deck-${player.id}" class="player-draw-deck"></div>
@@ -80,7 +80,7 @@ export class PlayerTable {
 			if (typeArg !== CARD_TYPE_HARDWARE) {
 				const button = document.createElement('button')
 				button.type = 'button'
-				button.className = 'bgabutton bgabutton_blue play-all'
+				button.className = 'play-all'
 				button.title = _('Play all simple cards, others will be ignored')
 				button.disabled = true
 				button.addEventListener('click', () => this.game.takeAction('actPlayAll', { typeArg }))
@@ -88,7 +88,7 @@ export class PlayerTable {
 				this.playAllButtons[typeArg] = button
 			} else {
 				const spacer = document.createElement('span')
-				spacer.className = 'bgabutton bgabutton_blue play-all'
+				spacer.className = 'play-all'
 				spacer.style.visibility = 'hidden'
 				spacer.setAttribute('aria-hidden', 'true')
 				pile.appendChild(spacer)
@@ -113,7 +113,7 @@ export class PlayerTable {
 
 		container.insertAdjacentHTML('beforeend', `
 			<div class="hand-pile player-discard-pile">
-				<span class="bgabutton bgabutton_blue play-all" style="visibility: hidden" aria-hidden="true"></span>
+				<span class="play-all" style="visibility: hidden" aria-hidden="true"></span>
 				<div class="player-discard-zone cst-block">
 					<div class="zone-title">${_('Discard')}</div>
 					<div id="player-discard-${player.id}" class="player-discard"></div>
