@@ -345,19 +345,20 @@ svg {
 
 	.card-choices {
 		position: absolute;
-		top: 12px;
-		left: 8px;
+		inset: 0;
 		z-index: 1;
 		display: none;
-		flex-direction: row;
-		gap: 9px;
 	}
 
 	.card-choice {
+		position: absolute;
+		top: 5.73%;
+		left: 9%;
+		width: 13.5%;
+		height: 14%;
+		box-sizing: border-box;
 		background: transparent;
 		pointer-events: auto;
-		width: 21px;
-		height: 25px;
 		padding: 0;
 		cursor: pointer;
 
@@ -369,12 +370,24 @@ svg {
 		}
 	}
 
+	.card-choice:nth-child(2) {
+		left: 28.5%;
+	}
+
+	.card-choice:nth-child(3) {
+		left: 48%;
+	}
+
 	.card-choices.wide-choices .card-choice {
-		width: 42px;
+		width: 25%;
+
+		&:nth-child(2) {
+			left: 42%;
+		}
 	}
 
 	.card-choices.has-selected-choice {
-		display: flex;
+		display: block;
 		pointer-events: none;
 
 		.card-choice {
