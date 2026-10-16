@@ -63,10 +63,14 @@
 
 	.player-resources {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 8px 27px;
-		align-self: stretch;
-		padding: 8px;
+		grid-template-columns: repeat(2, min-content);
+		gap: 8px 13px;
+		align-self: center;
+		width: min-content;
+		box-sizing: border-box;
+		margin-top: 5px;
+		padding: 1px 8px 1px 1px;
+		background: rgb(255 255 255 / 69%);
 
 		.counter > span {
 			padding: 0;

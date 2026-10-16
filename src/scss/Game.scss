@@ -121,8 +121,6 @@ html {
 	#river-deck-zone,
 	.player-deck-zone,
 	.player-discard-zone {
-		//background: rgba(255, 255, 255, 0.25);
-
 		.zone-title {
 			padding: 0 0 4px;
 			font-size: 12px;
@@ -306,6 +304,13 @@ svg {
 .cst-block {
 	padding: 12px 20px;
 	border-radius: 5px;
+	background: rgba(255, 255, 255, 0.25);
+}
+
+#river-deck-zone,
+.player-deck-zone,
+.player-discard-zone {
+	background: none;
 }
 
 //do not display title if the stock is empty
