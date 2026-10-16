@@ -15,25 +15,14 @@ export class PlayerDecisions {
 			if (args.canCorrupt) {
 				this.bga.statusBar.setTitle(_('${you} can corrupt a card from the river and choose where to place it'))
 				this.game.river.setSelectionMode('single')
-				const playerId = this.game.getPlayerId()
-				for (const marker of document.querySelectorAll<HTMLElement>(
-					`#corruption-panel-${playerId} .corruption-marker`
-				)) {
-					if (marker.textContent) continue
-					marker.classList.add('selectable')
-					marker.onclick = () => {
-						if (marker.textContent || !this.bga.players.isCurrentPlayerActive()) return
-						const card = this.game.river.getSelection()[0]
-						if (!card) {
-							this.bga.dialogs.showMessage(_('Select a card from the river'), 'error')
-							return
-						}
-						const boardSlot = Math.floor(Number(marker.id.split('-').pop()) / 10)
-						const slot = Number(this.game.getCurrentPlayer().playerNo) === 1 ? boardSlot : 7 - boardSlot
-						this.game.takeAction('actCorrupt', { cardId: card.id, slot })
+				this.selectableMarkers = this.game.highlightCorruptionSlots((slot) => {
+					const card = this.game.river.getSelection()[0]
+					if (!card) {
+						this.bga.dialogs.showMessage(_('Select a card from the river'), 'error')
+						return
 					}
-					this.selectableMarkers.push(marker)
-				}
+					this.game.takeAction('actCorrupt', { cardId: card.id, slot })
+				})
 			}
 			if (args.canProgressOnProp) {
 				this.bga.statusBar.addActionButton(_('Progress on propaganda'), () => this.game.takeAction('actProgressOnProp'), {

@@ -111,6 +111,7 @@ export class CardsManager extends CardsManagerBase<SanCard> {
 			animationManager: game.animationManager,
 			type: 'card',
 			getId: (card) => `san-card-${card.id}`,
+			isCardVisible: (card) => card.type !== undefined && !card.location?.startsWith('corr_'),
 			setupFrontDiv: setupFrontDiv(game),
 			setupDiv: (card: SanCard, div: HTMLElement) => {
 				div.classList.add('san-card')

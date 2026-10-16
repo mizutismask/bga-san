@@ -95,24 +95,14 @@ export class ImmediateAction {
 					}
 				}
 			}
-			for (const marker of document.querySelectorAll<HTMLElement>(
-				`#corruption-panel-${this.game.getPlayerId()} .corruption-marker`
-			)) {
-				const boardSlot = Math.floor(Number(marker.id.split('-').pop()) / 10)
-				const slot = Number(this.game.getCurrentPlayer().playerNo) === 1 ? boardSlot : 7 - boardSlot
-				if (marker.textContent || !args.corruptionSlots.includes(slot)) continue
-				marker.classList.add('selectable')
-				marker.onclick = () => {
-					if (marker.textContent || !this.bga.players.isCurrentPlayerActive()) return
-					const card = stocks.flatMap((stock) => stock.getSelection())[0]
-					if (!card) {
-						this.bga.dialogs.showMessage(_('Select a card from your hand'), 'error')
-						return
-					}
-					this.game.takeAction('actCorrupt', { cardId: card.id, slot })
+			this.selectableMarkers = this.game.highlightCorruptionSlots((slot) => {
+				const card = stocks.flatMap((stock) => stock.getSelection())[0]
+				if (!card) {
+					this.bga.dialogs.showMessage(_('Select a card from your hand'), 'error')
+					return
 				}
-				this.selectableMarkers.push(marker)
-			}
+				this.game.takeAction('actCorrupt', { cardId: card.id, slot })
+			}, args.corruptionSlots)
 		}
 		if (args.remainingDestroysFromHand) {
 			document.getElementById(`hand-${this.game.getPlayerId()}`)?.classList.add('selecting-hand-cards')

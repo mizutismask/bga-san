@@ -22,6 +22,7 @@ export class Game extends BaseGame {
 	public playedCards!: LineStock<SanCard>
 	public virusZone!: VirusZone
 	private corruptedCardPositions = new Map<number, HTMLElement>()
+	private corruptionStocks = new Map<string, CardStock<SanCard>>()
 	public propagandaCounters = new Map<number, Counter>()
 	private discardCounters = new Map<number, Counter>()
 
@@ -182,11 +183,16 @@ export class Game extends BaseGame {
 					marker.id = `corruption-${playerId}-${slot * 10 + position}`
 					marker.className = 'corruption-marker'
 					pair.appendChild(marker)
+					this.corruptionStocks.set(marker.id, new BgaCards.CardStock<SanCard>(this.cardsManager, marker))
 				}
 				slots.appendChild(pair)
 			}
 			for (const card of gamedatas.corruptedCards?.[playerId] ?? []) {
 				this.updateCorruptionMarker(card)
+				const marker = this.corruptedCardPositions.get(card.id)
+				if (marker) {
+					void this.corruptionStocks.get(marker.id)!.addCard(card, { initialSide: 'back', finalSide: 'back' })
+				}
 			}
 		})
 	}
@@ -287,20 +293,36 @@ export class Game extends BaseGame {
 		})
 	}
 
+	public highlightCorruptionSlots(onSelect: (slot: number) => void, allowedSlots?: number[]): HTMLElement[] {
+		const markers: HTMLElement[] = []
+		const highlightedSlots = new Set<number>()
+		for (const marker of document.querySelectorAll<HTMLElement>(
+			`#corruption-panel-${this.getPlayerId()} .corruption-marker`
+		)) {
+			const boardSlot = Math.floor(Number(marker.id.split('-').pop()) / 10)
+			const slot = Number(this.getCurrentPlayer().playerNo) === 1 ? boardSlot : 7 - boardSlot
+			if (marker.dataset.occupied || highlightedSlots.has(slot) || (allowedSlots && !allowedSlots.includes(slot))) continue
+			highlightedSlots.add(slot)
+			marker.classList.add('selectable')
+			marker.onclick = () => {
+				if (!marker.dataset.occupied && this.bga.players.isCurrentPlayerActive()) onSelect(slot)
+			}
+			markers.push(marker)
+		}
+		return markers
+	}
+
 	private updateCorruptionMarker(card: SanCard) {
 		const previous = this.corruptedCardPositions.get(card.id)
 		if (previous) {
-			previous.textContent = ''
+			delete previous.dataset.occupied
 			this.setTooltip(previous.id, _('Place a card here to corrupt it and modify the crossing cost'))
 			this.corruptedCardPositions.delete(card.id)
 		}
 		if (card.location?.startsWith('corr_')) {
 			const marker = document.getElementById(`corruption-${card.location.substring(5)}-${card.location_arg}`)
 			if (marker) {
-				const ownerId = Number(card.location.substring(5))
-				const perspectiveId =
-					this.getPlayerId() > 0 ? this.getPlayerId() : this.gamedatas.playerOrderWorkingWithSpectators[0]
-				marker.textContent = ownerId === perspectiveId ? '✓ −1' : '✓ +1'
+				marker.dataset.occupied = 'true'
 				this.setTooltip(marker.id, _('the card crossing cost is modified by this amount'))
 				this.corruptedCardPositions.set(card.id, marker)
 			}
@@ -312,7 +334,7 @@ export class Game extends BaseGame {
 		document.querySelectorAll<HTMLElement>('.corruption-marker').forEach((marker) => {
 			this.setTooltip(
 				marker.id,
-				marker.textContent
+				marker.dataset.occupied
 					? _('Card crossing cost is modified by this amount')
 					: _('Place a card here to corrupt it and modify the crossing cost')
 			)
@@ -735,27 +757,12 @@ export class Game extends BaseGame {
 				this.cardsManager.updateCardInformations(card)
 			} else if (card.location?.startsWith('corr_')) {
 				const slot = this.corruptedCardPositions.get(card.id)
-				const cardElement = this.cardsManager.getCardElement(card)
-				let shrinkFinished: Promise<void> = Promise.resolve()
-				if (slot && cardElement && this.animationManager.animationsActive()) {
-					const shrinkAnimation = cardElement.animate([{ scale: '1' }, { scale: '0' }], {
-						duration: 1000,
-						easing: 'ease-in-out',
-						fill: 'forwards'
+				if (slot) {
+					await this.corruptionStocks.get(slot.id)!.addCard(card, {
+						initialSide: 'back',
+						finalSide: 'back',
+						bump: 1
 					})
-					shrinkFinished = shrinkAnimation.finished.then(
-						() => undefined,
-						() => undefined
-					)
-				}
-				await Promise.all([this.cardsManager.removeCard(card, { slideTo: slot }), shrinkFinished])
-				if (slot && this.animationManager.animationsActive()) {
-					slot.classList.add('highlighted')
-					try {
-						await this.animationManager.base.wait(1000)
-					} finally {
-						slot.classList.remove('highlighted')
-					}
 				}
 			} else if (card.location?.startsWith('virus_')) {
 				await this.virusZone.decks[Number(card.location.substring(6))]
